@@ -1,0 +1,153 @@
+/*
+ * Copyright (C) 2009 eXo Platform SAS.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+package org.exoplatform.services.rest.impl;
+
+import org.exoplatform.services.rest.AbstractResourceTest;
+import org.exoplatform.services.rest.Filter;
+import org.exoplatform.services.rest.GenericContainerRequest;
+import org.exoplatform.services.rest.RequestFilter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.Providers;
+
+/**
+ * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
+ * @version $Id: $
+ */
+public class RequestFilterTest extends AbstractResourceTest
+{
+
+   @Filter
+   public static class RequestFilter1 implements RequestFilter
+   {
+
+      @Context
+      private UriInfo uriInfo;
+
+      @Context
+      private HttpHeaders httpHeaders;
+
+      private Providers providers;
+
+      private HttpServletRequest httpRequest;
+
+      private ResourceBinder binder; // exo container component
+
+      public RequestFilter1(@Context Providers providers, @Context HttpServletRequest httpRequest, ResourceBinder binder)
+      {
+         this.providers = providers;
+         this.httpRequest = httpRequest;
+         this.binder = binder;
+      }
+
+      public void doFilter(GenericContainerRequest request)
+      {
+         if (uriInfo != null && httpHeaders != null && providers != null && httpRequest != null && binder != null)
+            request.setMethod("POST");
+      }
+
+   }
+
+   @Path("a/b/c/{x:.*}")
+   @Filter
+   public static class RequestFilter2 implements RequestFilter
+   {
+
+      public void doFilter(GenericContainerRequest request)
+      {
+         request.setMethod("DELETE");
+      }
+
+   }
+
+   @Path("a")
+   public static class Resource1
+   {
+
+      @POST
+      public void m0()
+      {
+      }
+
+      @DELETE
+      @Path("b/c/d/e")
+      public void m1()
+      {
+
+      }
+
+      @PUT
+      @Path("c/d/e")
+      public void m2()
+      {
+
+      }
+   }
+
+   public void testWithoutFilter1() throws Exception
+   {
+      registry(Resource1.class);
+      ContainerResponse resp = service("GET", "/a", "", null, null);
+      assertEquals(405, resp.getStatus());
+      assertEquals(1, resp.getHttpHeaders().get("allow").size());
+      assertTrue(resp.getHttpHeaders().get("allow").get(0).toString().contains("POST"));
+      unregistry(Resource1.class);
+   }
+
+   public void testWithFilter2() throws Exception
+   {
+      registry(Resource1.class);
+
+      // add filter that can change method
+      providers.addRequestFilter(RequestFilter1.class);
+
+      // should get status 204
+      ContainerResponse resp = service("GET", "/a", "", null, null);
+      assertEquals(204, resp.getStatus());
+
+      unregistry(Resource1.class);
+
+   }
+
+   public void testFilter2() throws Exception
+   {
+      registry(Resource1.class);
+      ContainerResponse resp = service("GET", "/a/b/c/d/e", "", null, null);
+      assertEquals(405, resp.getStatus());
+      assertEquals(1, resp.getHttpHeaders().get("allow").size());
+      assertTrue(resp.getHttpHeaders().get("allow").get(0).toString().contains("DELETE"));
+
+      // add filter that can change method
+      providers.addRequestFilter(new RequestFilter2());
+
+      // not should get status 204
+      resp = service("GET", "/a/b/c/d/e", "", null, null);
+      assertEquals(204, resp.getStatus());
+
+      unregistry(Resource1.class);
+   }
+
+}
