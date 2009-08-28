@@ -27,12 +27,12 @@
          <name>ws.rs.method.filter</name>
          <set-method>addPlugin</set-method>
          <type>org.exoplatform.services.rest.impl.method.MethodInvokerFilterComponentPlugin</type>
-         <init-params>
+         <!--init-params>
             <value-param>
                <name>method.access.filter</name>
                <value>org.exoplatform.services.rest.ext.method.filter.MethodAccessFilter</value>
             </value-param>
-         </init-params>
+         </init-params-->
       </component-plugin>
       <component-plugin>
          <name>ws.rs.entity.provider</name>
