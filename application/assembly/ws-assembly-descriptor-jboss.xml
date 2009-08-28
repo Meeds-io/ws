@@ -19,7 +19,7 @@
 
 -->
 <assembly>
-  <id>2.0.3-SNAPSHOT</id>
+  <id>2.1.0-Beta01</id>
   <formats>
     <format>dir</format>
   </formats>

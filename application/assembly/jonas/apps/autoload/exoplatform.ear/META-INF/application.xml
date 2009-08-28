@@ -24,13 +24,13 @@
   <display-name>exoplatform</display-name>
   <module>
     <web>
-      <web-uri>exo.ws.application.webapps-2.0.3-SNAPSHOT.war</web-uri>
+      <web-uri>exo.ws.application.webapps-2.1.0-Beta01.war</web-uri>
       <context-root>ws-examples</context-root>
     </web>
   </module>
   <module>
     <web>
-      <web-uri>exo.ws.security.oauth.provider.webapp-2.0.3-SNAPSHOT.war</web-uri>
+      <web-uri>exo.ws.security.oauth.provider.webapp-2.1.0-Beta01.war</web-uri>
       <context-root>oauthprovider</context-root>
     </web>
   </module>
