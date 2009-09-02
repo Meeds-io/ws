@@ -193,6 +193,23 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
          {
             fields.add(new FieldInjectorImpl(resourceClass, jfield));
          }
+         Class<?> sc = resourceClass;
+         while (sc != Object.class)
+         {
+            for (java.lang.reflect.Field jfield : sc.getDeclaredFields())
+            {
+               int modif = jfield.getModifiers();
+               if (Modifier.isPublic(modif) || Modifier.isProtected(modif))
+               {
+                  FieldInjector inj = new FieldInjectorImpl(resourceClass, jfield);
+                  if (inj.getAnnotation() != null && !fields.contains(inj))
+                  {
+                     fields.add(new FieldInjectorImpl(resourceClass, jfield));
+                  }
+               }
+            }
+            sc = sc.getSuperclass();
+         }
       }
 
       this.resourceMethods = new ResourceMethodMap<ResourceMethodDescriptor>();
@@ -459,8 +476,9 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
                else
                {
                   String msg =
-                     "JAX-RS annotations on one of method parameters of resource " + toString() + "are equivocality. "
-                        + "Annotations: " + annotation + " and " + a + " can't be applied to one parameter.";
+                     "JAX-RS annotations on one of method parameters of resource " + toString() + ", method "
+                        + method.getName() + " are equivocality. " + "Annotations: " + annotation + " and " + a
+                        + " can't be applied to one parameter.";
                   throw new RuntimeException(msg);
                }
 
@@ -475,8 +493,8 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
             }
             else
             {
-               LOG.warn("Method parameter contains unknown or not valid JAX-RS annotation " + a.toString()
-                  + ". It will be ignored.");
+               LOG.warn("Method parameter of resource " + toString() + ", method " + method.getName()
+                  + " contains unknown or not valid JAX-RS annotation " + a.toString() + ". It will be ignored.");
             }
          }
 
@@ -721,8 +739,7 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
    {
       StringBuffer sb = new StringBuffer("[ AbstractResourceDescriptorImpl: ");
       sb.append("path: " + getPathValue()).append("; isRootResource: " + isRootResource()).append(
-         "; class: " + getObjectClass()).append(getConstructorDescriptors() + "; ").append(getFieldInjectors()).append(
-         " ]");
+         "; class: " + getObjectClass()).append(" ]");
       return sb.toString();
    }
 

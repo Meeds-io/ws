@@ -29,6 +29,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 /**
@@ -327,5 +330,46 @@ public class RequestDispatcherTest extends AbstractResourceTest
       service("GET", "/a/b/c/d?q1=q1&q2=q2", "", null, null);
       unregistry(Resource5.class);
    }
+
    //--------------------------------------
+   
+   public void testFieldSuperClass() throws Exception
+   {
+      registry(EndResource.class);
+      service("GET", "/a", "", null, null);
+      unregistry(EndResource.class);
+   }
+
+   public abstract static class AbstractResource
+   {
+      @Context
+      protected UriInfo uriInfo;
+
+      @Context
+      public Request request;
+   }
+
+   public abstract static class ExtResource extends AbstractResource
+   {
+      @Context
+      protected SecurityContext sc;
+
+   }
+
+   @Path("a")
+   public static class EndResource extends ExtResource
+   {
+      @Context
+      private HttpHeaders header;
+
+      @GET
+      public void m1()
+      {
+         assertNotNull(uriInfo);
+         assertNotNull(request);
+         assertNotNull(sc);
+         assertNotNull(header);
+      }
+   }
+
 }

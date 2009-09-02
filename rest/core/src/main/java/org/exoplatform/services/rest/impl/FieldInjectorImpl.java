@@ -64,16 +64,6 @@ public class FieldInjectorImpl implements FieldInjector
    private final Annotation annotation;
 
    /**
-    * Parameter type. See {@link Constructor#getGenericParameterTypes()} .
-    */
-   private final Type type;
-
-   /**
-    * Parameter class. See {@link Constructor#getParameterTypes()}
-    */
-   private final Class<?> clazz;
-
-   /**
     * Default value for this parameter, default value can be used if there is not
     * found required parameter in request. See {@link javax.ws.rs.DefaultValue}.
     */
@@ -84,10 +74,9 @@ public class FieldInjectorImpl implements FieldInjector
     */
    private final boolean encoded;
 
-   /**
-    * Field name, see {@link java.lang.reflect.Field#getName()}.
-    */
-   private final String name;
+
+   /** See {@link java.lang.reflect.Field} . */
+   private final java.lang.reflect.Field jfield;
 
    /**
     * @param resourceClass class that contains field <tt>jfield</tt>
@@ -96,10 +85,8 @@ public class FieldInjectorImpl implements FieldInjector
    public FieldInjectorImpl(Class<?> resourceClass, java.lang.reflect.Field jfield)
    {
 
-      this.name = jfield.getName();
+      this.jfield = jfield;
       this.annotations = jfield.getDeclaredAnnotations();
-      this.clazz = jfield.getType();
-      this.type = jfield.getGenericType();
 
       Annotation annotation = null;
       String defaultValue = null;
@@ -126,8 +113,8 @@ public class FieldInjectorImpl implements FieldInjector
             else
             {
                String msg =
-                  "JAX-RS annotations on one of fields are equivocality. Annotations: " + annotation.toString()
-                     + " and " + a.toString() + " can't be applied to one field.";
+                  "JAX-RS annotations on one of fields " + jfield.toString() + " are equivocality. Annotations: "
+                     + annotation.toString() + " and " + a.toString() + " can't be applied to one field.";
                throw new RuntimeException(msg);
             }
 
@@ -160,6 +147,23 @@ public class FieldInjectorImpl implements FieldInjector
    /**
     * {@inheritDoc}
     */
+   @Override
+   public boolean equals(Object other)
+   {
+      if (other == null)
+      {
+         return false;
+      }
+      if (getClass() != other.getClass())
+      {
+         return false;
+      }
+      return getName().equals(((FieldInjectorImpl)other).getName());
+   }
+   
+   /**
+    * {@inheritDoc}
+    */
    public Annotation getAnnotation()
    {
       return annotation;
@@ -186,7 +190,7 @@ public class FieldInjectorImpl implements FieldInjector
     */
    public Class<?> getParameterClass()
    {
-      return clazz;
+      return jfield.getType();
    }
 
    /**
@@ -194,7 +198,7 @@ public class FieldInjectorImpl implements FieldInjector
     */
    public Type getGenericType()
    {
-      return type;
+      return jfield.getGenericType();
    }
 
    /**
@@ -210,7 +214,7 @@ public class FieldInjectorImpl implements FieldInjector
     */
    public String getName()
    {
-      return name;
+      return jfield.getName();
    }
 
    /**
@@ -223,8 +227,6 @@ public class FieldInjectorImpl implements FieldInjector
          ParameterResolver<?> pr = ParameterResolverFactory.createParameterResolver(annotation);
          try
          {
-            java.lang.reflect.Field jfield = resource.getClass().getDeclaredField(getName());
-
             if (!Modifier.isPublic(jfield.getModifiers()))
                jfield.setAccessible(true);
 
@@ -233,8 +235,7 @@ public class FieldInjectorImpl implements FieldInjector
          catch (Throwable e)
          {
 
-            //        if (LOG.isDebugEnabled())
-            e.printStackTrace();
+            LOG.error("Failed initialize field. ", e);
 
             Class<?> ac = annotation.annotationType();
             if (ac == MatrixParam.class || ac == QueryParam.class || ac == PathParam.class)

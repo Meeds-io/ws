@@ -51,7 +51,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 /**
@@ -750,4 +753,40 @@ public class ResourceDescriptorTest extends BaseTest
 
    }
 
+   // =========================================
+
+   public void testInitializeFieldSuperClass()
+   {
+      AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(EndResource.class);
+      assertEquals(4, resource.getFieldInjectors().size());
+   }
+
+   public abstract static class AbstractResource
+   {
+      @Context
+      protected UriInfo uriInfo;
+
+      @Context
+      public Request request;
+   }
+
+   public abstract static class ExtResource extends AbstractResource
+   {
+
+      @Context
+      protected SecurityContext sc;
+
+   }
+
+   public static class EndResource extends ExtResource
+   {
+      @SuppressWarnings("unused")
+      @Context
+      private HttpHeaders header;
+
+      @GET
+      public void m1()
+      {
+      }
+   }
 }
