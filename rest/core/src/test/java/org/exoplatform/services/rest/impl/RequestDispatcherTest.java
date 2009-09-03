@@ -347,6 +347,9 @@ public class RequestDispatcherTest extends AbstractResourceTest
 
       @Context
       public Request request;
+      
+      @Context
+      protected UriInfo something;
    }
 
    public abstract static class ExtResource extends AbstractResource
@@ -361,12 +364,19 @@ public class RequestDispatcherTest extends AbstractResourceTest
    {
       @Context
       private HttpHeaders header;
+      
+      @Context
+      private SecurityContext something;
 
       @GET
       public void m1()
       {
          assertNotNull(uriInfo);
          assertNotNull(request);
+         assertNotNull(this.something);
+         assertNotNull(super.something);
+         assertTrue(this.something instanceof SecurityContext);
+         assertTrue(super.something instanceof UriInfo);
          assertNotNull(sc);
          assertNotNull(header);
       }

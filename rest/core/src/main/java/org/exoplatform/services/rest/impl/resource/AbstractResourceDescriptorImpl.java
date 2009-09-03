@@ -199,10 +199,12 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
             for (java.lang.reflect.Field jfield : sc.getDeclaredFields())
             {
                int modif = jfield.getModifiers();
+               // TODO process fields with package visibility.
                if (Modifier.isPublic(modif) || Modifier.isProtected(modif))
                {
                   FieldInjector inj = new FieldInjectorImpl(resourceClass, jfield);
-                  if (inj.getAnnotation() != null && !fields.contains(inj))
+                  // Skip not annotated field. They will be not injected from container.  
+                  if (inj.getAnnotation() != null)
                   {
                      fields.add(new FieldInjectorImpl(resourceClass, jfield));
                   }

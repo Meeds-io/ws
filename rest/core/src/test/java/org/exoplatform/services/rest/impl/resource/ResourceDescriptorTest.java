@@ -758,7 +758,7 @@ public class ResourceDescriptorTest extends BaseTest
    public void testInitializeFieldSuperClass()
    {
       AbstractResourceDescriptor resource = new AbstractResourceDescriptorImpl(EndResource.class);
-      assertEquals(4, resource.getFieldInjectors().size());
+      assertEquals(6, resource.getFieldInjectors().size());
    }
 
    public abstract static class AbstractResource
@@ -768,6 +768,9 @@ public class ResourceDescriptorTest extends BaseTest
 
       @Context
       public Request request;
+
+      @Context
+      protected UriInfo something;
    }
 
    public abstract static class ExtResource extends AbstractResource
@@ -783,6 +786,10 @@ public class ResourceDescriptorTest extends BaseTest
       @SuppressWarnings("unused")
       @Context
       private HttpHeaders header;
+
+      @SuppressWarnings("unused")
+      @Context
+      private UriInfo something;
 
       @GET
       public void m1()

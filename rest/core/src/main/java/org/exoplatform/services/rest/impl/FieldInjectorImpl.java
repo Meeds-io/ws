@@ -147,23 +147,6 @@ public class FieldInjectorImpl implements FieldInjector
    /**
     * {@inheritDoc}
     */
-   @Override
-   public boolean equals(Object other)
-   {
-      if (other == null)
-      {
-         return false;
-      }
-      if (getClass() != other.getClass())
-      {
-         return false;
-      }
-      return getName().equals(((FieldInjectorImpl)other).getName());
-   }
-   
-   /**
-    * {@inheritDoc}
-    */
    public Annotation getAnnotation()
    {
       return annotation;
