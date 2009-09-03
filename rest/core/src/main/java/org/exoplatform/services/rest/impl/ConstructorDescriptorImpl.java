@@ -251,6 +251,7 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
                String msg =
                   "Can't instantiate resource " + resourceClass + " by using constructor " + this
                      + ". Not found parameter " + cp;
+               LOG.error(msg);
                throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg)
                   .type(MediaType.TEXT_PLAIN).build());
             }
