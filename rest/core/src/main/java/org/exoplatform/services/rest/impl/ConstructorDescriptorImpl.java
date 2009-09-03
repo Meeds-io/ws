@@ -44,6 +44,7 @@ import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
@@ -232,15 +233,11 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
             }
             catch (Exception e)
             {
-
-               if (LOG.isDebugEnabled())
-                  e.printStackTrace();
-
                Class<?> ac = a.annotationType();
                if (ac == MatrixParam.class || ac == QueryParam.class || ac == PathParam.class)
-                  throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build());
+                  throw new WebApplicationException(e, Response.status(Response.Status.NOT_FOUND).build());
 
-               throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).build());
+               throw new WebApplicationException(e, Response.status(Response.Status.BAD_REQUEST).build());
             }
          }
          else
@@ -255,7 +252,7 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
                   "Can't instantiate resource " + resourceClass + " by using constructor " + this
                      + ". Not found parameter " + cp;
                throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg)
-                  .build());
+                  .type(MediaType.TEXT_PLAIN).build());
             }
 
             p[i] = tmp;
@@ -286,8 +283,6 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
       catch (InvocationTargetException invExc)
       {
          // constructor may produce exceptions
-         if (LOG.isDebugEnabled())
-            invExc.printStackTrace();
          // get cause of exception that method produces
          Throwable cause = invExc.getCause();
          // if WebApplicationException than it may contain response

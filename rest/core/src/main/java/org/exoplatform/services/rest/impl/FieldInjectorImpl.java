@@ -218,13 +218,11 @@ public class FieldInjectorImpl implements FieldInjector
          catch (Throwable e)
          {
 
-            LOG.error("Failed initialize field. ", e);
-
             Class<?> ac = annotation.annotationType();
             if (ac == MatrixParam.class || ac == QueryParam.class || ac == PathParam.class)
-               throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build());
+               throw new WebApplicationException(e, Response.status(Response.Status.NOT_FOUND).build());
 
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).build());
+            throw new WebApplicationException(e, Response.status(Response.Status.BAD_REQUEST).build());
          }
       }
 

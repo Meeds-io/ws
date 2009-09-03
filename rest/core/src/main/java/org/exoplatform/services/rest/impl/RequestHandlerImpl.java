@@ -144,6 +144,10 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
                // should be some of 4xx status
                if (errorResponse.getStatus() < 500)
                {
+                  if (LOG.isDebugEnabled() && e.getCause() != null)
+                  {
+                     LOG.warn("WedApplication exception occurs.", e.getCause());
+                  }
                   if (errorResponse.getEntity() == null)
                   {
                      if (excmap != null)
@@ -155,17 +159,26 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
                }
                else
                {
-                  if (LOG.isDebugEnabled())
-                     e.printStackTrace();
 
                   if (errorResponse.getEntity() == null)
                   {
                      if (excmap != null)
                      {
+                        if (LOG.isDebugEnabled() && e.getCause() != null)
+                        {
+                           // Hide error message if exception mapper exists.
+                           LOG.warn("WedApplication exception occurs.", e.getCause());
+                        }
+
                         errorResponse = excmap.toResponse(e);
                      }
                      else
                      {
+                        if (e.getCause() != null)
+                        {
+                           LOG.warn("WedApplication exception occurs.", e.getCause());
+                        }
+
                         // add stack trace as message body
                         errorResponse =
                            Response.status(errorResponse.getStatus()).entity(new ErrorStreaming(e)).type(
@@ -177,20 +190,27 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
             }
             else if (e instanceof InternalException)
             {
-               Class cause = e.getCause().getClass();
-               ExceptionMapper excmap = ProviderBinder.getInstance().getExceptionMapper(cause);
-               while (cause != null && excmap == null)
+               Throwable cause = e.getCause();
+               Class causeClazz = cause.getClass();
+               ExceptionMapper excmap = ProviderBinder.getInstance().getExceptionMapper(causeClazz);
+               while (causeClazz != null && excmap == null)
                {
-                  excmap = ProviderBinder.getInstance().getExceptionMapper(cause);
+                  excmap = ProviderBinder.getInstance().getExceptionMapper(causeClazz);
                   if (excmap == null)
-                     cause = cause.getSuperclass();
+                     causeClazz = causeClazz.getSuperclass();
                }
                if (excmap != null)
                {
+                  if (LOG.isDebugEnabled()) 
+                  {
+                     // Hide error message if exception mapper exists.
+                     LOG.warn("Internal error occurs.", cause);
+                  }
                   response.setResponse(excmap.toResponse(e.getCause()));
                }
                else
                {
+                  LOG.error("Internal error occurs.", cause);
                   throw new UnhandledException(e.getCause());
                }
             }
