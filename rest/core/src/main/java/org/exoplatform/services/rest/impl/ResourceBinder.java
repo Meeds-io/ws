@@ -22,11 +22,15 @@ import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.rest.Filter;
 import org.exoplatform.services.rest.ObjectFactory;
 import org.exoplatform.services.rest.PerRequestObjectFactory;
+import org.exoplatform.services.rest.RequestFilter;
+import org.exoplatform.services.rest.ResponseFilter;
 import org.exoplatform.services.rest.SingletonObjectFactory;
 import org.exoplatform.services.rest.impl.resource.AbstractResourceDescriptorImpl;
 import org.exoplatform.services.rest.impl.resource.ResourceDescriptorValidator;
+import org.exoplatform.services.rest.method.MethodInvokerFilter;
 import org.exoplatform.services.rest.resource.AbstractResourceDescriptor;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.rest.resource.ResourceDescriptorVisitor;
@@ -101,8 +105,6 @@ public final class ResourceBinder
     */
    private final ResourceDescriptorVisitor rdv = ResourceDescriptorValidator.getInstance();
 
-   private final ProviderBinder providers;
-
    private int size = 0;
 
    /**
@@ -122,7 +124,6 @@ public final class ResourceBinder
       // TODO better solution to initialize RuntimeDelegate
       rd = new RuntimeDelegateImpl();
       RuntimeDelegate.setInstance(rd);
-      providers = ProviderBinder.getInstance();
 
       ExoContainer container = containerContext.getContainer();
 
@@ -156,6 +157,7 @@ public final class ResourceBinder
    @SuppressWarnings("unchecked")
    public void addApplication(Application application)
    {
+      ProviderBinder providers = ProviderBinder.getInstance();
       for (Object obj : application.getSingletons())
       {
          if (obj.getClass().getAnnotation(Provider.class) != null)
@@ -176,6 +178,22 @@ public final class ResourceBinder
             if (obj instanceof MessageBodyWriter)
             {
                providers.addMessageBodyWriter((MessageBodyWriter)obj);
+            }
+         }
+         else if (obj.getClass().getAnnotation(Filter.class) != null)
+         {
+            // singleton filter
+            if (obj instanceof MethodInvokerFilter)
+            {
+               providers.addMethodInvokerFilter((MethodInvokerFilter)obj);
+            }
+            if (obj instanceof RequestFilter)
+            {
+               providers.addRequestFilter((RequestFilter)obj);
+            }
+            if (obj instanceof ResponseFilter)
+            {
+               providers.addResponseFilter((ResponseFilter)obj);
             }
          }
          else
@@ -203,6 +221,22 @@ public final class ResourceBinder
             if (MessageBodyWriter.class.isAssignableFrom(clazz))
             {
                providers.addMessageBodyWriter(clazz);
+            }
+         }
+         else if (clazz.getAnnotation(Filter.class) != null)
+         {
+            // per-request filter
+            if (MethodInvokerFilter.class.isAssignableFrom(clazz))
+            {
+               providers.addMethodInvokerFilter(clazz);
+            }
+            if (RequestFilter.class.isAssignableFrom(clazz))
+            {
+               providers.addRequestFilter(clazz);
+            }
+            if (ResponseFilter.class.isAssignableFrom(clazz))
+            {
+               providers.addResponseFilter(clazz);
             }
          }
          else

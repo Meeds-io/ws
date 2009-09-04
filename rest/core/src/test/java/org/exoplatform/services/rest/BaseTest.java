@@ -47,6 +47,7 @@ public abstract class BaseTest extends TestCase
       container = StandaloneContainer.getInstance();
       binder = (ResourceBinder)container.getComponentInstanceOfType(ResourceBinder.class);
       requestHandler = (RequestHandlerImpl)container.getComponentInstanceOfType(RequestHandlerImpl.class);
+      // reset providers to be sure it is clean
       ProviderBinder.setInstance(new ProviderBinder());
       providers = ProviderBinder.getInstance();
       //    System.out.println("##########################"+providers);
