@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.method;
 
+import org.exoplatform.services.rest.Property;
 import org.exoplatform.services.rest.method.TypeProducer;
 
 import java.lang.annotation.Annotation;
@@ -27,12 +28,14 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
 import javax.ws.rs.CookieParam;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
@@ -84,20 +87,25 @@ public class ParameterHelper
 
    static
    {
-      PROVIDER_FIELDS_ANNOTATIONS = Collections.singletonList(Context.class.getName());
-      PROVIDER_CONSTRUCTOR_PARAMETER_ANNOTATIONS = Collections.singletonList(Context.class.getName());
-      List<String> tmp1 = new ArrayList<String>(6);
+      PROVIDER_FIELDS_ANNOTATIONS =
+         Collections.unmodifiableList(Arrays.asList(Context.class.getName(), Property.class.getName()));
+      
+      PROVIDER_CONSTRUCTOR_PARAMETER_ANNOTATIONS =
+         Collections.unmodifiableList(Arrays.asList(Context.class.getName(), Property.class.getName()));
+      
+      List<String> tmp1 = new ArrayList<String>(7);
       tmp1.add(CookieParam.class.getName());
       tmp1.add(Context.class.getName());
       tmp1.add(HeaderParam.class.getName());
       tmp1.add(MatrixParam.class.getName());
       tmp1.add(PathParam.class.getName());
       tmp1.add(QueryParam.class.getName());
+      tmp1.add(Property.class.getName());
       RESOURCE_FIELDS_ANNOTATIONS = Collections.unmodifiableList(tmp1);
       RESOURCE_CONSTRUCTOR_PARAMETER_ANNOTATIONS = Collections.unmodifiableList(tmp1);
 
       List<String> tmp2 = new ArrayList<String>(tmp1);
-      tmp2.add(javax.ws.rs.FormParam.class.getName());
+      tmp2.add(FormParam.class.getName());
       RESOURCE_METHOD_PARAMETER_ANNOTATIONS = Collections.unmodifiableList(tmp2);
    }
 

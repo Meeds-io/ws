@@ -20,7 +20,6 @@ package org.exoplatform.services.rest.impl.method;
 
 import org.exoplatform.services.rest.ApplicationContext;
 import org.exoplatform.services.rest.Property;
-import org.exoplatform.services.rest.method.TypeProducer;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -50,10 +49,20 @@ public class PropertyResolver extends ParameterResolver<Property>
    public Object resolve(org.exoplatform.services.rest.Parameter parameter, ApplicationContext context)
       throws Exception
    {
+      if (parameter.getParameterClass() != String.class)
+      {
+         throw new IllegalArgumentException(
+            "Only parameters and fields with string type may be annotated by @Property.");
+      }
       String param = this.property.value();
-      TypeProducer typeProducer =
-         ParameterHelper.createTypeProducer(parameter.getParameterClass(), parameter.getGenericType());
-      return typeProducer.createValue(param, null, parameter.getDefaultValue());
+
+      Object value = context.getAttributes().get(param);
+      if (value == null)
+      {
+         return parameter.getDefaultValue();
+      }
+      
+      return value;
    }
 
 }

@@ -20,6 +20,7 @@ package org.exoplatform.services.rest.impl;
 
 import org.exoplatform.services.rest.AbstractResourceTest;
 import org.exoplatform.services.rest.GenericContainerResponse;
+import org.exoplatform.services.rest.Property;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Encoded;
@@ -381,5 +382,40 @@ public class RequestDispatcherTest extends AbstractResourceTest
          assertNotNull(header);
       }
    }
+   
+   // -----------------------------------------------
+   
+   public void testPropertyInjection() throws Exception
+   {
+      registry(Resource6.class);
+      RequestHandlerImpl.setProperty("prop1", "hello");
+      RequestHandlerImpl.setProperty("prop2", "test");
+      service("GET", "/a", "", null, null);
+      unregistry(Resource6.class);
+      
+   }
 
+   @Path("a")
+   public static class Resource6
+   {
+      
+      @Property("prop1")
+      private String prop1;
+      
+      private final String prop2;
+      
+      public Resource6(@Property("prop2") String cProp)
+      {
+         this.prop2 = cProp;
+      }
+      
+      @GET
+      public void m1()
+      {
+         assertEquals("hello", prop1);
+         assertEquals("test", prop2);
+      }
+      
+   }
+   
 }

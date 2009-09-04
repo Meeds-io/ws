@@ -28,6 +28,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 
+import org.exoplatform.services.rest.Property;
+
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
@@ -66,7 +68,8 @@ public final class ParameterResolverFactory
          return new PathParameterResolver((PathParam)annotation);
       if (clazz == QueryParam.class)
          return new QueryParameterResolver((QueryParam)annotation);
-
+      if (clazz == Property.class)
+         return new PropertyResolver((Property)annotation);
       return null;
    }
 

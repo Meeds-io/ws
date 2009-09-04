@@ -96,8 +96,11 @@ public class MultipartFormDataEntityProvider implements EntityProvider<Iterator<
       try
       {
          ApplicationContext context = ApplicationContextImpl.getCurrent();
-         int bufferSize = (Integer)context.getAttributes().get(RequestHandler.WS_RS_BUFFER_SIZE);
-         File repo = (File)context.getAttributes().get(RequestHandler.WS_RS_TMP_DIR);
+         int bufferSize =
+            context.getAttributes().get(RequestHandler.WS_RS_BUFFER_SIZE) == null
+               ? RequestHandler.WS_RS_BUFFER_SIZE_VALUE : Integer.parseInt((String)context.getAttributes().get(
+                  RequestHandler.WS_RS_BUFFER_SIZE));
+         File repo = new File((String)context.getAttributes().get(RequestHandler.WS_RS_TMP_DIR));
 
          DefaultFileItemFactory factory = new DefaultFileItemFactory(bufferSize, repo);
          FileUpload upload = new FileUpload(factory);

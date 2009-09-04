@@ -41,6 +41,11 @@ public interface RequestHandler
    public static final String WS_RS_BUFFER_SIZE = "ws.rs.buffersize";
 
    /**
+    * Max buffer size attribute value. See {@link WS_RS_BUFFER_SIZE}.
+    */
+   public static final int WS_RS_BUFFER_SIZE_VALUE = 204800;
+
+   /**
     * Handle the HTTP request by dispatching request to appropriate resource. If
     * no one appropriate resource found then error response will be produced.
     * 

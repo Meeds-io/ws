@@ -19,7 +19,9 @@
 package org.exoplatform.services.rest.impl.method;
 
 import org.exoplatform.services.rest.AbstractResourceTest;
+import org.exoplatform.services.rest.Property;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
+import org.exoplatform.services.rest.impl.RequestHandlerImpl;
 
 import java.util.List;
 import java.util.Set;
@@ -44,7 +46,7 @@ import javax.ws.rs.core.UriInfo;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class PatametersInjectionTest extends AbstractResourceTest
+public class ParametersInjectionTest extends AbstractResourceTest
 {
 
    @Path("/a/{x}")
@@ -189,6 +191,16 @@ public class PatametersInjectionTest extends AbstractResourceTest
          return param;
       }
 
+      @GET
+      @Path("/14")
+      public String m14(@Property("prop1") @DefaultValue("hello") String prop)
+      {
+
+         assertNotNull(prop);
+
+         return prop;
+      }
+
    }
 
    public static class Test
@@ -239,6 +251,17 @@ public class PatametersInjectionTest extends AbstractResourceTest
       assertEquals("111", service("GET", "/a/111/13", "", null, null).getEntity());
       assertEquals("222", service("GET", "/a/111/13?query=222", "", null, null).getEntity());
 
+      try
+      {
+         assertEquals("hello", service("GET", "/a/111/14", "", null, null).getEntity());
+         RequestHandlerImpl.setProperty("prop1", "to be or not to be");
+         assertEquals("to be or not to be", service("GET", "/a/111/14", "", null, null).getEntity());
+      }
+      finally
+      {
+         RequestHandlerImpl.setProperty("prop1", null);
+      }
+      
       unregistry(r1);
    }
 

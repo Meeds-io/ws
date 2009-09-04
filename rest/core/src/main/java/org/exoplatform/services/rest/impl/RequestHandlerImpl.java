@@ -18,11 +18,25 @@
  */
 package org.exoplatform.services.rest.impl;
 
+import java.io.File;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.ext.ExceptionMapper;
+
 import org.exoplatform.container.component.ComponentPlugin;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.rest.ApplicationContext;
 import org.exoplatform.services.rest.FilterDescriptor;
 import org.exoplatform.services.rest.GenericContainerRequest;
 import org.exoplatform.services.rest.GenericContainerResponse;
@@ -36,21 +50,6 @@ import org.exoplatform.services.rest.method.MethodInvokerFilter;
 import org.exoplatform.services.rest.provider.EntityProvider;
 import org.picocontainer.Startable;
 
-import java.io.File;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
-import javax.ws.rs.ext.ExceptionMapper;
-
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
@@ -62,26 +61,29 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
     * Logger.
     */
    private static final Log LOG = ExoLogger.getLogger(RequestHandlerImpl.class.getName());
-   
+
    /**
-    * Application properties.
+    * Application properties. Properties from this map will be copied to ApplicationContext
+    * and may be accessible via method {@link ApplicationContext#getAttributes()}. 
     */
    private static final MultivaluedMap<String, String> properties = new MultivaluedMapImpl();
-   
+
    /**
     * See {@link RequestDispatcher}.
     */
    private final RequestDispatcher dispatcher;
-
-   //  /**
-   //   * See {@link ProviderBinder}.
-   //   */
-   //  private final ProviderBinder      providers;
-
-   /**
-    * Application properties.
-    */
-   private final Map<String, Object> applicationProperties = new HashMap<String, Object>();
+   
+   public static final String getProperty(String name)
+   {
+      return properties.getFirst(name);
+   }
+   
+   public static final void setProperty(String name, String value)
+   {
+      if (value == null)
+         properties.remove(name);
+      properties.putSingle(name, value);
+   }
 
    /**
     * Constructs new instance of {@link RequestHandler}.
@@ -89,7 +91,6 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
     * @param dispatcher See {@link RequestDispatcher}
     * @param params init parameters
     */
-   @SuppressWarnings("unchecked")
    public RequestHandlerImpl(RequestDispatcher dispatcher, InitParams params)
    {
       if (params != null)
@@ -97,14 +98,7 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
          for (Iterator<ValueParam> i = params.getValueParamIterator(); i.hasNext();)
          {
             ValueParam vp = i.next();
-            String name = vp.getName();
-            String value = vp.getValue();
-            if (name.equals(WS_RS_BUFFER_SIZE))
-               applicationProperties.put(name, Integer.parseInt(value));
-            else if (name.equals(WS_RS_TMP_DIR))
-               applicationProperties.put(name, new File(value));
-            else
-               applicationProperties.put(name, value);
+            properties.putSingle(vp.getName(), vp.getValue());
          }
       }
 
@@ -123,7 +117,15 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
       try
       {
          ApplicationContextImpl context = new ApplicationContextImpl(request, response, ProviderBinder.getInstance());
-         context.getAttributes().putAll(applicationProperties);
+         for (String propName : properties.keySet())
+         {
+            String value = properties.getFirst(propName);
+            if (value != null)
+            {
+               context.getAttributes().put(propName, value);
+
+            }
+         }
          ApplicationContextImpl.setCurrent(context);
 
          for (ObjectFactory<FilterDescriptor> factory : ProviderBinder.getInstance().getRequestFilters(
@@ -207,7 +209,7 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
                }
                if (excmap != null)
                {
-                  if (LOG.isDebugEnabled()) 
+                  if (LOG.isDebugEnabled())
                   {
                      // Hide error message if exception mapper exists.
                      LOG.warn("Internal error occurs.", cause);
@@ -302,12 +304,15 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
    {
       // Directory for temporary files
       final File tmpDir;
-      if (applicationProperties.containsKey(WS_RS_TMP_DIR))
-         tmpDir = (File)applicationProperties.get(WS_RS_TMP_DIR);
-      else
+      String tmpDirName = properties.getFirst(WS_RS_TMP_DIR);
+      if (tmpDirName == null)
       {
          tmpDir = new File(System.getProperty("java.io.tmpdir") + File.separator + "ws_jaxrs");
-         applicationProperties.put(WS_RS_TMP_DIR, tmpDir);
+         properties.putSingle(WS_RS_TMP_DIR, tmpDir.getPath());
+      }
+      else
+      {
+         tmpDir = new File(tmpDirName);
       }
 
       if (!tmpDir.exists())
@@ -326,13 +331,6 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
             }
          }
       });
-
-      Integer bufferSize = (Integer)applicationProperties.get(WS_RS_BUFFER_SIZE);
-      if (bufferSize == null)
-      {
-         bufferSize = 204800; // TODO move somewhere as const
-         applicationProperties.put(WS_RS_BUFFER_SIZE, bufferSize);
-      }
 
    }
 
