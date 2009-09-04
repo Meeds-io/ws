@@ -46,6 +46,7 @@ import java.util.Set;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -61,7 +62,12 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
     * Logger.
     */
    private static final Log LOG = ExoLogger.getLogger(RequestHandlerImpl.class.getName());
-
+   
+   /**
+    * Application properties.
+    */
+   private static final MultivaluedMap<String, String> properties = new MultivaluedMapImpl();
+   
    /**
     * See {@link RequestDispatcher}.
     */
