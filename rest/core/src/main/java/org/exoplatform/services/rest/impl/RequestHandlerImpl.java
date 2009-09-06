@@ -21,12 +21,13 @@ package org.exoplatform.services.rest.impl;
 import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -36,7 +37,6 @@ import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.rest.ApplicationContext;
 import org.exoplatform.services.rest.FilterDescriptor;
 import org.exoplatform.services.rest.GenericContainerRequest;
 import org.exoplatform.services.rest.GenericContainerResponse;
@@ -64,9 +64,9 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
 
    /**
     * Application properties. Properties from this map will be copied to ApplicationContext
-    * and may be accessible via method {@link ApplicationContext#getAttributes()}. 
+    * and may be accessible via method {@link ApplicationContextImpl#getProperties()}. 
     */
-   private static final MultivaluedMap<String, String> properties = new MultivaluedMapImpl();
+   private static final Map<String, String> properties = new HashMap<String, String>();
 
    /**
     * See {@link RequestDispatcher}.
@@ -75,14 +75,14 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
    
    public static final String getProperty(String name)
    {
-      return properties.getFirst(name);
+      return properties.get(name);
    }
    
    public static final void setProperty(String name, String value)
    {
       if (value == null)
          properties.remove(name);
-      properties.putSingle(name, value);
+      properties.put(name, value);
    }
 
    /**
@@ -98,7 +98,7 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
          for (Iterator<ValueParam> i = params.getValueParamIterator(); i.hasNext();)
          {
             ValueParam vp = i.next();
-            properties.putSingle(vp.getName(), vp.getValue());
+            properties.put(vp.getName(), vp.getValue());
          }
       }
 
@@ -117,15 +117,7 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
       try
       {
          ApplicationContextImpl context = new ApplicationContextImpl(request, response, ProviderBinder.getInstance());
-         for (String propName : properties.keySet())
-         {
-            String value = properties.getFirst(propName);
-            if (value != null)
-            {
-               context.getAttributes().put(propName, value);
-
-            }
-         }
+         context.getProperties().putAll(properties);
          ApplicationContextImpl.setCurrent(context);
 
          for (ObjectFactory<FilterDescriptor> factory : ProviderBinder.getInstance().getRequestFilters(
@@ -304,11 +296,11 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
    {
       // Directory for temporary files
       final File tmpDir;
-      String tmpDirName = properties.getFirst(WS_RS_TMP_DIR);
+      String tmpDirName = properties.get(WS_RS_TMP_DIR);
       if (tmpDirName == null)
       {
          tmpDir = new File(System.getProperty("java.io.tmpdir") + File.separator + "ws_jaxrs");
-         properties.putSingle(WS_RS_TMP_DIR, tmpDir.getPath());
+         properties.put(WS_RS_TMP_DIR, tmpDir.getPath());
       }
       else
       {

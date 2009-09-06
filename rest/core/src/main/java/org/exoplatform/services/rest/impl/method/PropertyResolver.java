@@ -20,6 +20,7 @@ package org.exoplatform.services.rest.impl.method;
 
 import org.exoplatform.services.rest.ApplicationContext;
 import org.exoplatform.services.rest.Property;
+import org.exoplatform.services.rest.impl.ApplicationContextImpl;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -56,12 +57,12 @@ public class PropertyResolver extends ParameterResolver<Property>
       }
       String param = this.property.value();
 
-      Object value = context.getAttributes().get(param);
+      Object value = ((ApplicationContextImpl)context).getProperties().get(param);
       if (value == null)
       {
          return parameter.getDefaultValue();
       }
-      
+
       return value;
    }
 

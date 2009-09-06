@@ -41,7 +41,7 @@ import javax.ws.rs.core.UriInfo;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class ApplicationContextImpl implements ApplicationContext
+public class ApplicationContextImpl implements ApplicationContext, InitialProperties
 {
 
    /**
@@ -91,6 +91,11 @@ public class ApplicationContextImpl implements ApplicationContext
     * Mutable runtime attributes.
     */
    private Map<String, Object> attributes;
+   
+   /**
+    * Properties.
+    */
+   private Map<String, String> properties;
 
    /**
     * See {@link GenericContainerRequest}.
@@ -214,6 +219,32 @@ public class ApplicationContextImpl implements ApplicationContext
    public GenericContainerResponse getContainerResponse()
    {
       return response;
+   }
+   
+   // InitialProperties
+
+   /**
+    * {@inheritDoc}
+    */
+   public Map<String, String> getProperties()
+   {
+      return properties == null ? properties = new HashMap<String, String>() : properties;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public String getProperty(String name)
+   {
+      return getProperties().get(name);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void setProperty(String name, String value)
+   {
+      getProperties().put(name, value);
    }
 
    // UriInfo

@@ -19,6 +19,7 @@
 package org.exoplatform.services.rest.impl.resource;
 
 import org.exoplatform.services.rest.AbstractResourceTest;
+import org.exoplatform.services.rest.impl.InitialProperties;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 import org.exoplatform.services.rest.impl.header.HeaderHelper;
 
@@ -73,6 +74,12 @@ public class ContextParametersInjectionTest extends AbstractResourceTest
          assertNotNull(providers);
       }
 
+      @GET
+      @Path("g")
+      public void m4(@Context InitialProperties properties)
+      {
+         assertNotNull(properties);
+      }
    }
 
    public void testMethodContextInjection() throws Exception
@@ -101,6 +108,9 @@ public class ContextParametersInjectionTest extends AbstractResourceTest
       @Context
       private Providers providers;
 
+      @Context
+      private InitialProperties properties;
+
       @GET
       @Path("c")
       public String m0()
@@ -124,11 +134,19 @@ public class ContextParametersInjectionTest extends AbstractResourceTest
       }
 
       @GET
-      @Path("g")
-      public void m4()
+      @Path("f")
+      public void m3()
       {
          assertNotNull(providers);
       }
+
+      @GET
+      @Path("g")
+      public void m4()
+      {
+         assertNotNull(properties);
+      }
+
    }
 
    public void testFieldInjection() throws Exception
@@ -212,6 +230,7 @@ public class ContextParametersInjectionTest extends AbstractResourceTest
       assertEquals("GET", service("GET", "http://localhost/test/a/b/e", "http://localhost/test", null, null)
          .getEntity());
       service("GET", "http://localhost/test/a/b/f", "http://localhost/test", null, null).getEntity();
+      service("GET", "http://localhost/test/a/b/g", "http://localhost/test", null, null).getEntity();
    }
 
 }

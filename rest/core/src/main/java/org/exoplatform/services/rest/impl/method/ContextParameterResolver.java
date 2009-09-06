@@ -20,6 +20,7 @@ package org.exoplatform.services.rest.impl.method;
 
 import org.exoplatform.services.rest.ApplicationContext;
 import org.exoplatform.services.rest.impl.EnvironmentContext;
+import org.exoplatform.services.rest.impl.InitialProperties;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +63,11 @@ public class ContextParameterResolver extends ParameterResolver<Context>
       /**
        * @see Providers
        */
-      PROVIDERS
+      PROVIDERS,
+      /**
+       * @see InitialProperties
+       */
+      PROPERTIES
    }
 
    /**
@@ -77,6 +82,7 @@ public class ContextParameterResolver extends ParameterResolver<Context>
       CONTEXT_PARAMETERS_MAP.put(Request.class.getName(), CONTEXT_PARAMS.REQUEST);
       CONTEXT_PARAMETERS_MAP.put(UriInfo.class.getName(), CONTEXT_PARAMS.URI_INFO);
       CONTEXT_PARAMETERS_MAP.put(Providers.class.getName(), CONTEXT_PARAMS.PROVIDERS);
+      CONTEXT_PARAMETERS_MAP.put(InitialProperties.class.getName(), CONTEXT_PARAMS.PROPERTIES);
    }
 
    /**
@@ -110,6 +116,8 @@ public class ContextParameterResolver extends ParameterResolver<Context>
                return context.getUriInfo();
             case PROVIDERS :
                return context.getProviders();
+            case PROPERTIES :
+               return context;
          }
       }
       // For servlet container environment context contains HttpServletRequest,
