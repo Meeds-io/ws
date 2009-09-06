@@ -23,11 +23,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.exoplatform.services.rest.impl.RequestHandlerImpl;
-
 /**
  * Useful for injection in service, provider or filter properties which
- * is preset in {@link RequestHandlerImpl}.
+ * is preset in {@link InitialProperties}.
  *  
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
