@@ -19,7 +19,7 @@
 package org.exoplatform.services.rest.impl.resource;
 
 import org.exoplatform.services.rest.AbstractResourceTest;
-import org.exoplatform.services.rest.impl.InitialProperties;
+import org.exoplatform.services.rest.InitialProperties;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 import org.exoplatform.services.rest.impl.header.HeaderHelper;
 
@@ -170,13 +170,16 @@ public class ContextParametersInjectionTest extends AbstractResourceTest
 
       private Providers providers;
 
+      private InitialProperties properties;
+
       public Resource3(@Context UriInfo uriInfo, @Context HttpHeaders headers, @Context Request request,
-         @Context Providers providers)
+         @Context Providers providers, @Context InitialProperties properties)
       {
          this.uriInfo = uriInfo;
          this.headers = headers;
          this.request = request;
          this.providers = providers;
+         this.properties = properties;
       }
 
       @GET
@@ -202,10 +205,18 @@ public class ContextParametersInjectionTest extends AbstractResourceTest
       }
 
       @GET
+      @Path("f")
+      public void m3()
+      {
+         assertNotNull(providers);
+      }
+
+      @GET
       @Path("g")
       public void m4()
       {
-         assertNotNull(providers);
+         assertNotNull(properties);
+         properties.setProperty("ws.rs.tmpdir", "null");
       }
    }
 
@@ -229,8 +240,8 @@ public class ContextParametersInjectionTest extends AbstractResourceTest
          h, null).getEntity());
       assertEquals("GET", service("GET", "http://localhost/test/a/b/e", "http://localhost/test", null, null)
          .getEntity());
-      service("GET", "http://localhost/test/a/b/f", "http://localhost/test", null, null).getEntity();
-      service("GET", "http://localhost/test/a/b/g", "http://localhost/test", null, null).getEntity();
+      assertEquals(204, service("GET", "http://localhost/test/a/b/f", "http://localhost/test", null, null).getStatus());
+      assertEquals(204, service("GET", "http://localhost/test/a/b/g", "http://localhost/test", null, null).getStatus());
    }
 
 }
