@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.provider;
 
+import org.exoplatform.services.rest.ApplicationContext;
 import org.exoplatform.services.rest.RequestHandler;
 import org.exoplatform.services.rest.impl.ApplicationContextImpl;
 import org.exoplatform.services.rest.provider.EntityProvider;
@@ -115,7 +116,7 @@ public class DataSourceEntityProvider implements EntityProvider<DataSource>
       boolean overflow = false;
       byte[] buffer = new byte[8192];
 
-      ApplicationContextImpl context = (ApplicationContextImpl)ApplicationContextImpl.getCurrent();
+      ApplicationContext context = ApplicationContextImpl.getCurrent();
       int bufferSize =
          context.getProperties().get(RequestHandler.WS_RS_BUFFER_SIZE) == null ? RequestHandler.WS_RS_BUFFER_SIZE_VALUE
             : Integer.parseInt((String)context.getProperties().get(RequestHandler.WS_RS_BUFFER_SIZE));

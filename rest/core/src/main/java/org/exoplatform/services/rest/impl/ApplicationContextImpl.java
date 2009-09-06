@@ -21,6 +21,7 @@ package org.exoplatform.services.rest.impl;
 import org.exoplatform.services.rest.ApplicationContext;
 import org.exoplatform.services.rest.GenericContainerRequest;
 import org.exoplatform.services.rest.GenericContainerResponse;
+import org.exoplatform.services.rest.InitialProperties;
 import org.exoplatform.services.rest.impl.uri.UriComponent;
 
 import java.net.URI;
@@ -41,7 +42,7 @@ import javax.ws.rs.core.UriInfo;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class ApplicationContextImpl implements ApplicationContext, InitialProperties
+public class ApplicationContextImpl implements ApplicationContext
 {
 
    /**
@@ -187,6 +188,14 @@ public class ApplicationContextImpl implements ApplicationContext, InitialProper
    public HttpHeaders getHttpHeaders()
    {
       return request;
+   }
+   
+   /**
+    * {@inheritDoc}
+    */
+   public InitialProperties getInitialProperties()
+   {
+      return this;
    }
 
    /**

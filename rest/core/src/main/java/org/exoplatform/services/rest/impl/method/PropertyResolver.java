@@ -57,7 +57,7 @@ public class PropertyResolver extends ParameterResolver<Property>
       }
       String param = this.property.value();
 
-      Object value = ((ApplicationContextImpl)context).getProperties().get(param);
+      Object value = context.getInitialProperties().getProperties().get(param);
       if (value == null)
       {
          return parameter.getDefaultValue();

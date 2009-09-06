@@ -22,6 +22,7 @@ import org.apache.commons.fileupload.DefaultFileItemFactory;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
+import org.exoplatform.services.rest.ApplicationContext;
 import org.exoplatform.services.rest.RequestHandler;
 import org.exoplatform.services.rest.impl.ApplicationContextImpl;
 import org.exoplatform.services.rest.provider.EntityProvider;
@@ -94,7 +95,7 @@ public class MultipartFormDataEntityProvider implements EntityProvider<Iterator<
    {
       try
       {
-         ApplicationContextImpl context = (ApplicationContextImpl)ApplicationContextImpl.getCurrent();
+         ApplicationContext context = ApplicationContextImpl.getCurrent();
          int bufferSize =
             context.getProperties().get(RequestHandler.WS_RS_BUFFER_SIZE) == null
                ? RequestHandler.WS_RS_BUFFER_SIZE_VALUE : Integer.parseInt((String)context.getProperties().get(

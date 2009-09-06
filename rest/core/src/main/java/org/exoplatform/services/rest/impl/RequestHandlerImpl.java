@@ -37,6 +37,7 @@ import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.rest.ApplicationContext;
 import org.exoplatform.services.rest.FilterDescriptor;
 import org.exoplatform.services.rest.GenericContainerRequest;
 import org.exoplatform.services.rest.GenericContainerResponse;
@@ -116,7 +117,7 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
    {
       try
       {
-         ApplicationContextImpl context = new ApplicationContextImpl(request, response, ProviderBinder.getInstance());
+         ApplicationContext context = new ApplicationContextImpl(request, response, ProviderBinder.getInstance());
          context.getProperties().putAll(properties);
          ApplicationContextImpl.setCurrent(context);
 

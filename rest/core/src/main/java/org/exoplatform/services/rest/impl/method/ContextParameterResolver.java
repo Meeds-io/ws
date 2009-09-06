@@ -19,8 +19,8 @@
 package org.exoplatform.services.rest.impl.method;
 
 import org.exoplatform.services.rest.ApplicationContext;
+import org.exoplatform.services.rest.InitialProperties;
 import org.exoplatform.services.rest.impl.EnvironmentContext;
-import org.exoplatform.services.rest.impl.InitialProperties;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -117,7 +117,7 @@ public class ContextParameterResolver extends ParameterResolver<Context>
             case PROVIDERS :
                return context.getProviders();
             case PROPERTIES :
-               return context;
+               return context.getInitialProperties();
          }
       }
       // For servlet container environment context contains HttpServletRequest,
