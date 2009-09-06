@@ -37,7 +37,7 @@ import javax.ws.rs.ext.Providers;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public interface ApplicationContext extends UriInfo
+public interface ApplicationContext extends UriInfo, InitialProperties
 {
 
    /**
@@ -97,6 +97,12 @@ public interface ApplicationContext extends UriInfo
     * @return See {@link HttpHeaders}
     */
    HttpHeaders getHttpHeaders();
+   
+   
+   /**
+    * @return {@link InitialProperties}
+    */
+   InitialProperties getInitialProperties();
 
    /**
     * @return See {@link SecurityContext}
