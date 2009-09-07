@@ -1,0 +1,461 @@
+/**
+ * Copyright (C) 2003-2009 eXo Platform SAS.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see<http://www.gnu.org/licenses/>.
+ */
+
+package org.exoplatform.httputils;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
+
+/**
+ * The Class MockHttpServletResponse.
+ * 
+ * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>
+ * @version $Id: $
+ */
+
+public class MockHttpServletResponse implements HttpServletResponse
+{
+
+   /** The writer. */
+   private PrintWriter writer;
+
+   /** The stream. */
+   private ByteArrayOutputStream stream;
+
+   /** The output. */
+   private ByteArrayServletOutputStream output;
+
+   /** The buffer. */
+   private byte[] buffer = new byte[1024];
+
+   /** The buffer count. */
+   private int bufferCount = 0;
+
+   /** The cookies. */
+   private ArrayList cookies = new ArrayList();
+
+   /** The headers. */
+   private HashMap<String, ArrayList> headers = new HashMap<String, ArrayList>();
+
+   /** The status. */
+   private int status = HttpServletResponse.SC_OK;
+
+   /** The message. */
+   private String message = "";
+
+   /** The locale. */
+   private Locale locale = Locale.getDefault();
+
+   /** The content type. */
+   private String contentType = null;
+
+   /** The content length. */
+   protected int contentLength = -1;
+
+   /** The encoding. */
+   protected String encoding = null;
+
+   /** The date format we will use for creating date headers. */
+   protected static final SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+   static
+   {
+      format.setTimeZone(TimeZone.getTimeZone("GMT"));
+   };
+
+   /**
+    * Instantiates a new mock http servlet response.
+    */
+   public MockHttpServletResponse()
+   {
+      stream = new ByteArrayOutputStream();
+      writer = new PrintWriter(stream);
+      output = new ByteArrayServletOutputStream(stream);
+   }
+
+   /**
+    * Gets the output content.
+    * 
+    * @return the output content
+    */
+   public String getOutputContent()
+   {
+      return new String(stream.toByteArray());
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void flushBuffer() throws IOException
+   {
+      if (bufferCount > 0)
+      {
+         try
+         {
+            output.write(buffer, 0, bufferCount);
+         }
+         finally
+         {
+            bufferCount = 0;
+         }
+      }
+
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public int getBufferSize()
+   {
+      return (buffer.length);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public ServletOutputStream getOutputStream() throws IOException
+   {
+      return this.output;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public PrintWriter getWriter() throws IOException
+   {
+      return this.writer;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public boolean isCommitted()
+   {
+      return false;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void reset()
+   {
+      bufferCount = 0;
+
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void resetBuffer()
+   {
+      bufferCount = 0;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void addCookie(Cookie cookie)
+   {
+      synchronized (cookies)
+      {
+         cookies.add(cookie);
+      }
+
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void addDateHeader(String name, long value)
+   {
+      addHeader(name, format.format(new Date(value)));
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void addHeader(String name, String value)
+   {
+      synchronized (headers) {
+         Iterator it = headers.keySet().iterator();
+         while (it.hasNext()){
+            String key = (String)it.next();
+            if (key.equalsIgnoreCase(name)){
+               ArrayList values = (ArrayList) headers.get(key);
+               if (values != null){
+                 values = new ArrayList();
+               headers.put(name, values);
+               }
+               values.add(value);  
+            }
+         }
+      }
+   }
+
+
+
+   /**
+    * {@inheritDoc}
+    */
+   public void addIntHeader(String name, int value)
+   {
+      addHeader(name, "" + value);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public boolean containsHeader(String name)
+   {
+      synchronized (headers)
+      {
+         return (headers.get(name) != null);
+      }
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public String encodeRedirectURL(String url)
+   {
+      return url; // TODO encode
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public String encodeRedirectUrl(String url)
+   {
+      return url;// TODO encode
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public String encodeURL(String url)
+   {
+      return url;// TODO encode
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public String encodeUrl(String url)
+   {
+      return url;// TODO encode
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void sendError(int status) throws IOException
+   {
+      sendError(status, "");
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void sendError(int status, String message) throws IOException
+   {
+      this.status = status;
+      this.message = message;
+      resetBuffer();
+      try
+      {
+         flushBuffer();
+      }
+      catch (IOException e)
+      {
+
+      }
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void sendRedirect(String location) throws IOException
+   {
+      resetBuffer();
+      setStatus(SC_MOVED_TEMPORARILY);
+      setHeader("Location", location);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void setDateHeader(String name, long value)
+   {
+      setHeader(name, format.format(new Date(value)));
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void setHeader(String name, String value)
+   {
+      ArrayList values = new ArrayList();
+      values.add(value);
+      synchronized (headers)
+      {
+         headers.put(name, values);
+      }
+
+      String match = name.toLowerCase();
+      if (match.equals("content-length"))
+      {
+         int contentLength = -1;
+         try
+         {
+            contentLength = Integer.parseInt(value);
+         }
+         catch (NumberFormatException e)
+         {
+            ;
+         }
+         if (contentLength >= 0)
+            setContentLength(contentLength);
+      }
+      else if (match.equals("content-type"))
+      {
+         setContentType(value);
+      }
+
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void setIntHeader(String name, int value)
+   {
+      setHeader(name, "" + value);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void setStatus(int status)
+   {
+      this.status = status;
+
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void setStatus(int status, String message)
+   {
+      this.status = status;
+      this.message = message;
+
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public String getCharacterEncoding()
+   {
+      if (encoding == null)
+         return ("UTF-8");
+      else
+         return (encoding);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public Locale getLocale()
+   {
+      return locale;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void setBufferSize(int size)
+   {
+      if (buffer.length >= size)
+         return;
+      buffer = new byte[size];
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void setContentLength(int length)
+   {
+      this.contentLength = length;
+
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void setContentType(String type)
+   {
+      this.contentType = type;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void setLocale(Locale locale)
+   {
+      this.locale = locale;
+   }
+
+   /**
+    * The Class ByteArrayServletOutputStream.
+    */
+   private static class ByteArrayServletOutputStream extends ServletOutputStream
+   {
+      
+      /** The baos. */
+      ByteArrayOutputStream baos;
+
+      /**
+       * Instantiates a new byte array servlet output stream.
+       * 
+       * @param baos the baos
+       */
+      public ByteArrayServletOutputStream(ByteArrayOutputStream baos)
+      {
+         this.baos = baos;
+      }
+
+      /**
+       * {@inheritDoc}
+       */
+      public void write(int i) throws IOException
+      {
+         baos.write(i);
+      }
+   }
+
+}
