@@ -28,9 +28,9 @@
     <version>2.1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>exo.ws.httputils</artifactId>
+  <artifactId>exo.ws.testframework</artifactId>
 
-  <name>eXo WS HTTP utils</name>
+  <name>eXo WS HTTP testframework</name>
 
   <dependencies>
     <dependency>
