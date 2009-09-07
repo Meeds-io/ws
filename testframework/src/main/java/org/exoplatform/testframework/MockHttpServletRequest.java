@@ -15,7 +15,7 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  */
 
-package org.exoplatform.httputils;
+package org.exoplatform.testframework;
 
 import java.io.BufferedReader;
 import java.io.IOException;
