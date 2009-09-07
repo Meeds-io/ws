@@ -105,10 +105,6 @@ public class MockHttpServletRequest implements HttpServletRequest
       this.headers = headers;
       String queryString = getQueryString();
       if (queryString != null)
-      {
-         // parameters.putAll((Map)UriComponent.parseQueryString(queryString,
-         // true));
-      }
    }
 
    /**
