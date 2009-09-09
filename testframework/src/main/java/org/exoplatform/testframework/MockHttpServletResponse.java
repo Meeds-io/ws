@@ -63,7 +63,7 @@ public class MockHttpServletResponse implements HttpServletResponse
    private ArrayList cookies = new ArrayList();
 
    /** The headers. */
-   private HashMap<String, ArrayList> headers = new HashMap<String, ArrayList>();
+   private HashMap headers = new CaseInsensitiveMap();
 
    /** The status. */
    private int status = HttpServletResponse.SC_OK;
@@ -207,7 +207,7 @@ public class MockHttpServletResponse implements HttpServletResponse
          Iterator it = headers.keySet().iterator();
          while (it.hasNext()){
             String key = (String)it.next();
-            if (key.equalsIgnoreCase(name)){
+            if (key.equals(name)){
                ArrayList values = (ArrayList) headers.get(key);
                if (values != null){
                  values = new ArrayList();
