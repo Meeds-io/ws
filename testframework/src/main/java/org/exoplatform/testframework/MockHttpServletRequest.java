@@ -62,7 +62,7 @@ public class MockHttpServletRequest implements HttpServletRequest
    private InputStream data;
 
    /** Headers. */
-   private Map<String, ArrayList> headers;
+   private Map headers = new CaseInsensitiveMap();
 
    /** The parameters. */
    private Map<String, ArrayList> parameters = new HashMap();
@@ -106,7 +106,7 @@ public class MockHttpServletRequest implements HttpServletRequest
       String queryString = getQueryString();
       if (queryString != null)
       {
-          parameters.putAll(parseQueryString(queryString));
+         parameters.putAll(parseQueryString(queryString));
       }
    }
 
@@ -167,17 +167,8 @@ public class MockHttpServletRequest implements HttpServletRequest
       // return headers.getFirst("content-type");
       synchronized (headers)
       {
-         Iterator<String> it = headers.keySet().iterator();
-         while (it.hasNext())
-         {
-            String key = it.next();
-            if (key.equalsIgnoreCase("content-type"))
-            {
-               ArrayList values = (ArrayList)headers.get(key);
-               if (values != null)
-                  return (String)values.get(0);
-            }
-         }
+         if (headers.get("content-type") != null)
+            return (String)headers.get("content-type");
       }
       return (null);
    }
@@ -209,17 +200,8 @@ public class MockHttpServletRequest implements HttpServletRequest
       // return Long.valueOf(headers.get(name));
       synchronized (headers)
       {
-         Iterator<String> it = headers.keySet().iterator();
-         while (it.hasNext())
-         {
-            String key = it.next();
-            if (key.equalsIgnoreCase(name))
-            {
-               ArrayList values = (ArrayList)headers.get(key);
-               if (values != null)
-                  return (Long)values.get(0);
-            }
-         }
+         if (headers.get(name) != null)
+            return (Long)headers.get(0);
       }
       return -1L;
    }
@@ -232,17 +214,8 @@ public class MockHttpServletRequest implements HttpServletRequest
       // return headers.get(name);
       synchronized (headers)
       {
-         Iterator<String> it = headers.keySet().iterator();
-         while (it.hasNext())
-         {
-            String key = it.next();
-            if (key.equalsIgnoreCase(name))
-            {
-               ArrayList values = (ArrayList)headers.get(key);
-               if (values != null)
-                  return (String)values.get(0);
-            }
-         }
+         if (headers.get(name) != null)
+            return (String)headers.get(name);
       }
       return (null);
    }
@@ -294,23 +267,14 @@ public class MockHttpServletRequest implements HttpServletRequest
       // return Integer.valueOf(headers.get(name));
       synchronized (headers)
       {
-         Iterator<String> it = headers.keySet().iterator();
-         while (it.hasNext())
-         {
-            String key = it.next();
-            if (key.equalsIgnoreCase(name))
+         if (headers.get(name) != null)
+            try
             {
-               ArrayList values = (ArrayList)headers.get(key);
-               if (values != null)
-                  try
-                  {
-                     return Integer.parseInt((String)values.get(0));
-                  }
-                  catch (NumberFormatException e)
-                  {
-                  }
+               return Integer.parseInt((String)headers.get(name));
             }
-         }
+            catch (NumberFormatException e)
+            {
+            }
       }
       return -1;
    }
