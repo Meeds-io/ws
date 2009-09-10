@@ -34,7 +34,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
-
 /**
  * The Class MockHttpServletResponse.
  * 
@@ -184,11 +183,7 @@ public class MockHttpServletResponse implements HttpServletResponse
     */
    public void addCookie(Cookie cookie)
    {
-      synchronized (cookies)
-      {
          cookies.add(cookie);
-      }
-
    }
 
    /**
@@ -204,23 +199,22 @@ public class MockHttpServletResponse implements HttpServletResponse
     */
    public void addHeader(String name, String value)
    {
-      synchronized (headers) {
          Iterator it = headers.keySet().iterator();
-         while (it.hasNext()){
+         while (it.hasNext())
+         {
             String key = (String)it.next();
-            if (key.equals(name)){
-               ArrayList values = (ArrayList) headers.get(key);
-               if (values != null){
-                 values = new ArrayList();
-               headers.put(name, values);
+            if (key.equals(name))
+            {
+               List<String> values = (ArrayList<String>)headers.get(key);
+               if (values != null)
+               {
+                  values = new ArrayList<String>();
+                  headers.put(name, values);
                }
-               values.add(value);  
+               values.add(value);
             }
          }
-      }
    }
-
-
 
    /**
     * {@inheritDoc}
@@ -235,10 +229,7 @@ public class MockHttpServletResponse implements HttpServletResponse
     */
    public boolean containsHeader(String name)
    {
-      synchronized (headers)
-      {
          return (headers.get(name) != null);
-      }
    }
 
    /**
@@ -322,25 +313,15 @@ public class MockHttpServletResponse implements HttpServletResponse
     */
    public void setHeader(String name, String value)
    {
-      ArrayList values = new ArrayList();
+      List<String> values = new ArrayList<String>();
       values.add(value);
-      synchronized (headers)
-      {
-         headers.put(name, values);
-      }
+      headers.put(name, values);
 
       String match = name.toLowerCase();
       if (match.equals("content-length"))
       {
          int contentLength = -1;
-         try
-         {
-            contentLength = Integer.parseInt(value);
-         }
-         catch (NumberFormatException e)
-         {
-            ;
-         }
+         contentLength = Integer.parseInt(value);
          if (contentLength >= 0)
             setContentLength(contentLength);
       }
@@ -437,14 +418,15 @@ public class MockHttpServletResponse implements HttpServletResponse
     */
    private static class ByteArrayServletOutputStream extends ServletOutputStream
    {
-      
+
       /** The baos. */
       ByteArrayOutputStream baos;
 
       /**
        * Instantiates a new byte array servlet output stream.
        * 
-       * @param baos the baos
+       * @param baos
+       *           the baos
        */
       public ByteArrayServletOutputStream(ByteArrayOutputStream baos)
       {

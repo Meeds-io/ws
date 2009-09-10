@@ -65,7 +65,7 @@ public class MockHttpServletRequest implements HttpServletRequest
    private InputStream data;
 
    /** Headers. */
-   private Map<String, List<String>> headers = new CaseInsensitiveMultivaluedMap<String>();
+   private CaseInsensitiveMultivaluedMap<String> headers = new CaseInsensitiveMultivaluedMap<String>();
 
    /** The parameters. */
    private Map<String, List<String>> parameters = new HashMap<String, List<String>>();
@@ -172,9 +172,7 @@ public class MockHttpServletRequest implements HttpServletRequest
     */
    public String getContentType()
    {
-      if (headers.get("content-type") != null)
-         return headers.get("content-type").get(0);
-      return (null);
+      return headers.getFirst("content-type");
    }
 
    /**
@@ -202,7 +200,7 @@ public class MockHttpServletRequest implements HttpServletRequest
    public long getDateHeader(String name)
    {
       if (headers.get(name) != null)
-         return Long.valueOf(headers.get(name).get(0));
+         return Long.valueOf(headers.getFirst(name));
       return -1L;
    }
 
@@ -211,9 +209,7 @@ public class MockHttpServletRequest implements HttpServletRequest
     */
    public String getHeader(String name)
    {
-      if (headers.get(name) != null)
-         return headers.get(name).get(0);
-      return (null);
+      return headers.getFirst(name);
    }
 
    /**
@@ -229,21 +225,10 @@ public class MockHttpServletRequest implements HttpServletRequest
     */
    public Enumeration getHeaders(String name)
    {
-      // return new EnumerationImpl(headers.get(name).iterator());
-      synchronized (headers)
-      {
-         Iterator<String> it = headers.keySet().iterator();
-         while (it.hasNext())
-         {
-            String key = it.next();
-            if (key.equalsIgnoreCase(name))
-            {
-               ArrayList values = (ArrayList)headers.get(key);
-               if (values != null)
-                  return new EnumerationImpl(values.iterator());
-            }
-         }
-      }
+      ArrayList values = (ArrayList)headers.get(name);
+      if (values.size() > 0)
+         return new EnumerationImpl(values.iterator());
+
       return new EnumerationImpl(Collections.EMPTY_LIST.iterator());
    }
 
@@ -260,8 +245,8 @@ public class MockHttpServletRequest implements HttpServletRequest
     */
    public int getIntHeader(String name)
    {
-      if (headers.get(name) != null)
-         return Integer.parseInt(headers.get(name).get(0));
+      if (headers.get(name).size() > 0)
+         return Integer.parseInt(headers.getFirst(name));
       return -1;
    }
 
@@ -324,18 +309,15 @@ public class MockHttpServletRequest implements HttpServletRequest
     */
    public String getParameter(String name)
    {
-      synchronized (parameters)
+      Iterator<String> it = parameters.keySet().iterator();
+      while (it.hasNext())
       {
-         Iterator<String> it = parameters.keySet().iterator();
-         while (it.hasNext())
+         String key = it.next();
+         if (key.equalsIgnoreCase(name))
          {
-            String key = it.next();
-            if (key.equalsIgnoreCase(name))
-            {
-               ArrayList values = (ArrayList)parameters.get(key);
-               if (values != null)
-                  return (String)values.get(0);
-            }
+            ArrayList values = (ArrayList)parameters.get(key);
+            if (values != null)
+               return (String)values.get(0);
          }
       }
       return (null);
@@ -362,8 +344,6 @@ public class MockHttpServletRequest implements HttpServletRequest
     */
    public String[] getParameterValues(String name)
    {
-      // List<String> values = parameters.get(name);
-      // return values.toArray(new String[values.size()]);
       ArrayList<String> arr = new ArrayList<String>();
       Iterator it = parameters.keySet().iterator();
       while (it.hasNext())

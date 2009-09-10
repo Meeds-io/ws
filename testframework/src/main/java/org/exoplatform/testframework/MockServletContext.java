@@ -44,17 +44,17 @@ import javax.servlet.ServletException;
 public class MockServletContext implements ServletContext
 {
 
-   /** The name_. */
-   private String name_;
+   /** The name. */
+   private String name;
 
    /** The init params. */
-   private HashMap initParams_;
+   private HashMap<String, String> initParams;
 
    /** The attributes. */
-   private HashMap attributes_;
+   private HashMap<String, Object> attributes;
 
    /** The context path. */
-   private String contextPath_;
+   private String contextPath;
 
    /** The log buffer. */
    private StringBuffer logBuffer = new StringBuffer();
@@ -74,9 +74,9 @@ public class MockServletContext implements ServletContext
     */
    public MockServletContext(String name)
    {
-      name_ = name;
-      initParams_ = new HashMap();
-      attributes_ = new HashMap();
+      this.name = name;
+      this.initParams = new HashMap<String, String>();
+      this.attributes = new HashMap<String, Object>();
    }
 
    /**
@@ -88,8 +88,8 @@ public class MockServletContext implements ServletContext
    public MockServletContext(String name, String path)
    {
       this(name);
-      contextPath_ = path;
-      attributes_.put("javax.servlet.context.tempdir", path);
+      contextPath = path;
+      attributes.put("javax.servlet.context.tempdir", path);
    }
 
    /**
@@ -99,7 +99,7 @@ public class MockServletContext implements ServletContext
     */
    public void setName(String name)
    {
-      name_ = name;
+      this.name = name;
    }
 
    /**
@@ -160,7 +160,7 @@ public class MockServletContext implements ServletContext
       if (!s.endsWith("/"))
          s = s + "/";
 
-      Set set = new HashSet<String>();
+      Set<String> set = new HashSet<String>();
       set.add("/WEB-INF/");
 
       try
@@ -191,7 +191,7 @@ public class MockServletContext implements ServletContext
     */
    public URL getResource(String s) throws MalformedURLException
    {
-      String path = "file:" + contextPath_ + s;
+      String path = "file:" + contextPath + s;
       URL url = new URL(path);
       return url;
    }
@@ -287,7 +287,7 @@ public class MockServletContext implements ServletContext
     */
    public void setContextPath(String s)
    {
-      contextPath_ = s;
+      contextPath = s;
    }
 
    /**
@@ -295,7 +295,7 @@ public class MockServletContext implements ServletContext
     */
    public String getRealPath(String s)
    {
-      return contextPath_ + s;
+      return contextPath + s;
    }
 
    /**
@@ -314,7 +314,7 @@ public class MockServletContext implements ServletContext
     */
    public void setInitParameter(String name, String value)
    {
-      initParams_.put(name, value);
+      initParams.put(name, value);
    }
 
    /**
@@ -322,7 +322,7 @@ public class MockServletContext implements ServletContext
     */
    public String getInitParameter(String name)
    {
-      return (String)initParams_.get(name);
+      return (String)initParams.get(name);
    }
 
    /**
@@ -330,7 +330,7 @@ public class MockServletContext implements ServletContext
     */
    public Enumeration getInitParameterNames()
    {
-      Vector keys = new Vector(initParams_.keySet());
+      Vector<String> keys = new Vector<String>(initParams.keySet());
       return keys.elements();
    }
 
@@ -339,7 +339,7 @@ public class MockServletContext implements ServletContext
     */
    public Object getAttribute(String name)
    {
-      return attributes_.get(name);
+      return attributes.get(name);
    }
 
    /**
@@ -347,7 +347,7 @@ public class MockServletContext implements ServletContext
     */
    public Enumeration getAttributeNames()
    {
-      Vector keys = new Vector(attributes_.keySet());
+      Vector<String> keys = new Vector<String>(attributes.keySet());
       return keys.elements();
    }
 
@@ -356,7 +356,7 @@ public class MockServletContext implements ServletContext
     */
    public void setAttribute(String name, Object value)
    {
-      attributes_.put(name, value);
+      attributes.put(name, value);
    }
 
    /**
@@ -364,7 +364,7 @@ public class MockServletContext implements ServletContext
     */
    public void removeAttribute(String name)
    {
-      attributes_.remove(name);
+      attributes.remove(name);
    }
 
    /**
@@ -372,7 +372,7 @@ public class MockServletContext implements ServletContext
     */
    public String getServletContextName()
    {
-      return name_;
+      return name;
    }
 
 }

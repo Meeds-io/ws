@@ -78,7 +78,7 @@ public class CaseInsensitiveMultivaluedMap<T> extends HashMap<String, List<T>>
    
    private List<T> getList(String key)
    {
-      List<T> l = super.get(key);
+      List<T> l = super.get(getKey(key));
       if (l == null)
          l = new ArrayList<T>();
       put(key, l);

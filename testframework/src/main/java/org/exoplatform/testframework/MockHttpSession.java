@@ -38,7 +38,7 @@ public class MockHttpSession implements HttpSession
 {
 
    /** The attributes map. */
-   private Map attributes = new HashMap();
+   private Map<String, Object> attributes = new HashMap<String, Object>();
 
    /** The servlet context. */
    private ServletContext servletContext;
@@ -131,7 +131,7 @@ public class MockHttpSession implements HttpSession
       {
          throw new IllegalStateException("Cannot call getAttribute() on invalidated session");
       }
-      return new Vector(attributes.keySet()).elements();
+      return new Vector<String>(attributes.keySet()).elements();
    }
 
    /**
