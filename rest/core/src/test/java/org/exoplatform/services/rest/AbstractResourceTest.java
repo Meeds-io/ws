@@ -24,7 +24,7 @@ import org.exoplatform.services.rest.impl.EnvironmentContext;
 import org.exoplatform.services.rest.impl.InputHeadersMap;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 import org.exoplatform.services.rest.tools.DummyContainerResponseWriter;
-import org.exoplatform.testframework.MockHttpServletRequest;
+import org.exoplatform.services.test.mock.MockHttpServletRequest;
 
 import java.io.ByteArrayInputStream;
 import java.net.URI;
