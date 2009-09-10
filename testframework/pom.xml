@@ -30,7 +30,7 @@
 
   <artifactId>exo.ws.testframework</artifactId>
 
-  <name>eXo WS HTTP testframework</name>
+  <name>eXo WS :: HTTP :: testframework</name>
 
   <dependencies>
     <dependency>
