@@ -1,18 +1,20 @@
-/**
- * Copyright (C) 2003-2009 eXo Platform SAS.
+/*
+ * Copyright (C) 2009 eXo Platform SAS.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Affero General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, see<http://www.gnu.org/licenses/>.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
 package org.exoplatform.testframework;
@@ -63,10 +65,10 @@ public class MockHttpServletRequest implements HttpServletRequest
    private InputStream data;
 
    /** Headers. */
-   private Map headers = new CaseInsensitiveMap();
+   private Map<String, List<String>> headers = new CaseInsensitiveMultivaluedMap<String>();
 
    /** The parameters. */
-   private Map<String, ArrayList> parameters = new HashMap();
+   private Map<String, List<String>> parameters = new HashMap<String, List<String>>();
 
    /** The session. */
    private HttpSession session;
@@ -83,6 +85,8 @@ public class MockHttpServletRequest implements HttpServletRequest
    /** The attributes. */
    private Map<String, Object> attributes = new HashMap<String, Object>();
 
+   private Principal principal;
+
    /**
     * Instantiates a new mock http servlet request.
     * 
@@ -97,18 +101,21 @@ public class MockHttpServletRequest implements HttpServletRequest
     * @param headers
     *           the headers
     */
-   public MockHttpServletRequest(String url, InputStream data, int length, String method, HashMap<String, List> headers)
+   public MockHttpServletRequest(String url, InputStream data, int length, String method,
+      Map<String, List<String>> headers)
    {
       this.requestURL = url;
       this.data = data;
       this.length = length;
       this.method = method;
-      this.headers = headers;
+      if (headers != null)
+         this.headers.putAll(headers);
       String queryString = getQueryString();
       if (queryString != null)
       {
          parameters.putAll(parseQueryString(queryString));
       }
+      session = new MockHttpSession();
    }
 
    /**
@@ -165,12 +172,8 @@ public class MockHttpServletRequest implements HttpServletRequest
     */
    public String getContentType()
    {
-      // return headers.getFirst("content-type");
-      synchronized (headers)
-      {
-         if (headers.get("content-type") != null)
-            return (String)headers.get("content-type");
-      }
+      if (headers.get("content-type") != null)
+         return headers.get("content-type").get(0);
       return (null);
    }
 
@@ -198,12 +201,8 @@ public class MockHttpServletRequest implements HttpServletRequest
     */
    public long getDateHeader(String name)
    {
-      // return Long.valueOf(headers.get(name));
-      synchronized (headers)
-      {
-         if (headers.get(name) != null)
-            return (Long)headers.get(0);
-      }
+      if (headers.get(name) != null)
+         return Long.valueOf(headers.get(name).get(0));
       return -1L;
    }
 
@@ -212,12 +211,8 @@ public class MockHttpServletRequest implements HttpServletRequest
     */
    public String getHeader(String name)
    {
-      // return headers.get(name);
-      synchronized (headers)
-      {
-         if (headers.get(name) != null)
-            return (String)headers.get(name);
-      }
+      if (headers.get(name) != null)
+         return headers.get(name).get(0);
       return (null);
    }
 
@@ -265,18 +260,8 @@ public class MockHttpServletRequest implements HttpServletRequest
     */
    public int getIntHeader(String name)
    {
-      // return Integer.valueOf(headers.get(name));
-      synchronized (headers)
-      {
-         if (headers.get(name) != null)
-            try
-            {
-               return Integer.parseInt((String)headers.get(name));
-            }
-            catch (NumberFormatException e)
-            {
-            }
-      }
+      if (headers.get(name) != null)
+         return Integer.parseInt(headers.get(name).get(0));
       return -1;
    }
 
@@ -565,7 +550,7 @@ public class MockHttpServletRequest implements HttpServletRequest
     */
    public HttpSession getSession()
    {
-      return null;
+      return session;
    }
 
    /**
@@ -573,7 +558,7 @@ public class MockHttpServletRequest implements HttpServletRequest
     */
    public HttpSession getSession(boolean b)
    {
-      return null;
+      return session;
    }
 
    /**
@@ -581,14 +566,7 @@ public class MockHttpServletRequest implements HttpServletRequest
     */
    public Principal getUserPrincipal()
    {
-      return new Principal()
-      {
-
-         public String getName()
-         {
-            return "root";
-         }
-      };
+      return principal == null ? principal = new MockPrincipal("root") : principal;
    }
 
    /**
@@ -628,7 +606,7 @@ public class MockHttpServletRequest implements HttpServletRequest
     */
    public boolean isSecure()
    {
-      return false;
+      return secure;
    }
 
    /**
@@ -677,9 +655,9 @@ public class MockHttpServletRequest implements HttpServletRequest
       parameters.put(name, arr);
    }
 
-   public static Map<String, ArrayList> parseQueryString(String rawQuery)
+   public static Map<String, List<String>> parseQueryString(String rawQuery)
    {
-      HashMap<String, ArrayList> m = new HashMap();
+      HashMap<String, List<String>> m = new HashMap<String, List<String>>();
       if (rawQuery == null || rawQuery.length() == 0)
          return m;
       int p = 0;
@@ -707,13 +685,13 @@ public class MockHttpServletRequest implements HttpServletRequest
 
          if (m.get(name) == null)
          {
-            ArrayList<String> arr = new ArrayList<String>();
+            List<String> arr = new ArrayList<String>();
             arr.add(value);
             m.put(name, arr);
          }
          else
          {
-            ArrayList<String> arr = m.get(name);
+            List<String> arr = m.get(name);
             arr.add(value);
          }
          p = n + 1;

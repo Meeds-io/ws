@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -60,10 +61,10 @@ public class MockHttpServletResponse implements HttpServletResponse
    private int bufferCount = 0;
 
    /** The cookies. */
-   private ArrayList cookies = new ArrayList();
+   private List<Cookie> cookies = new ArrayList<Cookie>();
 
    /** The headers. */
-   private HashMap headers = new CaseInsensitiveMap();
+   private HashMap<String, List<String>> headers = new CaseInsensitiveMultivaluedMap<String>();
 
    /** The status. */
    private int status = HttpServletResponse.SC_OK;

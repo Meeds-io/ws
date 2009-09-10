@@ -18,14 +18,16 @@
  */
 package org.exoplatform.testframework;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: CaseInsensitiveMap.java 2822 2009-08-27 14:14:41Z andrew00x $
  */
-public class CaseInsensitiveMap extends HashMap<String, String>
+public class CaseInsensitiveMultivaluedMap<T> extends HashMap<String, List<T>>
 {
 
    private static final long serialVersionUID = 6637313979061607685L;
@@ -43,16 +45,16 @@ public class CaseInsensitiveMap extends HashMap<String, String>
     * {@inheritDoc}
     */
    @Override
-   public String get(Object key)
+   public List<T> get(Object key)
    {
-      return super.get(getKey(key));
+      return getList(getKey(key));
    }
 
    /**
     * {@inheritDoc}
     */
    @Override
-   public String put(String key, String value)
+   public List<T> put(String key, List<T> value)
    {
       return super.put(getKey(key), value);
    }
@@ -61,9 +63,26 @@ public class CaseInsensitiveMap extends HashMap<String, String>
     * {@inheritDoc}
     */
    @Override
-   public String remove(Object key)
+   public List<T> remove(Object key)
    {
       return super.remove(getKey(key));
+   }
+   
+   public T getFirst(String key)
+   {
+      List<T> l = getList(key);
+      if (l.size() == 0)
+         return null;
+      return l.get(0);
+   }
+   
+   private List<T> getList(String key)
+   {
+      List<T> l = super.get(key);
+      if (l == null)
+         l = new ArrayList<T>();
+      put(key, l);
+      return l;
    }
 
    private String getKey(Object key)
