@@ -55,6 +55,7 @@
       <module>commons</module>
       <module>frameworks/json</module>
       <module>frameworks/servlet</module>
+      <module>testframework</module>
       <module>rest/core</module>
       <module>rest/ext</module>
    </modules>
@@ -74,6 +75,11 @@
          <dependency>
             <groupId>org.exoplatform.ws</groupId>
             <artifactId>exo.ws.rest.core</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.exoplatform.ws</groupId>
+            <artifactId>exo.ws.testframework</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>

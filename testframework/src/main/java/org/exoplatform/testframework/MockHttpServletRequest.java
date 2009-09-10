@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -96,7 +97,7 @@ public class MockHttpServletRequest implements HttpServletRequest
     * @param headers
     *           the headers
     */
-   public MockHttpServletRequest(String url, InputStream data, int length, String method, Map<String, ArrayList> headers)
+   public MockHttpServletRequest(String url, InputStream data, int length, String method, HashMap<String, List> headers)
    {
       this.requestURL = url;
       this.data = data;
