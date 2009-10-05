@@ -19,7 +19,7 @@
 package org.exoplatform.services.rest.servlet;
 
 import org.exoplatform.container.ExoContainer;
-import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.container.web.AbstractHttpServlet;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.Connector;
@@ -38,7 +38,6 @@ import java.util.Map;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -49,7 +48,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class RestServlet extends HttpServlet implements Connector
+public class RestServlet extends AbstractHttpServlet implements Connector
 {
 
    private static final Log LOG = ExoLogger.getLogger(RestServlet.class.getName());
@@ -60,35 +59,12 @@ public class RestServlet extends HttpServlet implements Connector
    private static final long serialVersionUID = 2152962763071591181L;
 
    /**
-    * See {@link ServletConfig}.
-    */
-   private ServletConfig config;
-
-   /**
-    * See {@link ServletContext}.
-    */
-   private ServletContext context;
-
-   /**
     * {@inheritDoc}
     */
    @Override
-   public void init(ServletConfig config)
+   protected void onService(ExoContainer container, HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+      throws IOException, ServletException
    {
-      this.config = config;
-      this.context = config.getServletContext();
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public void service(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-      ServletException
-   {
-      // Current container must be set by filter.
-
-      ExoContainer container = ExoContainerContext.getCurrentContainer();
 
       RequestHandler requestHandler = (RequestHandler)container.getComponentInstanceOfType(RequestHandler.class);
 
@@ -96,7 +72,7 @@ public class RestServlet extends HttpServlet implements Connector
       env.put(HttpServletRequest.class, httpRequest);
       env.put(HttpServletResponse.class, httpResponse);
       env.put(ServletConfig.class, config);
-      env.put(ServletContext.class, context);
+      env.put(ServletContext.class, getServletContext());
 
       try
       {
@@ -177,5 +153,4 @@ public class RestServlet extends HttpServlet implements Connector
          }
       }
    }
-
 }
