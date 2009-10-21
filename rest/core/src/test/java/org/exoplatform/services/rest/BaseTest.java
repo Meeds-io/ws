@@ -43,7 +43,7 @@ public abstract class BaseTest extends TestCase
 
    public void setUp() throws Exception
    {
-      StandaloneContainer.setConfigurationPath("conf/standalone/test-configuration.xml");
+      StandaloneContainer.setConfigurationPath("src/test/resources/conf/standalone/test-configuration.xml");
       container = StandaloneContainer.getInstance();
       binder = (ResourceBinder)container.getComponentInstanceOfType(ResourceBinder.class);
       requestHandler = (RequestHandlerImpl)container.getComponentInstanceOfType(RequestHandlerImpl.class);

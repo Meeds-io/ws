@@ -45,7 +45,7 @@
       <exo.product.name>exo-ws</exo.product.name>
       <exo.product.specification>2.1</exo.product.specification>
       
-      <org.exoplatform.kernel.version>2.2.0-Beta03-SNAPSHOT/org.exoplatform.kernel.version>
+      <org.exoplatform.kernel.version>2.2.0-Beta03-SNAPSHOT</org.exoplatform.kernel.version>
       <org.exoplatform.core.version>2.3.0-Beta03-SNAPSHOT</org.exoplatform.core.version>
 
       <exo.test.includes>*Test*</exo.test.includes>
