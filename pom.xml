@@ -52,12 +52,12 @@
    </properties>
 
    <modules>
-      <module>commons</module>
-      <module>frameworks/json</module>
-      <module>frameworks/servlet</module>
-      <module>testframework</module>
-      <module>rest/core</module>
-      <module>rest/ext</module>
+      <module>exo.ws.commons</module>
+      <module>exo.ws.frameworks.json</module>
+      <module>exo.ws.frameworks.servlet</module>
+      <module>exo.ws.testframework</module>
+      <module>exo.ws.rest.core</module>
+      <module>exo.ws.rest.ext</module>
       <module>packaging/module</module>
    </modules>
 
