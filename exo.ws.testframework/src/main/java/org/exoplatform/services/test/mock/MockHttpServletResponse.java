@@ -81,7 +81,7 @@ public class MockHttpServletResponse implements HttpServletResponse
    protected int contentLength = -1;
 
    /** The encoding. */
-   protected String encoding = null;
+   protected String charset = null;
 
    /** The date format we will use for creating date headers. */
    protected static final SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
@@ -364,10 +364,18 @@ public class MockHttpServletResponse implements HttpServletResponse
     */
    public String getCharacterEncoding()
    {
-      if (encoding == null)
+      if (charset == null)
          return ("UTF-8");
       else
-         return (encoding);
+         return (charset);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public String getContentType()
+   {
+      return contentType;
    }
 
    /**
@@ -386,6 +394,14 @@ public class MockHttpServletResponse implements HttpServletResponse
       if (buffer.length >= size)
          return;
       buffer = new byte[size];
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void setCharacterEncoding(String charset)
+   {
+      this.charset = charset;
    }
 
    /**
