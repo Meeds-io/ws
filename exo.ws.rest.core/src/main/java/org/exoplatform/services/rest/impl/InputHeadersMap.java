@@ -255,6 +255,14 @@ public final class InputHeadersMap extends HashMap<String, List<String>> impleme
       throw new UnsupportedOperationException();
    }
 
+   /**
+    * {@inheritDoc}
+    */
+   public int size()
+   {
+      return m.size();
+   }
+
    // MultivaluedMap
 
    /**
@@ -281,7 +289,7 @@ public final class InputHeadersMap extends HashMap<String, List<String>> impleme
    {
       throw new UnsupportedOperationException();
    }
-
+   
    // helpers methods
 
    /**
