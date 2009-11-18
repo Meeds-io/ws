@@ -35,15 +35,19 @@
    <dependencies>
       <dependency>
          <groupId>org.exoplatform.kernel</groupId>
-         <artifactId>exo.kernel.component.common</artifactId>
+         <artifactId>exo.kernel.commons</artifactId>
       </dependency>
+      
       <dependency>
-         <groupId>com.sun.xml.stream</groupId>
-         <artifactId>sjsxp</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>stax</groupId>
+         <groupId>javax.xml.stream</groupId>
          <artifactId>stax-api</artifactId>
       </dependency>
+      
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <scope>test</scope>
+      </dependency>
+      
    </dependencies>
 </project>
