@@ -103,9 +103,6 @@
             <artifactId>exo.ws.rest.core</artifactId>
             <version>${project.version}</version>
          </dependency>               
-         
-
-      
          <dependency>
             <groupId>javax.xml.stream</groupId>
             <artifactId>stax-api</artifactId>
