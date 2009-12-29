@@ -18,39 +18,23 @@
  */
 package org.exoplatform.services.rest.impl.method;
 
-import org.exoplatform.services.rest.AbstractResourceTest;
-import org.exoplatform.services.rest.impl.UnhandledException;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import org.exoplatform.services.rest.AbstractResourceTest;
+import org.exoplatform.services.rest.impl.method.MethodExceptionTest.UncheckedException;
+
 /**
  * Created by The eXo Platform SAS. <br/>
- * Date: 21 Jan 2009
+ * Date: 24 Dec 2009
  * 
- * @author <a href="mailto:dmitry.kataev@exoplatform.com.ua">Dmytro Katayev</a>
- * @version $Id: MethodExceptionTest.java
+ * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>
+ * @version $Id: WebApplicationExceptionTest.java
  */
-public class MethodExceptionTest extends AbstractResourceTest
+public class WebApplicationExceptionTest extends AbstractResourceTest
 {
-
-   @SuppressWarnings("serial")
-   public static class UncheckedException extends Exception
-   {
-
-      public UncheckedException()
-      {
-         super();
-      }
-
-      public UncheckedException(String msg)
-      {
-         super(msg);
-      }
-
-   }
 
    @Path("/a")
    public static class Resource1
@@ -60,14 +44,15 @@ public class MethodExceptionTest extends AbstractResourceTest
       @Path("/0")
       public void m0() throws WebApplicationException
       {
-         throw new WebApplicationException();
+         Exception e = new Exception("testmsg");
+         throw new WebApplicationException(e, 500);
       }
 
       @GET
       @Path("/1")
       public Response m1() throws WebApplicationException
       {
-         return new WebApplicationException().getResponse();
+         throw new WebApplicationException(500);
       }
 
       @GET
@@ -79,23 +64,18 @@ public class MethodExceptionTest extends AbstractResourceTest
 
    }
 
-   public void testExceptionProcessing() throws Exception
+   public void testExceptionMessage() throws Exception
    {
       Resource1 resource = new Resource1();
       registry(resource);
 
       assertEquals(500, service("GET", "/a/0", "", null, null).getStatus());
+      String entity = (String)service("GET", "/a/0", "", null, null).getEntity();
+      assertTrue(entity.indexOf("testmsg") > 0);
+
       assertEquals(500, service("GET", "/a/1", "", null, null).getStatus());
-      try
-      {
-         assertEquals(500, service("GET", "/a/2", "", null, null).getStatus());
-         fail();
-      }
-      catch (UnhandledException e)
-      {
-      }
+      assertEquals(null, service("GET", "/a/1", "", null, null).getEntity());
       unregistry(resource);
    }
 
-   //
 }
