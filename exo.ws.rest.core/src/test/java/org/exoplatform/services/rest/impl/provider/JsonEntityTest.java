@@ -125,7 +125,7 @@ public class JsonEntityTest extends AbstractResourceTest
       assertEquals("Hamlet\n", book.getTitle());
       assertEquals("William Shakespeare\n", book.getAuthor());
       assertFalse(book.isSendByPost());
-      writer = new ByteArrayContainerResponseWriter();
+//      writer = new ByteArrayContainerResponseWriter();
       unregistry(r2);
    }
 

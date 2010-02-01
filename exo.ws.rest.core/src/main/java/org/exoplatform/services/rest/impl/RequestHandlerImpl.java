@@ -30,6 +30,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.ext.ExceptionMapper;
 
 import org.exoplatform.container.component.ComponentPlugin;
@@ -38,6 +39,7 @@ import org.exoplatform.container.xml.ValueParam;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.ApplicationContext;
+import org.exoplatform.services.rest.ExtHttpHeaders;
 import org.exoplatform.services.rest.FilterDescriptor;
 import org.exoplatform.services.rest.GenericContainerRequest;
 import org.exoplatform.services.rest.GenericContainerResponse;
@@ -73,12 +75,12 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
     * See {@link RequestDispatcher}.
     */
    private final RequestDispatcher dispatcher;
-   
+
    public static final String getProperty(String name)
    {
       return properties.get(name);
    }
-   
+
    public static final void setProperty(String name, String value)
    {
       if (value == null)
@@ -132,6 +134,14 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
          {
 
             dispatcher.dispatch(request, response);
+            if (response.getHttpHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED) == null)
+            {
+               String jaxrsHeader = getJaxrsHeader(response.getStatus());
+               if (jaxrsHeader != null)
+               {
+                  response.getHttpHeaders().putSingle(ExtHttpHeaders.JAXRS_BODY_PROVIDED, jaxrsHeader);
+               }
+            }
 
          }
          catch (Exception e)
@@ -142,65 +152,50 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
                Response errorResponse = ((WebApplicationException)e).getResponse();
                ExceptionMapper excmap = ProviderBinder.getInstance().getExceptionMapper(WebApplicationException.class);
 
+               int errorStatus = errorResponse.getStatus();
                // should be some of 4xx status
-               if (errorResponse.getStatus() < 500)
+               if (errorStatus < 500)
                {
+                  // Warn about error in debug mode only.
                   if (LOG.isDebugEnabled() && e.getCause() != null)
                   {
                      LOG.warn("WebApplication exception occurs.", e.getCause());
                   }
-                  if (errorResponse.getEntity() == null)
-                  {
-                     if (excmap != null)
-                     {
-                        errorResponse = excmap.toResponse(e);
-                     }
-                  }
-                  
-                  if (e.getMessage() != null)
-                     errorResponse =
-                        Response.status(errorResponse.getStatus()).entity(new String(e.getMessage())).type(
-                           MediaType.TEXT_PLAIN).header("JAXRS-Message-Provided", "true").build();
-                  
-                  response.setResponse(errorResponse);
                }
                else
                {
-
-                  if (errorResponse.getEntity() == null)
+                  if (e.getCause() != null)
                   {
-                     if (excmap != null)
+                     LOG.warn("WebApplication exception occurs.", e.getCause());
+                  }
+               }
+               // -----
+               if (errorResponse.getEntity() == null)
+               {
+                  if (excmap != null)
+                  {
+                     errorResponse = excmap.toResponse(e);
+                  }
+                  else
+                  {
+                     if (e.getMessage() != null)
                      {
-                        if (LOG.isDebugEnabled() && e.getCause() != null)
-                        {
-                           // Hide error message if exception mapper exists.
-                           LOG.warn("WebApplication exception occurs.", e.getCause());
-                        }
-
-                        errorResponse = excmap.toResponse(e);
-                     }
-                     else
-                     {
-                        if (e.getCause() != null)
-                        {
-                           LOG.warn("WebApplication exception occurs.", e.getCause());
-                        }
-
-                        // print stack trace & adding ex message into body
-                        if (LOG.isDebugEnabled())
-                        {
-                           e.printStackTrace();
-                        }
-                        if (e.getMessage() != null)
-                           errorResponse =
-                              Response.status(errorResponse.getStatus()).entity(new String(e.getMessage())).type(
-                                 MediaType.TEXT_PLAIN).header("JAXRS-Message-Provided", "true").build();
-                        else
-                           errorResponse =  Response.status(errorResponse.getStatus()).header("JAXRS-Message-Provided", "false").build();
+                        errorResponse = createErrorResponse(errorStatus, e.getMessage());
                      }
                   }
-                  response.setResponse(errorResponse);
                }
+               else
+               {
+                  if (errorResponse.getMetadata().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED) == null)
+                  {
+                     String jaxrsHeader = getJaxrsHeader(errorStatus);
+                     if (jaxrsHeader != null)
+                     {
+                        errorResponse.getMetadata().putSingle(ExtHttpHeaders.JAXRS_BODY_PROVIDED, jaxrsHeader);
+                     }
+                  }
+               }
+               response.setResponse(errorResponse);
             }
             else if (e instanceof InternalException)
             {
@@ -249,6 +244,41 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
          // reset application context
          ApplicationContextImpl.setCurrent(null);
       }
+   }
+
+   /**
+    * Create error response with specified status and body message.
+    *  
+    * @param status response status
+    * @param message response message
+    * @return response
+    */
+   private Response createErrorResponse(int status, String message)
+   {
+
+      ResponseBuilder responseBuilder = Response.status(status);
+      responseBuilder.entity(message).type(MediaType.TEXT_PLAIN);
+      String jaxrsHeader = getJaxrsHeader(status);
+      if (jaxrsHeader != null)
+         responseBuilder.header(ExtHttpHeaders.JAXRS_BODY_PROVIDED, jaxrsHeader);
+
+      return responseBuilder.build();
+   }
+
+   /**
+    * Get JAXR header for response status.
+    * 
+    * @param status response status
+    * @return JAXRS header or null.
+    */
+   private String getJaxrsHeader(int status)
+   {
+      if (status >= 400)
+      {
+         return "Error-Message";
+      }
+      // Add required behavior here.
+      return null;
    }
 
    //
