@@ -19,6 +19,9 @@
 package org.exoplatform.ws.frameworks.servlet;
 
 import org.exoplatform.container.StandaloneContainer;
+import org.exoplatform.container.configuration.ConfigurationManagerImpl;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.naming.InitialContextInitializer;
 
 import java.net.MalformedURLException;
@@ -49,7 +52,12 @@ public class StandaloneContainerInitializedListener implements ServletContextLis
    /**
     * org.exoplatform.container.standalone.config
     */
+   
+   private static final Log log = ExoLogger.getLogger(StandaloneContainerInitializedListener.class);
+   
    private static final String CONF_URL_PARAMETER = "org.exoplatform.container.standalone.config";
+
+   private static final String PREFIX_WAR = "war:";
 
    /**
     * Container.
@@ -62,12 +70,27 @@ public class StandaloneContainerInitializedListener implements ServletContextLis
    public void contextInitialized(ServletContextEvent event)
    {
       String configurationURL = event.getServletContext().getInitParameter(CONF_URL_PARAMETER);
+
+      try
+      {
+         if (configurationURL != null && configurationURL.startsWith(PREFIX_WAR))
+         {
+            configurationURL =
+               event.getServletContext().getResource(configurationURL.substring(PREFIX_WAR.length())).toExternalForm();
+         }
+      }
+      catch (Exception e)
+      {
+         log.warn(e.getMessage());
+      }
+
       try
       {
          StandaloneContainer.addConfigurationURL(configurationURL);
       }
-      catch (MalformedURLException e1)
+      catch (MalformedURLException e)
       {
+         log.warn(e.getMessage());
       }
 
       try
@@ -85,7 +108,7 @@ public class StandaloneContainerInitializedListener implements ServletContextLis
       }
       catch (Exception e)
       {
-         e.printStackTrace();
+         log.warn(e.getMessage());
       }
 
    }
