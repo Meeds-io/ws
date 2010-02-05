@@ -58,5 +58,27 @@ public abstract class Connector
     */
    abstract HTTPResponse fetchPost(HttpServletRequest httpRequest, String url) throws MalformedURLException, ProtocolNotSuppException,
    IOException, ModuleException,ParseException;
+   
+   
+   /**
+    * Do PUT proxy request.
+    * 
+    * @param httpRequest the HttpServletRequest
+    * @param url the url to request
+    * @return  response HTTPResponse
+    */
+   abstract HTTPResponse doPut(HttpServletRequest httpRequest, String url) throws MalformedURLException, ProtocolNotSuppException,
+   IOException, ModuleException,ParseException;
+   
+   
+   /**
+    * Do DELETE proxy request.
+    * 
+    * @param httpRequest the HttpServletRequest
+    * @param url the url to request
+    * @return  response HTTPResponse
+    */
+   abstract HTTPResponse doDelete(HttpServletRequest httpRequest, String url) throws MalformedURLException, ProtocolNotSuppException,
+   IOException, ModuleException,ParseException;
 
 }
