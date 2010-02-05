@@ -78,8 +78,8 @@ public class BaseConnector extends Connector
 
          if (resp.getStatusCode() >= 300)
          {
-            System.err.println("Received Error: " + resp.getReasonLine());
-            System.err.println(resp.getText());
+            LOG.error("Received Error: " + resp.getReasonLine());
+            LOG.error(resp.getText());
          }
       return resp;
    }
@@ -103,8 +103,8 @@ public class BaseConnector extends Connector
          resp = conn.Post(url_obj.getProtocol() + "://" + url_obj.getAuthority() + url_obj.getPath(), body, headers);
          if (resp.getStatusCode() >= 300)
          {
-            System.err.println("Received Error: " + resp.getReasonLine());
-            System.err.println(resp.getText());
+            LOG.error("Received Error: " + resp.getReasonLine());
+            LOG.error(resp.getText());
          }
       return resp;
    }
@@ -147,7 +147,7 @@ public class BaseConnector extends Connector
          }
          catch (ParseException e)
          {
-            System.err.println(e.getMessage());
+            LOG.error(e.getMessage());
          }
       }
    }
