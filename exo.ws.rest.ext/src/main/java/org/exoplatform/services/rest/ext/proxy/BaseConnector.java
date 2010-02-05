@@ -34,7 +34,6 @@ import org.exoplatform.common.http.client.ModuleException;
 import org.exoplatform.common.http.client.NVPair;
 import org.exoplatform.common.http.client.ParseException;
 import org.exoplatform.common.http.client.ProtocolNotSuppException;
-import org.exoplatform.services.cmis.jcr.object.EntryImpl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
