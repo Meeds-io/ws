@@ -55,7 +55,7 @@ public class BaseConnector extends Connector
 
    /** The headers array. */
    NVPair[] headers;
-   
+
    /** Logger. */
    private static final Log LOG = ExoLogger.getLogger(BaseConnector.class);
 
@@ -63,24 +63,22 @@ public class BaseConnector extends Connector
     * {@inheritDoc}
     */
    @Override
-   public HTTPResponse fetchGet(HttpServletRequest httpRequest, String url) throws MalformedURLException, ProtocolNotSuppException,
-   IOException, ModuleException,ParseException
+   public HTTPResponse fetchGet(HttpServletRequest httpRequest, String url) throws MalformedURLException,
+      ProtocolNotSuppException, IOException, ModuleException, ParseException
    {
       URL url_obj = null;
       url_obj = new URL(url);
 
-         conn = new HTTPConnection(url_obj);
-         conn.setTimeout(DEFAULT_CONNECT_TIMEOUT_MS);
-         prepareRequestHeaders(httpRequest);
-         prepareFormParams(url_obj);
-         
-         resp = conn.Get(url_obj.getProtocol() + "://" + url_obj.getAuthority() + url_obj.getPath(), form_data, headers);
-
-         if (resp.getStatusCode() >= 300)
-         {
-            LOG.error("Received Error: " + resp.getReasonLine());
-            LOG.error(resp.getText());
-         }
+      conn = new HTTPConnection(url_obj);
+      conn.setTimeout(DEFAULT_CONNECT_TIMEOUT_MS);
+      prepareRequestHeaders(httpRequest);
+      prepareFormParams(url_obj);
+      resp = conn.Get(url_obj.getProtocol() + "://" + url_obj.getAuthority() + url_obj.getPath(), form_data, headers);
+      if (resp.getStatusCode() >= 300)
+      {
+         LOG.error("Received Error: " + resp.getReasonLine());
+         LOG.error(resp.getText());
+      }
       return resp;
    }
 
@@ -88,24 +86,71 @@ public class BaseConnector extends Connector
     * {@inheritDoc}
     */
    @Override
-   public HTTPResponse fetchPost(HttpServletRequest httpRequest, String url) throws MalformedURLException, ProtocolNotSuppException,
-   IOException, ModuleException,ParseException
+   public HTTPResponse fetchPost(HttpServletRequest httpRequest, String url) throws MalformedURLException,
+      ProtocolNotSuppException, IOException, ModuleException, ParseException
    {
       URL url_obj = null;
-         url_obj = new URL(url);
+      url_obj = new URL(url);
 
-         conn = new HTTPConnection(url_obj);
-         conn.setTimeout(DEFAULT_CONNECT_TIMEOUT_MS);
-         prepareRequestHeaders(httpRequest);
+      conn = new HTTPConnection(url_obj);
+      conn.setTimeout(DEFAULT_CONNECT_TIMEOUT_MS);
+      prepareRequestHeaders(httpRequest);
 
-         byte[] body = new byte[httpRequest.getContentLength()];;
-         new DataInputStream(httpRequest.getInputStream()).readFully(body);
-         resp = conn.Post(url_obj.getProtocol() + "://" + url_obj.getAuthority() + url_obj.getPath(), body, headers);
-         if (resp.getStatusCode() >= 300)
-         {
-            LOG.error("Received Error: " + resp.getReasonLine());
-            LOG.error(resp.getText());
-         }
+      byte[] body = new byte[httpRequest.getContentLength()];
+      new DataInputStream(httpRequest.getInputStream()).readFully(body);
+      resp = conn.Post(url_obj.getProtocol() + "://" + url_obj.getAuthority() + url_obj.getPath(), body, headers);
+      if (resp.getStatusCode() >= 300)
+      {
+         LOG.error("Received Error: " + resp.getReasonLine());
+         LOG.error(resp.getText());
+      }
+      return resp;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public HTTPResponse doPut(HttpServletRequest httpRequest, String url) throws MalformedURLException,
+      ProtocolNotSuppException, IOException, ModuleException, ParseException
+   {
+      URL url_obj = null;
+      url_obj = new URL(url);
+
+      conn = new HTTPConnection(url_obj);
+      conn.setTimeout(DEFAULT_CONNECT_TIMEOUT_MS);
+      prepareRequestHeaders(httpRequest);
+
+      byte[] body = new byte[httpRequest.getContentLength()];
+      new DataInputStream(httpRequest.getInputStream()).readFully(body);
+      resp = conn.Put(url_obj.getProtocol() + "://" + url_obj.getAuthority() + url_obj.getPath(), body, headers);
+      if (resp.getStatusCode() >= 300)
+      {
+         LOG.error("Received Error: " + resp.getReasonLine());
+         LOG.error(resp.getText());
+      }
+      return resp;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public HTTPResponse doDelete(HttpServletRequest httpRequest, String url) throws MalformedURLException,
+      ProtocolNotSuppException, IOException, ModuleException, ParseException
+   {
+      URL url_obj = null;
+      url_obj = new URL(url);
+
+      conn = new HTTPConnection(url_obj);
+      conn.setTimeout(DEFAULT_CONNECT_TIMEOUT_MS);
+      prepareRequestHeaders(httpRequest);
+      resp = conn.Delete(url_obj.getProtocol() + "://" + url_obj.getAuthority() + url_obj.getPath(), headers);
+      if (resp.getStatusCode() >= 300)
+      {
+         LOG.error("Received Error: " + resp.getReasonLine());
+         LOG.error(resp.getText());
+      }
       return resp;
    }
 

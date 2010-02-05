@@ -23,8 +23,10 @@ import java.net.MalformedURLException;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
@@ -88,6 +90,7 @@ public class ProxyService implements ResourceContainer
       }
 
    }
+
    /**
     * Handles POST proxy request.
     * 
@@ -129,6 +132,94 @@ public class ProxyService implements ResourceContainer
       {
          throw new WebApplicationException(pe, createErrorResponse(pe, 400));
       }
+   }
+
+   /**
+    * Handles PUT proxy request.
+    * 
+    * @param httpRequestHttpServletRequest
+    * @param url the url to request
+    * @return  response Response
+    */
+   @PUT
+   public Response doProxyPut(@Context HttpServletRequest httpRequest, @QueryParam("url") String url)
+   {
+      BaseConnector conn = new BaseConnector();
+      if (url == null)
+      {
+         Throwable e = new Throwable("Necessary URL parameter not found in proxy request");
+         throw new WebApplicationException(e, createErrorResponse(e, 404));
+      }
+      try
+      {
+         HTTPResponse resp = conn.doPut(httpRequest, url);
+         return createResponse(resp);
+      }
+      catch (MalformedURLException mue)
+      {
+         throw new WebApplicationException(mue, createErrorResponse(mue, 400));
+      }
+      catch (ProtocolNotSuppException pnse)
+      {
+         throw new WebApplicationException(pnse, createErrorResponse(pnse, 400));
+      }
+      catch (IOException ioe)
+      {
+         throw new WebApplicationException(ioe, createErrorResponse(ioe, 500));
+      }
+      catch (ModuleException me)
+      {
+         throw new WebApplicationException(me, createErrorResponse(me, 500));
+      }
+      catch (ParseException pe)
+      {
+         throw new WebApplicationException(pe, createErrorResponse(pe, 400));
+      }
+
+   }
+
+   /**
+    * Handles DELETE proxy request.
+    * 
+    * @param httpRequestHttpServletRequest
+    * @param url the url to request
+    * @return  response Response
+    */
+   @DELETE
+   public Response doProxyDelete(@Context HttpServletRequest httpRequest, @QueryParam("url") String url)
+   {
+      BaseConnector conn = new BaseConnector();
+      if (url == null)
+      {
+         Throwable e = new Throwable("Necessary URL parameter not found in proxy request");
+         throw new WebApplicationException(e, createErrorResponse(e, 404));
+      }
+      try
+      {
+         HTTPResponse resp = conn.doDelete(httpRequest, url);
+         return createResponse(resp);
+      }
+      catch (MalformedURLException mue)
+      {
+         throw new WebApplicationException(mue, createErrorResponse(mue, 400));
+      }
+      catch (ProtocolNotSuppException pnse)
+      {
+         throw new WebApplicationException(pnse, createErrorResponse(pnse, 400));
+      }
+      catch (IOException ioe)
+      {
+         throw new WebApplicationException(ioe, createErrorResponse(ioe, 500));
+      }
+      catch (ModuleException me)
+      {
+         throw new WebApplicationException(me, createErrorResponse(me, 500));
+      }
+      catch (ParseException pe)
+      {
+         throw new WebApplicationException(pe, createErrorResponse(pe, 400));
+      }
+
    }
 
    /**
