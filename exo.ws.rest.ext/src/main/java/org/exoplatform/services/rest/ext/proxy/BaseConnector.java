@@ -34,6 +34,9 @@ import org.exoplatform.common.http.client.ModuleException;
 import org.exoplatform.common.http.client.NVPair;
 import org.exoplatform.common.http.client.ParseException;
 import org.exoplatform.common.http.client.ProtocolNotSuppException;
+import org.exoplatform.services.cmis.jcr.object.EntryImpl;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 
 /**
  * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>
@@ -42,13 +45,20 @@ import org.exoplatform.common.http.client.ProtocolNotSuppException;
 public class BaseConnector extends Connector
 {
 
+   /** The connection. */
    private HTTPConnection conn;
 
+   /** The HTTPResponse. */
    HTTPResponse resp = null;
 
+   /** The form_data array. */
    NVPair[] form_data;
 
+   /** The headers array. */
    NVPair[] headers;
+   
+   /** Logger. */
+   private static final Log LOG = ExoLogger.getLogger(BaseConnector.class);
 
    /**
     * {@inheritDoc}

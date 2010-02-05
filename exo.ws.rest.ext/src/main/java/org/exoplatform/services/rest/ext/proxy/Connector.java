@@ -35,6 +35,7 @@ import org.exoplatform.common.http.client.ProtocolNotSuppException;
 public abstract class Connector
 {
 
+   /** The  connect timeout. */
    protected static final int DEFAULT_CONNECT_TIMEOUT_MS = 5000; 
    
    
