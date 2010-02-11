@@ -49,12 +49,8 @@ import javax.servlet.ServletContextListener;
 public class StandaloneContainerInitializedListener implements ServletContextListener
 {
 
-   /**
-    * org.exoplatform.container.standalone.config
-    */
-   
-   private static final Log log = ExoLogger.getLogger(StandaloneContainerInitializedListener.class);
-   
+   private static final Log LOG = ExoLogger.getLogger(StandaloneContainerInitializedListener.class);
+
    private static final String CONF_URL_PARAMETER = "org.exoplatform.container.standalone.config";
 
    private static final String PREFIX_WAR = "war:";
@@ -81,7 +77,7 @@ public class StandaloneContainerInitializedListener implements ServletContextLis
       }
       catch (Exception e)
       {
-         log.warn(e.getMessage());
+         LOG.error("Error of configurationURL read", e);
       }
 
       try
@@ -90,7 +86,7 @@ public class StandaloneContainerInitializedListener implements ServletContextLis
       }
       catch (MalformedURLException e)
       {
-         log.warn(e.getMessage());
+         LOG.error("Error of addConfigurationURL", e);
       }
 
       try
@@ -102,13 +98,15 @@ public class StandaloneContainerInitializedListener implements ServletContextLis
             (InitialContextInitializer)container.getComponentInstanceOfType(InitialContextInitializer.class);
 
          if (ic != null)
+         {
             ic.recall();
+         }
 
          event.getServletContext().setAttribute("org.exoplatform.frameworks.web.eXoContainer", container);
       }
       catch (Exception e)
       {
-         log.warn(e.getMessage());
+         LOG.error("Error of StandaloneContainer initialization", e);
       }
 
    }
