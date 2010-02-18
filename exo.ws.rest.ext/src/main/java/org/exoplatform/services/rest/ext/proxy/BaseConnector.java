@@ -73,6 +73,7 @@ public class BaseConnector extends Connector
       conn.setTimeout(DEFAULT_CONNECT_TIMEOUT_MS);
       prepareRequestHeaders(httpRequest);
       prepareFormParams(url_obj);
+      conn.setAllowUserInteraction(false);
       resp = conn.Get(url_obj.getProtocol() + "://" + url_obj.getAuthority() + url_obj.getPath(), form_data, headers);
       if (resp.getStatusCode() >= 300)
       {
@@ -94,6 +95,7 @@ public class BaseConnector extends Connector
 
       conn = new HTTPConnection(url_obj);
       conn.setTimeout(DEFAULT_CONNECT_TIMEOUT_MS);
+      conn.setAllowUserInteraction(false);
       prepareRequestHeaders(httpRequest);
 
       byte[] body = new byte[httpRequest.getContentLength()];
@@ -104,6 +106,7 @@ public class BaseConnector extends Connector
          LOG.error("Received Error: " + resp.getReasonLine());
          LOG.error(resp.getText());
       }
+      conn.stop();
       return resp;
    }
 
@@ -119,6 +122,7 @@ public class BaseConnector extends Connector
 
       conn = new HTTPConnection(url_obj);
       conn.setTimeout(DEFAULT_CONNECT_TIMEOUT_MS);
+      conn.setAllowUserInteraction(false);
       prepareRequestHeaders(httpRequest);
 
       byte[] body = new byte[httpRequest.getContentLength()];
@@ -129,6 +133,7 @@ public class BaseConnector extends Connector
          LOG.error("Received Error: " + resp.getReasonLine());
          LOG.error(resp.getText());
       }
+      conn.stop();
       return resp;
    }
 
@@ -144,6 +149,7 @@ public class BaseConnector extends Connector
 
       conn = new HTTPConnection(url_obj);
       conn.setTimeout(DEFAULT_CONNECT_TIMEOUT_MS);
+      conn.setAllowUserInteraction(false);
       prepareRequestHeaders(httpRequest);
       resp = conn.Delete(url_obj.getProtocol() + "://" + url_obj.getAuthority() + url_obj.getPath(), headers);
       if (resp.getStatusCode() >= 300)
@@ -151,6 +157,7 @@ public class BaseConnector extends Connector
          LOG.error("Received Error: " + resp.getReasonLine());
          LOG.error(resp.getText());
       }
+      conn.stop();
       return resp;
    }
 
