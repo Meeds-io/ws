@@ -89,9 +89,7 @@ public class RestServlet extends AbstractHttpServlet implements Connector
       }
       catch (Exception e)
       {
-         LOG.error("Dispatch method error!", e);
-         httpResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-            "This request can't be serve by service.\n Check request parameters and try again.");
+         throw new ServletException(e);
       }
       finally
       {
