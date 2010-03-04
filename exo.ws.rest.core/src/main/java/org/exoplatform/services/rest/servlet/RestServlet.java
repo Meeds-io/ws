@@ -32,6 +32,7 @@ import org.exoplatform.services.rest.impl.header.HeaderHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.SocketException;
 import java.util.List;
 import java.util.Map;
 
@@ -81,10 +82,16 @@ public class RestServlet extends AbstractHttpServlet implements Connector
          ContainerResponse response = new ContainerResponse(new ServletContainerResponseWriter(httpResponse));
          requestHandler.handleRequest(request, response);
       }
+      catch (SocketException se)
+      {
+         if (LOG.isDebugEnabled())
+            LOG.debug("Write socket error!", se);
+      }
       catch (Exception e)
       {
-         LOG.error(e);
-         throw new ServletException(e);
+         LOG.error("Dispatch method error!", e);
+         httpResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+            "This request can't be serve by service.\n Check request parameters and try again.");
       }
       finally
       {
