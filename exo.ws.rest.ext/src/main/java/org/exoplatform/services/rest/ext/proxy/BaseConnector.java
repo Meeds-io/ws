@@ -106,7 +106,6 @@ public class BaseConnector extends Connector
          LOG.error("Received Error: " + resp.getReasonLine());
          LOG.error(resp.getText());
       }
-      conn.stop();
       return resp;
    }
 
@@ -133,7 +132,6 @@ public class BaseConnector extends Connector
          LOG.error("Received Error: " + resp.getReasonLine());
          LOG.error(resp.getText());
       }
-      conn.stop();
       return resp;
    }
 
@@ -157,7 +155,6 @@ public class BaseConnector extends Connector
          LOG.error("Received Error: " + resp.getReasonLine());
          LOG.error(resp.getText());
       }
-      conn.stop();
       return resp;
    }
 
@@ -173,6 +170,7 @@ public class BaseConnector extends Connector
       {
          NVPair pair = null;
          String headerName = (String)en.nextElement();
+         if (!headerName.startsWith("Host")) {  //Do not need to send host
          for (Enumeration<String> en2 = httpRequest.getHeaders(headerName); en2.hasMoreElements();)
          {
             pair = new NVPair(headerName, en2.nextElement());
@@ -180,6 +178,7 @@ public class BaseConnector extends Connector
          hds.add(pair);
          this.headers = new NVPair[hds.size()];
          this.headers = hds.toArray(headers);
+         }
       }
    }
 
