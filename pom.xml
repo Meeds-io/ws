@@ -46,8 +46,6 @@
       
       <org.exoplatform.kernel.version>2.2.1-GA-SNAPSHOT</org.exoplatform.kernel.version>
       <org.exoplatform.core.version>2.3.1-GA-SNAPSHOT</org.exoplatform.core.version>
-
-      <exo.test.includes>*Test*</exo.test.includes>
    </properties>
 
    <modules>
