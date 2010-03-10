@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.HttpHeaders;
 
 import org.exoplatform.common.http.client.Codecs;
 import org.exoplatform.common.http.client.HTTPConnection;
@@ -170,7 +171,7 @@ public class BaseConnector extends Connector
       {
          NVPair pair = null;
          String headerName = (String)en.nextElement();
-         if (!headerName.startsWith("Host")) {  //Do not need to send host
+         if (!headerName.equalsIgnoreCase(HttpHeaders.HOST)) {  //Do not need to send host
          for (Enumeration<String> en2 = httpRequest.getHeaders(headerName); en2.hasMoreElements();)
          {
             pair = new NVPair(headerName, en2.nextElement());
