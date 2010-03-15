@@ -84,7 +84,7 @@ public class RestServlet extends AbstractHttpServlet implements Connector
       }
       catch (IOException ioe)
       {
-         if (ioe.getCause().getClass().getName().equals("org.apache.catalina.connector.ClientAbortException"))
+         if (ioe.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException"))
          {
             LOG.debug("Write socket error!", ioe);
          }
