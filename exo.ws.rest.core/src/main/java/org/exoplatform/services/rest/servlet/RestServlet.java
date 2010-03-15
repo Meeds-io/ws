@@ -82,10 +82,16 @@ public class RestServlet extends AbstractHttpServlet implements Connector
          ContainerResponse response = new ContainerResponse(new ServletContainerResponseWriter(httpResponse));
          requestHandler.handleRequest(request, response);
       }
-      catch (SocketException se)
+      catch (IOException ioe)
       {
-         if (LOG.isDebugEnabled())
-            LOG.debug("Write socket error!", se);
+         if (ioe.getCause().getClass().getName().equals("org.apache.catalina.connector.ClientAbortException"))
+         {
+            LOG.debug("Write socket error!", ioe);
+         }
+         else
+         {
+            throw new ServletException(ioe);
+         }
       }
       catch (Exception e)
       {
