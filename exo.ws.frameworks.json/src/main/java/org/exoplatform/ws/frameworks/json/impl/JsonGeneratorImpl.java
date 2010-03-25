@@ -94,9 +94,13 @@ public class JsonGeneratorImpl implements JsonGenerator
                   Object invokeResult = method.invoke(object, new Object[0]);
 
                   if (JsonUtils.getType(invokeResult) != null)
+                  {
                      jsonRootValue.addElement(key, createJsonValue(invokeResult));
+                  }
                   else
+                  {
                      jsonRootValue.addElement(key, createJsonObject(invokeResult));
+                  }
 
                }
                catch (InvocationTargetException e)
@@ -115,7 +119,7 @@ public class JsonGeneratorImpl implements JsonGenerator
 
    /**
     * Create JsonValue corresponding to Java object.
-    * 
+    *
     * @param object source object.
     * @return JsonValue.
     * @throws JsonException if any errors occurs.
@@ -146,67 +150,87 @@ public class JsonGeneratorImpl implements JsonGenerator
             return new StringValue(Character.toString((Character)object));
          case STRING :
             return new StringValue((String)object);
+         case ENUM:
+            return new StringValue(((Enum)object).name());
          case ARRAY_BOOLEAN : {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
             for (int i = 0; i < length; i++)
+            {
                jsonArray.addElement(new BooleanValue(Array.getBoolean(object, i)));
+            }
             return jsonArray;
          }
          case ARRAY_BYTE : {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
             for (int i = 0; i < length; i++)
+            {
                jsonArray.addElement(new LongValue(Array.getByte(object, i)));
+            }
             return jsonArray;
          }
          case ARRAY_SHORT : {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
             for (int i = 0; i < length; i++)
+            {
                jsonArray.addElement(new LongValue(Array.getShort(object, i)));
+            }
             return jsonArray;
          }
          case ARRAY_INT : {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
             for (int i = 0; i < length; i++)
+            {
                jsonArray.addElement(new LongValue(Array.getInt(object, i)));
+            }
             return jsonArray;
          }
          case ARRAY_LONG : {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
             for (int i = 0; i < length; i++)
+            {
                jsonArray.addElement(new LongValue(Array.getLong(object, i)));
+            }
             return jsonArray;
          }
          case ARRAY_FLOAT : {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
             for (int i = 0; i < length; i++)
+            {
                jsonArray.addElement(new DoubleValue(Array.getFloat(object, i)));
+            }
             return jsonArray;
          }
          case ARRAY_DOUBLE : {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
             for (int i = 0; i < length; i++)
+            {
                jsonArray.addElement(new DoubleValue(Array.getDouble(object, i)));
+            }
             return jsonArray;
          }
          case ARRAY_CHAR : {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
             for (int i = 0; i < length; i++)
+            {
                jsonArray.addElement(new StringValue(Character.toString(Array.getChar(object, i))));
+            }
             return jsonArray;
          }
          case ARRAY_STRING : {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
             for (int i = 0; i < length; i++)
+            {
                jsonArray.addElement(new StringValue((String)Array.get(object, i)));
+            }
             return jsonArray;
          }
          case ARRAY_OBJECT : {
@@ -216,9 +240,13 @@ public class JsonGeneratorImpl implements JsonGenerator
             {
                Object el = Array.get(object, i);
                if (JsonUtils.getType(el) != null)
+               {
                   jsonArray.addElement(createJsonValue(el));
+               }
                else
+               {
                   jsonArray.addElement(createJsonObject(el));
+               }
             }
 
             return jsonArray;
@@ -229,9 +257,13 @@ public class JsonGeneratorImpl implements JsonGenerator
             for (Object o : list)
             {
                if (JsonUtils.getType(o) != null)
+               {
                   jsonArray.addElement(createJsonValue(o));
+               }
                else
+               {
                   jsonArray.addElement(createJsonObject(o));
+               }
             }
 
             return jsonArray;
@@ -244,9 +276,13 @@ public class JsonGeneratorImpl implements JsonGenerator
             {
                Object o = map.get(k);
                if (JsonUtils.getType(o) != null)
+               {
                   jsonObject.addElement(k, createJsonValue(o));
+               }
                else
+               {
                   jsonObject.addElement(k, createJsonObject(o));
+               }
             }
 
             return jsonObject;
@@ -258,9 +294,9 @@ public class JsonGeneratorImpl implements JsonGenerator
    }
 
    /**
-    * Check fields in class which marked as 'transient'. Transient fields will be
-    * not serialized in JSON representation.
-    * 
+    * Check fields in class which marked as 'transient'. Transient fields will
+    * be not serialized in JSON representation.
+    *
     * @param clazz the class.
     * @return list of fields which must be skiped.
     */

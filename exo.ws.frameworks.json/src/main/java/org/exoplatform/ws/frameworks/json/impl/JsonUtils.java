@@ -152,7 +152,12 @@ public final class JsonUtils
       /**
        * Map.
        */
-      MAP
+      MAP,
+
+      /**
+       * Enum.
+       */
+      ENUM
    }
 
    /**
@@ -321,6 +326,8 @@ public final class JsonUtils
          return Types.NULL;
       if (KNOWN_TYPES.get(o.getClass().getName()) != null)
          return KNOWN_TYPES.get(o.getClass().getName());
+      if (o instanceof Enum)
+         return Types.ENUM;
       if (o instanceof Object[])
          return Types.ARRAY_OBJECT;
       if (o instanceof Collection)
@@ -340,6 +347,8 @@ public final class JsonUtils
    {
       if (KNOWN_TYPES.get(clazz.getName()) != null)
          return KNOWN_TYPES.get(clazz.getName());
+      if (Enum.class.isAssignableFrom(clazz))
+         return Types.ENUM;
       if (clazz.isArray())
          return Types.ARRAY_OBJECT;
       if (Collection.class.isAssignableFrom(clazz))

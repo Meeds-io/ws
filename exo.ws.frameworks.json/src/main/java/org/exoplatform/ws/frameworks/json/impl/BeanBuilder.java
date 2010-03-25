@@ -46,14 +46,22 @@ public class BeanBuilder
 
    /**
     * Create Java Bean from Json Source.
-    * 
+    *
     * @param clazz the Class of target Object.
     * @param jsonValue the Json representation.
     * @return Object.
     * @throws Exception if any errors occurs.
     */
+   @SuppressWarnings("unchecked")
    public Object createObject(Class<?> clazz, JsonValue jsonValue) throws Exception
    {
+      if (JsonUtils.getType(clazz) == Types.ENUM)
+      {
+         // Enum is not instantiable via CLass.getInstance().
+         // This is used when enum is member of array or collection.
+         Class c = clazz;
+         return Enum.valueOf(c, jsonValue.getStringValue());
+      }
       Object object = clazz.newInstance();
       Method[] methods = clazz.getMethods();
 
@@ -67,8 +75,10 @@ public class BeanBuilder
             Class<?>[] parameterTypes = method.getParameterTypes();
 
             if (parameterTypes.length != 1)
+            {
                throw new JsonException("Each set method must have one parameters, but method " + clazz.getName() + "#"
                   + method.getName() + " has " + parameterTypes.length);
+            }
 
             Class<?> methodParameterClazz = parameterTypes[0];
             String key = methodName.substring("set".length());
@@ -77,16 +87,22 @@ public class BeanBuilder
 
             // Bug : WS-53
             if (jsonValue.isNull())
+            {
                return null;
+            }
 
             if (!jsonValue.isObject())
+            {
                throw new JsonException("Unsupported type of jsonValue for parameter of method " + clazz.getName() + "#"
                   + method.getName());
+            }
 
             JsonValue childJsonValue = jsonValue.getElement(key);
 
             if (childJsonValue == null)
+            {
                continue;
+            }
 
             // if one of known primitive type or array of primitive type
             if (JsonUtils.isKnownType(methodParameterClazz))
@@ -101,6 +117,12 @@ public class BeanBuilder
                {
                   switch (type)
                   {
+                     case ENUM : {
+                        Class c = methodParameterClazz;
+                        Enum<?> en = Enum.valueOf(c, childJsonValue.getStringValue());
+                        method.invoke(object, new Object[]{en});
+                     }
+                        break;
                      case ARRAY_OBJECT : {
                         Object array = createArray(methodParameterClazz, childJsonValue);
                         method.invoke(object, new Object[]{array});
@@ -174,8 +196,10 @@ public class BeanBuilder
                            constructor = methodParameterClazz.getConstructor(new Class[]{Collection.class});
                         }
                         if (constructor == null)
+                        {
                            throw new JsonException("Can't find satisfied constructor for : " + methodParameterClazz
                               + ", method : " + clazz.getName() + "#" + method.getName());
+                        }
 
                         ArrayList<Object> sourceCollection = new ArrayList<Object>(childJsonValue.size());
 
@@ -185,9 +209,13 @@ public class BeanBuilder
                         {
                            JsonValue v = values.next();
                            if (!JsonUtils.isKnownType(parameterizedTypeClass))
+                           {
                               sourceCollection.add(createObject(parameterizedTypeClass, v));
+                           }
                            else
+                           {
                               sourceCollection.add(createObjectKnownTypes(parameterizedTypeClass, v));
+                           }
                         }
 
                         constructor.newInstance(sourceCollection);
@@ -204,8 +232,10 @@ public class BeanBuilder
                               ParameterizedType parameterizedType = (ParameterizedType)genericParameterTypes[0];
                               if (!String.class
                                  .isAssignableFrom((Class<?>)parameterizedType.getActualTypeArguments()[0]))
+                              {
                                  throw new JsonException("Unsupported parameter in method " + clazz.getName() + "#"
                                     + method.getName() + ". Key of Map must be String.");
+                              }
                               try
                               {
                                  parameterizedTypeClass = (Class<?>)parameterizedType.getActualTypeArguments()[1];
@@ -263,8 +293,10 @@ public class BeanBuilder
                         }
 
                         if (constructor == null)
+                        {
                            throw new JsonException("Can't find satisfied constructor for : " + methodParameterClazz
                               + ", method : " + clazz.getName() + "#" + method.getName());
+                        }
 
                         HashMap<String, Object> sourceMap = new HashMap<String, Object>(childJsonValue.size());
 
@@ -275,9 +307,13 @@ public class BeanBuilder
                            String k = keys.next();
                            JsonValue v = childJsonValue.getElement(k);
                            if (!JsonUtils.isKnownType(parameterizedTypeClass))
+                           {
                               sourceMap.put(k, createObject(parameterizedTypeClass, v));
+                           }
                            else
+                           {
                               sourceMap.put(k, createObjectKnownTypes(parameterizedTypeClass, v));
+                           }
                         }
 
                         method.invoke(object, constructor.newInstance(sourceMap));
@@ -303,8 +339,9 @@ public class BeanBuilder
    }
 
    /**
-    * Create array of Java Object from Json Source include multi-dimension array.
-    * 
+    * Create array of Java Object from Json Source include multi-dimension
+    * array.
+    *
     * @param clazz the Class of target Object.
     * @param jsonValue the Json representation.
     * @return Object.
@@ -350,7 +387,7 @@ public class BeanBuilder
 
    /**
     * Create Objects of known types.
-    * 
+    *
     * @param clazz class.
     * @param jsonValue JsonValue , @see {@link JsonValue}
     * @return Object.
@@ -387,7 +424,9 @@ public class BeanBuilder
             Iterator<JsonValue> values = jsonValue.getElements();
             int i = 0;
             while (values.hasNext())
+            {
                params[i++] = values.next().getBooleanValue();
+            }
             return params;
          }
          case ARRAY_BYTE : {
@@ -395,7 +434,9 @@ public class BeanBuilder
             Iterator<JsonValue> values = jsonValue.getElements();
             int i = 0;
             while (values.hasNext())
+            {
                params[i++] = values.next().getByteValue();
+            }
             return params;
          }
          case ARRAY_SHORT : {
@@ -403,7 +444,9 @@ public class BeanBuilder
             Iterator<JsonValue> values = jsonValue.getElements();
             int i = 0;
             while (values.hasNext())
+            {
                params[i++] = values.next().getShortValue();
+            }
             return params;
          }
          case ARRAY_INT : {
@@ -411,7 +454,9 @@ public class BeanBuilder
             Iterator<JsonValue> values = jsonValue.getElements();
             int i = 0;
             while (values.hasNext())
+            {
                params[i++] = values.next().getIntValue();
+            }
             return params;
          }
          case ARRAY_LONG : {
@@ -419,7 +464,9 @@ public class BeanBuilder
             Iterator<JsonValue> values = jsonValue.getElements();
             int i = 0;
             while (values.hasNext())
+            {
                params[i++] = values.next().getLongValue();
+            }
             return params;
          }
          case ARRAY_FLOAT : {
@@ -427,7 +474,9 @@ public class BeanBuilder
             Iterator<JsonValue> values = jsonValue.getElements();
             int i = 0;
             while (values.hasNext())
+            {
                params[i++] = values.next().getFloatValue();
+            }
             return params;
          }
          case ARRAY_DOUBLE : {
@@ -435,7 +484,9 @@ public class BeanBuilder
             Iterator<JsonValue> values = jsonValue.getElements();
             int i = 0;
             while (values.hasNext())
+            {
                params[i++] = values.next().getDoubleValue();
+            }
             return params;
          }
          case ARRAY_CHAR : {
@@ -444,7 +495,9 @@ public class BeanBuilder
             int i = 0;
             // TODO better checking an transformation string to char
             while (values.hasNext())
+            {
                params[i++] = values.next().getStringValue().charAt(0);
+            }
             return params;
          }
          case ARRAY_STRING : {
@@ -452,7 +505,9 @@ public class BeanBuilder
             Iterator<JsonValue> values = jsonValue.getElements();
             int i = 0;
             while (values.hasNext())
+            {
                params[i++] = values.next().getStringValue();
+            }
             return params;
          }
          default :

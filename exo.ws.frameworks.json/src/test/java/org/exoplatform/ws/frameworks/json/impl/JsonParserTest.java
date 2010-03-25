@@ -20,17 +20,22 @@ package org.exoplatform.ws.frameworks.json.impl;
 
 import junit.framework.TestCase;
 
+import org.exoplatform.ws.frameworks.json.BeanWithBookEnum;
+import org.exoplatform.ws.frameworks.json.BeanWithSimpleEnum;
 import org.exoplatform.ws.frameworks.json.Book;
+import org.exoplatform.ws.frameworks.json.BookEnum;
 import org.exoplatform.ws.frameworks.json.BookStorage;
 import org.exoplatform.ws.frameworks.json.JavaCollectionBean;
 import org.exoplatform.ws.frameworks.json.JavaMapBean;
 import org.exoplatform.ws.frameworks.json.JsonHandler;
 import org.exoplatform.ws.frameworks.json.JsonParser;
+import org.exoplatform.ws.frameworks.json.StringEnum;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -224,6 +229,48 @@ public class JsonParserTest extends TestCase
          .isObject());
       assertEquals("JUnit in Action", jsonValue.getElement("books").getElements().next().getElements().next()
          .getElements().next().getElement("title").getStringValue());
+   }
+
+   public void testEnumSerialization() throws Exception
+   {
+      String source =
+         "{\"countList\":[\"ONE\",\"TWO\",\"TREE\"], \"name\":\"andrew\",\"count\":\"TREE\",\"counts\":[\"TWO\",\"TREE\"]}";
+      JsonParser parser = new JsonParserImpl();
+      JsonHandler jsonHandler = new JsonDefaultHandler();
+      parser.parse(new ByteArrayInputStream(source.getBytes()), jsonHandler);
+      JsonValue jsonValue = jsonHandler.getJsonObject();
+      //      System.out.println(jsonValue);
+
+      BeanWithSimpleEnum o = (BeanWithSimpleEnum)new BeanBuilder().createObject(BeanWithSimpleEnum.class, jsonValue);
+
+      assertEquals("andrew", o.getName());
+
+      assertEquals(StringEnum.TREE, o.getCount());
+
+      StringEnum[] counts = o.getCounts();
+      assertEquals(2, counts.length);
+
+      List<StringEnum> tmp = Arrays.asList(counts);
+      assertTrue(tmp.contains(StringEnum.TWO));
+      assertTrue(tmp.contains(StringEnum.TREE));
+
+      tmp = o.getCountList();
+      assertEquals(3, tmp.size());
+      assertTrue(tmp.contains(StringEnum.ONE));
+      assertTrue(tmp.contains(StringEnum.TWO));
+      assertTrue(tmp.contains(StringEnum.TREE));
+   }
+
+   public void testEnumSerialization2() throws Exception
+   {
+      String source = "{\"book\":\"BEGINNING_C\"}";
+      JsonParser parser = new JsonParserImpl();
+      JsonHandler jsonHandler = new JsonDefaultHandler();
+      parser.parse(new ByteArrayInputStream(source.getBytes()), jsonHandler);
+      JsonValue jsonValue = jsonHandler.getJsonObject();
+      //System.out.println(jsonValue);
+      BeanWithBookEnum o = (BeanWithBookEnum)new BeanBuilder().createObject(BeanWithBookEnum.class, jsonValue);
+      assertEquals(BookEnum.BEGINNING_C, o.getBook());
    }
 
 }
