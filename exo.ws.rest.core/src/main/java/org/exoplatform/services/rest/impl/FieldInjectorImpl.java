@@ -51,7 +51,7 @@ public class FieldInjectorImpl implements FieldInjector
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(FieldInjectorImpl.class.getName());
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.FieldInjectorImpl");
 
    /**
     * All annotations including JAX-RS annotation.

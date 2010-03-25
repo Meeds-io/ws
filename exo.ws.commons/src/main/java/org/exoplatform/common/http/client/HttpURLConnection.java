@@ -143,7 +143,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection
    /** the output stream used for POST and PUT */
    private OutputStream output_stream;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.HttpURLConnection");
+   private static final Log log = ExoLogger.getLogger("exo.ws.commons.HttpURLConnection");
 
    static
    {

@@ -41,7 +41,7 @@ public class JAXBContextComponentPlugin extends BaseComponentPlugin
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(JAXBContextComponentPlugin.class.getName());
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.JAXBContextComponentPlugin");
 
    /**
     * Set of classes that will be bounded.

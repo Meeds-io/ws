@@ -82,7 +82,7 @@ public class ProviderBinder implements Providers
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(ProviderBinder.class.getName());
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.ProviderBinder");
 
    /**
     * Providers instance.

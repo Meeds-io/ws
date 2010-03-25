@@ -54,7 +54,7 @@ public final class DefaultMethodInvoker implements MethodInvoker
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(DefaultMethodInvoker.class.getName());
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.DefaultMethodInvoker");
 
    /**
     * {@inheritDoc}

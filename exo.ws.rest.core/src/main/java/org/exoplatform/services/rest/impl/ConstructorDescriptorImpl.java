@@ -58,7 +58,7 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(ConstructorDescriptorImpl.class.getName());
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.ConstructorDescriptorImpl");
 
    /**
     * ConstructorDescriptor comparator.

@@ -125,7 +125,7 @@ public class HttpOutputStream extends OutputStream
    /** just ignore all the data if told to do so */
    private boolean ignore = false;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.HttpOutputStream");
+   private static final Log log = ExoLogger.getLogger("exo.ws.commons.HttpOutputStream");
 
    // Constructors
 

@@ -63,7 +63,7 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(RequestHandlerImpl.class.getName());
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.RequestHandlerImpl");
 
    /**
     * Application properties. Properties from this map will be copied to ApplicationContext

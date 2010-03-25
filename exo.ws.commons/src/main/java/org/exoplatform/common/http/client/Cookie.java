@@ -70,7 +70,7 @@ public class Cookie implements Serializable
    /** Make this compatible with V0.3-2 */
    private static final long serialVersionUID = 8599975325569296615L;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.Cookie");
+   private static final Log log = ExoLogger.getLogger("exo.ws.commons.Cookie");
 
    protected String name;
 

@@ -58,7 +58,7 @@ public class BaseConnector extends Connector
    NVPair[] headers;
 
    /** Logger. */
-   private static final Log LOG = ExoLogger.getLogger(BaseConnector.class);
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.ext.BaseConnector");
 
    /**
     * {@inheritDoc}

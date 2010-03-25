@@ -43,7 +43,7 @@ public class MethodInvokerFilterComponentPlugin extends BaseComponentPlugin
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(MethodInvokerFilterComponentPlugin.class.getName());
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.MethodInvokerFilterComponentPlugin");
 
    /**
     * List of {@link MethodInvokerFilter}.

@@ -66,7 +66,7 @@ public final class ResourceBinder
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger("ws.rest.core.ResourceBinder");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.ResourceBinder");
 
    private static final Comparator<ObjectFactory<AbstractResourceDescriptor>> RESOURCE_COMPARATOR =
       new ResourceComparator();

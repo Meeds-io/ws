@@ -59,7 +59,7 @@ public class HierarchicalPropertyEntityProvider implements EntityProvider<Hierar
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(HierarchicalPropertyEntityProvider.class.getName());
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.ext.HierarchicalPropertyEntityProvider");
 
    /**
     * {@inheritDoc}

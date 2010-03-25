@@ -64,7 +64,7 @@ public final class RequestDispatcher
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(RequestDispatcher.class.getName());
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.RequestDispatcher");
 
    /**
     * See {@link ResourceBinder}.

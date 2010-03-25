@@ -81,7 +81,7 @@ class AuthorizationModule implements HTTPClientModule
 
    private Response saved_resp;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.AuthorizationModule");
+   private static final Log log = ExoLogger.getLogger("exo.ws.commons.AuthorizationModule");
 
    // Constructors
 

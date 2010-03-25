@@ -57,7 +57,7 @@ public class JAXBElementEntityProvider implements EntityProvider<JAXBElement<?>>
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(JAXBElementEntityProvider.class.getName());
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.JAXBElementEntityProvider");
 
    /**
     * @see Providers

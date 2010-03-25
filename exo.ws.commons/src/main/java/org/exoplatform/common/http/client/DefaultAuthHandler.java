@@ -92,7 +92,7 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
 
    private static boolean prompterSet = false;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.DefaultAuthHandler");
+   private static final Log log = ExoLogger.getLogger("exo.ws.commons.DefaultAuthHandler");
 
    /**
     * For Digest authentication we need to set the uri, response and opaque

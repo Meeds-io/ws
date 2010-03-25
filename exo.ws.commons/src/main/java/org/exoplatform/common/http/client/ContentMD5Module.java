@@ -50,7 +50,7 @@ import java.io.IOException;
 class ContentMD5Module implements HTTPClientModule
 {
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.ContentMD5Module");
+   private static final Log log = ExoLogger.getLogger("exo.ws.commons.ContentMD5Module");
 
    // Constructors
 

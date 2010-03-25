@@ -143,7 +143,7 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
    /** should the request be retried by the application? */
    boolean retry = false;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.Response");
+   private static final Log log = ExoLogger.getLogger("exo.ws.commons.Response");
 
    static
    {

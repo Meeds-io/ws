@@ -49,7 +49,7 @@ class DefaultModule implements HTTPClientModule
    /** number of times the request will be retried */
    private int req_timeout_retries;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.DefaultModule");
+   private static final Log log = ExoLogger.getLogger("exo.ws.commons.DefaultModule");
 
    // Constructors
 

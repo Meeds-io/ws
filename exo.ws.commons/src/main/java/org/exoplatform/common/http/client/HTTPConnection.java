@@ -303,7 +303,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    /** controls whether modules are allowed to interact with user */
    private boolean allowUI;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.HTTPConnection");
+   private static final Log log = ExoLogger.getLogger("exo.ws.commons.HTTPConnection");
 
    static
    {

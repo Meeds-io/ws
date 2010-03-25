@@ -82,7 +82,7 @@ class StreamDemultiplexor implements GlobalConstants
    /** the currently set timeout for the socket */
    private int cur_timeout = 0;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.StreamDemultiplexor");
+   private static final Log log = ExoLogger.getLogger("exo.ws.commons.StreamDemultiplexor");
 
    static
    {

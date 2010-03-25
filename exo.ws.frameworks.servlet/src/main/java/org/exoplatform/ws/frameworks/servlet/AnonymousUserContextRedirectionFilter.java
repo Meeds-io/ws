@@ -58,7 +58,7 @@ public class AnonymousUserContextRedirectionFilter implements Filter
    /**
     * Logger.
     */
-   private final static Log LOG = ExoLogger.getLogger("ws.AnonymousUserContextRedirectionFilter");
+   private final static Log LOG = ExoLogger.getLogger("exo.ws.frameworks.servlet.AnonymousUserContextRedirectionFilter");
 
    /**
     * The name of context.

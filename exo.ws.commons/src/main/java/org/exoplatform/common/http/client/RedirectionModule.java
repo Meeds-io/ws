@@ -65,7 +65,7 @@ class RedirectionModule implements HTTPClientModule
    /** used for deferred redirection retries */
    private Request saved_req;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.RedirectionModule");
+   private static final Log log = ExoLogger.getLogger("exo.ws.commons.RedirectionModule");
 
    // Constructors
 

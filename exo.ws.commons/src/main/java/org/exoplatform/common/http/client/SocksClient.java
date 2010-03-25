@@ -77,7 +77,7 @@ class SocksClient
    /** socks version 5 address types */
    private final static byte IP_V4 = 1, DMNAME = 3, IP_V6 = 4;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.SocksClient");
+   private static final Log log = ExoLogger.getLogger("exo.ws.commons.SocksClient");
 
    // Constructors
 

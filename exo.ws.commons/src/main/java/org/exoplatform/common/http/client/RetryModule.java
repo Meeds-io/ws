@@ -54,7 +54,7 @@ import java.io.IOException;
 class RetryModule implements HTTPClientModule, GlobalConstants
 {
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.RetryModule");
+   private static final Log log = ExoLogger.getLogger("exo.ws.commons.RetryModule");
 
    // Constructors
 

@@ -49,7 +49,7 @@ import java.util.zip.InflaterInputStream;
 class ContentEncodingModule implements HTTPClientModule
 {
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.ContentEncodingModule");
+   private static final Log log = ExoLogger.getLogger("exo.ws.commons.ContentEncodingModule");
 
    // Methods
 

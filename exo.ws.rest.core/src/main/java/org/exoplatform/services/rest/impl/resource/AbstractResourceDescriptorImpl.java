@@ -77,7 +77,7 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(AbstractResourceDescriptorImpl.class.getName());
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.AbstractResourceDescriptorImpl");
 
    /**
     * @see PathValue

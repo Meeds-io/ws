@@ -113,7 +113,7 @@ public class CookieModule implements HTTPClientModule
    /** the cookie policy handler */
    private static CookiePolicyHandler cookie_handler = new DefaultCookiePolicyHandler();
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpClient.CookieModule");
+   private static final Log log = ExoLogger.getLogger("exo.ws.commons.CookieModule");
 
    // read in cookies from disk at startup
 

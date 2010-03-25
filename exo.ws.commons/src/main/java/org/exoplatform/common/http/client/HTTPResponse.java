@@ -113,7 +113,7 @@ public class HTTPResponse implements HTTPClientModuleConstants
    /** the method used in the request */
    private String method = null;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.HTTPResponse");
+   private static final Log log = ExoLogger.getLogger("exo.ws.commons.HTTPResponse");
 
    // Constructors
 

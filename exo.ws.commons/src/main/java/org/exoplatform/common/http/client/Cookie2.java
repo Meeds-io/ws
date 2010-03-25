@@ -54,7 +54,7 @@ public class Cookie2 extends Cookie
    /** Make this compatible with V0.3-2 */
    private static final long serialVersionUID = 2208203902820875917L;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.Cookie2");
+   private static final Log log = ExoLogger.getLogger("exo.ws.commons.Cookie2");
 
    protected int version;
 

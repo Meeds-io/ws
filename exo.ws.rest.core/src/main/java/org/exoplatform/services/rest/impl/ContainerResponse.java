@@ -48,7 +48,7 @@ public class ContainerResponse implements GenericContainerResponse
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(ContainerResponse.class.getName());
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.ContainerResponse");
 
    /**
     * See {@link ContainerResponseWriter}.

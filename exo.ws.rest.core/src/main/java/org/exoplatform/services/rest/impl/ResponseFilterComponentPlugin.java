@@ -42,7 +42,7 @@ public class ResponseFilterComponentPlugin extends BaseComponentPlugin
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(RequestFilterComponentPlugin.class.getName());
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.RequestFilterComponentPlugin");
 
    /**
     * See {@link ResponseFilter}.

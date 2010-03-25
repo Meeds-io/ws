@@ -49,7 +49,7 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(JAXBContextResolver.class.getName());
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.JAXBContextResolver");
 
    /**
     * JAXBContext cache.

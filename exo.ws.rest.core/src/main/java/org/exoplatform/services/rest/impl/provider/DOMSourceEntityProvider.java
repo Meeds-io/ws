@@ -58,7 +58,7 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(DOMSourceEntityProvider.class.getName());
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.DOMSourceEntityProvider");
 
    /**
     * {@inheritDoc}

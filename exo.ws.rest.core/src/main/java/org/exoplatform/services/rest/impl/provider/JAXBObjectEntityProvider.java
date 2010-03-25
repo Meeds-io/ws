@@ -56,7 +56,7 @@ public class JAXBObjectEntityProvider implements EntityProvider<Object>
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(JAXBObjectEntityProvider.class.getName());
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.JAXBObjectEntityProvider");
 
    /**
     * @see Providers

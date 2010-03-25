@@ -49,7 +49,7 @@ import javax.servlet.ServletContextListener;
 public class StandaloneContainerInitializedListener implements ServletContextListener
 {
 
-   private static final Log LOG = ExoLogger.getLogger(StandaloneContainerInitializedListener.class);
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.frameworks.servlet.StandaloneContainerInitializedListener");
 
    private static final String CONF_URL_PARAMETER = "org.exoplatform.container.standalone.config";
 

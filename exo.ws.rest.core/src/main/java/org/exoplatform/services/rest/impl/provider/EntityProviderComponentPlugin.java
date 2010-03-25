@@ -40,7 +40,7 @@ public class EntityProviderComponentPlugin extends BaseComponentPlugin
    /**
     * Logger.
     */
-   private static final Log LOG = ExoLogger.getLogger(EntityProviderComponentPlugin.class.getName());
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.EntityProviderComponentPlugin");
 
    /**
     * See {@link EntityProvider}.

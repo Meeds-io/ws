@@ -82,7 +82,7 @@ final class RespInputStream extends InputStream implements GlobalConstants
    /** the total number of bytes of entity data read from the demux so far */
    int count = 0;
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.RespInputStream");
+   private static final Log log = ExoLogger.getLogger("exo.ws.commons.RespInputStream");
 
    static
    {

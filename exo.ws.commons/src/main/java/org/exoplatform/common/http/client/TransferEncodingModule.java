@@ -49,7 +49,7 @@ import java.util.zip.InflaterInputStream;
 class TransferEncodingModule implements HTTPClientModule
 {
 
-   private static final Log log = ExoLogger.getLogger("ws.commons.httpclient.TransferEncodingModule");
+   private static final Log log = ExoLogger.getLogger("exo.ws.commons.TransferEncodingModule");
 
    // Methods
 
