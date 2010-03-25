@@ -44,7 +44,7 @@ import javax.servlet.ServletResponse;
 public class PortalContainerInitializedFilter extends AbstractFilter
 {
 
-   private static final Log LOG = ExoLogger.getLogger("PortatContainerInitializedFilter");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.frameworks.servlet.PortatContainerInitializedFilter");
 
    /**
     * initializes PortalContainer instance.
