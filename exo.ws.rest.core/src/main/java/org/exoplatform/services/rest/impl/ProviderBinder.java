@@ -86,7 +86,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Providers instance.
-    * 
+    *
     * @see Providers
     */
    private static AtomicReference<ProviderBinder> ainst = new AtomicReference<ProviderBinder>();
@@ -182,6 +182,8 @@ public class ProviderBinder implements Providers
       // JAXB context
       addContextResolver(JAXBContextResolver.class, null, ComponentLifecycleScope.CONTAINER);
 
+      addExceptionMapper(new DefaultExceptionMapper());
+
    }
 
    /**
@@ -235,7 +237,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request ContextResolver.
-    * 
+    *
     * @param clazz class of implementation ContextResolver
     */
    @SuppressWarnings("unchecked")
@@ -253,7 +255,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton ContextResolver.
-    * 
+    *
     * @param instance ContextResolver instance
     */
    @SuppressWarnings("unchecked")
@@ -272,7 +274,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request ExceptionMapper.
-    * 
+    *
     * @param clazz class of implementation ExceptionMapper
     */
    @SuppressWarnings("unchecked")
@@ -290,7 +292,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton ExceptionMapper.
-    * 
+    *
     * @param instance ExceptionMapper instance
     */
    @SuppressWarnings("unchecked")
@@ -309,7 +311,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request MessageBodyReader.
-    * 
+    *
     * @param clazz class of implementation MessageBodyReader
     */
    @SuppressWarnings("unchecked")
@@ -327,7 +329,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton MessageBodyReader.
-    * 
+    *
     * @param instance MessageBodyReader instance
     */
    @SuppressWarnings("unchecked")
@@ -346,7 +348,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request MessageBodyWriter.
-    * 
+    *
     * @param clazz class of implementation MessageBodyWriter
     */
    @SuppressWarnings("unchecked")
@@ -364,7 +366,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton MessageBodyWriter.
-    * 
+    *
     * @param instance MessageBodyWriter instance
     */
    @SuppressWarnings("unchecked")
@@ -383,7 +385,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Get list of most acceptable writer's media type for specified type.
-    * 
+    *
     * @param type type
     * @param genericType generic type
     * @param annotations annotations
@@ -401,7 +403,9 @@ public class ProviderBinder implements Providers
          {
             MessageBodyWriter writer = (MessageBodyWriter)pf.getInstance(ApplicationContextImpl.getCurrent());
             if (writer.isWriteable(type, genericType, annotations, MediaTypeHelper.DEFAULT_TYPE))
+            {
                l.add(mime);
+            }
          }
       }
 
@@ -419,14 +423,20 @@ public class ProviderBinder implements Providers
       if (pm != null)
       {
          if (mediaType == null)
+         {
             return _getContextResolver(pm, contextType, MediaTypeHelper.DEFAULT_TYPE);
+         }
 
          resolver = _getContextResolver(pm, contextType, mediaType);
          if (resolver == null)
+         {
             resolver =
                _getContextResolver(pm, contextType, new MediaType(mediaType.getType(), MediaType.MEDIA_TYPE_WILDCARD));
+         }
          if (resolver == null)
+         {
             resolver = _getContextResolver(pm, contextType, MediaTypeHelper.DEFAULT_TYPE);
+         }
       }
       return resolver;
    }
@@ -439,7 +449,9 @@ public class ProviderBinder implements Providers
    {
       ObjectFactory pf = exceptionMappers.get(type);
       if (pf != null)
+      {
          return (ExceptionMapper<T>)pf.getInstance(ApplicationContextImpl.getCurrent());
+      }
       return null;
    }
 
@@ -450,15 +462,21 @@ public class ProviderBinder implements Providers
       MediaType mediaType)
    {
       if (mediaType == null)
+      {
          return _getMessageBodyReader(type, genericType, annotations, MediaTypeHelper.DEFAULT_TYPE);
+      }
 
       MessageBodyReader<T> reader = _getMessageBodyReader(type, genericType, annotations, mediaType);
       if (reader == null)
+      {
          reader =
             _getMessageBodyReader(type, genericType, annotations, new MediaType(mediaType.getType(),
                MediaType.MEDIA_TYPE_WILDCARD));
+      }
       if (reader == null)
+      {
          reader = _getMessageBodyReader(type, genericType, annotations, MediaTypeHelper.DEFAULT_TYPE);
+      }
 
       return reader;
    }
@@ -470,21 +488,27 @@ public class ProviderBinder implements Providers
       MediaType mediaType)
    {
       if (mediaType == null)
+      {
          return _getMessageBodyWriter(type, genericType, annotations, MediaTypeHelper.DEFAULT_TYPE);
+      }
 
       MessageBodyWriter<T> writer = _getMessageBodyWriter(type, genericType, annotations, mediaType);
       if (writer == null)
+      {
          writer =
             _getMessageBodyWriter(type, genericType, annotations, new MediaType(mediaType.getType(),
                MediaType.MEDIA_TYPE_WILDCARD));
+      }
       if (writer == null)
+      {
          writer = _getMessageBodyWriter(type, genericType, annotations, MediaTypeHelper.DEFAULT_TYPE);
+      }
       return writer;
    }
 
    /**
     * Add per-request MethodInvokerFilter.
-    * 
+    *
     * @param clazz class of implementation MethodInvokerFilter
     */
    public void addMethodInvokerFilter(Class<? extends MethodInvokerFilter> clazz)
@@ -501,7 +525,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton MethodInvokerFilter.
-    * 
+    *
     * @param instance MethodInvokerFilter instance
     */
    public void addMethodInvokerFilter(MethodInvokerFilter instance)
@@ -519,7 +543,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request RequestFilter.
-    * 
+    *
     * @param clazz class of implementation RequestFilter
     */
    public void addRequestFilter(Class<? extends RequestFilter> clazz)
@@ -536,7 +560,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton RequestFilter.
-    * 
+    *
     * @param instance RequestFilter instance
     */
    public void addRequestFilter(RequestFilter instance)
@@ -554,7 +578,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add per-request ResponseFilter.
-    * 
+    *
     * @param clazz class of implementation ResponseFilter
     */
    public void addResponseFilter(Class<? extends ResponseFilter> clazz)
@@ -571,7 +595,7 @@ public class ProviderBinder implements Providers
 
    /**
     * Add singleton ResponseFilter.
-    * 
+    *
     * @param instance ResponseFilter instance
     */
    public void addResponseFilter(ResponseFilter instance)
@@ -639,7 +663,9 @@ public class ProviderBinder implements Providers
             {
                int len = capturingValues.size();
                if (capturingValues.get(len - 1) != null && !"/".equals(capturingValues.get(len - 1)))
+               {
                   continue; // not matched
+               }
             }
             else
             {
@@ -681,7 +707,7 @@ public class ProviderBinder implements Providers
    /**
     * Looking for message body reader according to supplied entity class, entity
     * generic type, annotations and content type.
-    * 
+    *
     * @param <T> message body reader actual type argument
     * @param type entity type
     * @param genericType entity generic type
@@ -697,7 +723,9 @@ public class ProviderBinder implements Providers
       {
          MessageBodyReader reader = (MessageBodyReader)pf.getInstance(ApplicationContextImpl.getCurrent());
          if (reader.isReadable(type, genericType, annotations, mediaType))
+         {
             return reader;
+         }
       }
       return null;
    }
@@ -705,7 +733,7 @@ public class ProviderBinder implements Providers
    /**
     * Looking for message body writer according to supplied entity class, entity
     * generic type, annotations and content type.
-    * 
+    *
     * @param <T> message body writer actual type argument
     * @param type entity type
     * @param genericType entity generic type
@@ -721,7 +749,9 @@ public class ProviderBinder implements Providers
       {
          MessageBodyWriter writer = (MessageBodyWriter)pf.getInstance(ApplicationContextImpl.getCurrent());
          if (writer.isWriteable(type, genericType, annotations, mediaType))
+         {
             return writer;
+         }
       }
       return null;
    }
@@ -745,7 +775,9 @@ public class ProviderBinder implements Providers
             {
                Type[] atypes = pt.getActualTypeArguments();
                if (atypes.length > 1)
+               {
                   throw new RuntimeException("Unable strong determine actual type argument, more then one type found.");
+               }
 
                Class<?> aclazz = (Class<?>)atypes[0];
 
@@ -768,7 +800,9 @@ public class ProviderBinder implements Providers
                      break;
                   case SINGLETON :
                      if (instance == null)
+                     {
                         throw new NullPointerException("ContextResolver instance is null.");
+                     }
                      factory = new SingletonObjectFactory<ProviderDescriptor>(descriptor, instance);
                      break;
                   case CONTAINER :
@@ -814,7 +848,9 @@ public class ProviderBinder implements Providers
             break;
          case SINGLETON :
             if (instance == null)
+            {
                throw new NullPointerException("MessageBodyReader instance is null.");
+            }
             factory = new SingletonObjectFactory<ProviderDescriptor>(descriptor, instance);
             break;
          case CONTAINER :
@@ -827,7 +863,9 @@ public class ProviderBinder implements Providers
       // check is reader for the same Java and media type already exists.
       // Let it be under developer's control.
       for (MediaType mime : factory.getObjectModel().consumes())
+      {
          readProviders.getList(mime).add(factory);
+      }
    }
 
    /**
@@ -850,7 +888,9 @@ public class ProviderBinder implements Providers
             break;
          case SINGLETON :
             if (instance == null)
+            {
                throw new NullPointerException("MessageBodyWriter instance is null.");
+            }
             factory = new SingletonObjectFactory<ProviderDescriptor>(descriptor, instance);
             break;
          case CONTAINER :
@@ -863,7 +903,9 @@ public class ProviderBinder implements Providers
       // check is writer for the same Java and media type already exists.
       // Let it be under developer's control.
       for (MediaType mime : factory.getObjectModel().produces())
+      {
          writeProviders.getList(mime).add(factory);
+      }
    }
 
    /**
@@ -885,7 +927,9 @@ public class ProviderBinder implements Providers
             {
                Type[] atypes = pt.getActualTypeArguments();
                if (atypes.length > 1)
+               {
                   throw new RuntimeException("Unable strong determine actual type argument, more then one type found.");
+               }
                Class<? extends Throwable> exc = (Class<? extends Throwable>)atypes[0];
 
                if (exceptionMappers.get(exc) != null)
@@ -905,7 +949,9 @@ public class ProviderBinder implements Providers
                      break;
                   case SINGLETON :
                      if (instance == null)
+                     {
                         throw new NullPointerException("ExceptionMapper instance is null.");
+                     }
                      factory = new SingletonObjectFactory<ProviderDescriptor>(descriptor, instance);
                      break;
                   case CONTAINER :
@@ -940,7 +986,9 @@ public class ProviderBinder implements Providers
             break;
          case SINGLETON :
             if (instance == null)
+            {
                throw new NullPointerException("RequestFilter instance is null.");
+            }
             factory = new SingletonObjectFactory<FilterDescriptor>(descriptor, instance);
             break;
          case CONTAINER :
@@ -972,7 +1020,9 @@ public class ProviderBinder implements Providers
             break;
          case SINGLETON :
             if (instance == null)
+            {
                throw new NullPointerException("ResponseFilter instance is null.");
+            }
             factory = new SingletonObjectFactory<FilterDescriptor>(descriptor, instance);
             break;
          case CONTAINER :
@@ -1004,7 +1054,9 @@ public class ProviderBinder implements Providers
             break;
          case SINGLETON :
             if (instance == null)
+            {
                throw new NullPointerException("MethodInvokerFilter instance is null.");
+            }
             factory = new SingletonObjectFactory<FilterDescriptor>(descriptor, instance);
             break;
          case CONTAINER :
