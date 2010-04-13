@@ -60,7 +60,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public final class ResourceBinder
+public class ResourceBinder
 {
 
    /**
@@ -68,7 +68,7 @@ public final class ResourceBinder
     */
    private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.ResourceBinder");
 
-   private static final Comparator<ObjectFactory<AbstractResourceDescriptor>> RESOURCE_COMPARATOR =
+   protected static final Comparator<ObjectFactory<AbstractResourceDescriptor>> RESOURCE_COMPARATOR =
       new ResourceComparator();
 
    /**
@@ -97,20 +97,20 @@ public final class ResourceBinder
    /**
     * Root resource descriptors.
     */
-   private final List<ObjectFactory<AbstractResourceDescriptor>> rootResources =
+   protected final List<ObjectFactory<AbstractResourceDescriptor>> rootResources =
       new ArrayList<ObjectFactory<AbstractResourceDescriptor>>();
 
    /**
     * Validator.
     */
-   private final ResourceDescriptorVisitor rdv = ResourceDescriptorValidator.getInstance();
+   protected final ResourceDescriptorVisitor rdv = ResourceDescriptorValidator.getInstance();
 
-   private int size = 0;
+   protected int size = 0;
 
    /**
     * @see RuntimeDelegate
     */
-   private final RuntimeDelegate rd;
+   protected final RuntimeDelegate rd;
 
    /**
     * @param containerContext eXo container context

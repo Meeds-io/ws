@@ -69,7 +69,7 @@ public final class RequestDispatcher
    /**
     * See {@link ResourceBinder}.
     */
-   private final ResourceBinder resourceBinder;
+   protected final ResourceBinder resourceBinder;
 
    /**
     * Constructs new instance of RequestDispatcher.
@@ -93,44 +93,8 @@ public final class RequestDispatcher
       String requestPath = context.getPath(false);
       List<String> parameterValues = context.getParameterValues();
 
-      ObjectFactory<AbstractResourceDescriptor> resourceFactory = null;
-
-      List<ObjectFactory<AbstractResourceDescriptor>> resources = resourceBinder.getResources();
-      // be sure no new entries added
-      synchronized (resources)
-      {
-         for (ObjectFactory<AbstractResourceDescriptor> rc : resources)
-         {
-            if (rc.getObjectModel().getUriPattern().match(requestPath, parameterValues))
-            {
-               // all times will at least 1
-               int len = parameterValues.size();
-               // If capturing group contains last element and this element is
-               // neither null nor '/' then ResourceClass must contains at least one
-               // sub-resource method or sub-resource locator.
-               if (parameterValues.get(len - 1) != null && !parameterValues.get(len - 1).equals("/"))
-               {
-                  int subresnum =
-                     rc.getObjectModel().getSubResourceMethods().size()
-                        + rc.getObjectModel().getSubResourceLocators().size();
-                  if (subresnum == 0)
-                     continue;
-               }
-               resourceFactory = rc;
-               break;
-            }
-         }
-
-      }
-
-      if (resourceFactory == null)
-      {
-         if (LOG.isDebugEnabled())
-            LOG.debug("Root resource not found for " + requestPath);
-
-         // Stop here, there is no matched root resource
-         throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build());
-      }
+      // Get root resource
+      ObjectFactory<AbstractResourceDescriptor> resourceFactory = getRootResourse(parameterValues, requestPath);
 
       // Take the tail of the request path, the tail will be requested path
       // for lower resources, e. g. ResourceClass -> Sub-resource method/locator
@@ -563,5 +527,55 @@ public final class RequestDispatcher
 
       return !locators.isEmpty();
    }
+   
+   /**
+    * Get root resource
+    * 
+    * @param parameterValues is taken from context 
+    * @param requestPath is taken from context
+    * @return root resource 
+    */
+   protected ObjectFactory<AbstractResourceDescriptor> getRootResourse(List<String> parameterValues, String requestPath)
+   {
+      ObjectFactory<AbstractResourceDescriptor> resourceFactory = null;
+      List<ObjectFactory<AbstractResourceDescriptor>> resources = resourceBinder.getResources();
+      // be sure no new entries added
+      synchronized (resources)
+      {
+         for (ObjectFactory<AbstractResourceDescriptor> rc : resources)
+         {
+            if (rc.getObjectModel().getUriPattern().match(requestPath, parameterValues))
+            {
+               // all times will at least 1
+               int len = parameterValues.size();
+               // If capturing group contains last element and this element is
+               // neither null nor '/' then ResourceClass must contains at least one
+               // sub-resource method or sub-resource locator.
+               if (parameterValues.get(len - 1) != null && !parameterValues.get(len - 1).equals("/"))
+               {
+                  int subresnum =
+                     rc.getObjectModel().getSubResourceMethods().size()
+                        + rc.getObjectModel().getSubResourceLocators().size();
+                  if (subresnum == 0)
+                     continue;
+               }
+               resourceFactory = rc;
+               break;
+            }
+         }
 
+      }
+
+      if (resourceFactory == null)
+      {
+
+         if (LOG.isDebugEnabled())
+            LOG.debug("Root resource not found for " + requestPath);
+
+         // Stop here, there is no matched root resource
+         throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build());
+      }
+      else
+         return resourceFactory;
+   }
 }

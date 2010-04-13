@@ -22,6 +22,10 @@ import org.exoplatform.services.rest.ObjectModel;
 import org.exoplatform.services.rest.impl.resource.PathValue;
 import org.exoplatform.services.rest.uri.UriPattern;
 
+import java.util.List;
+
+import javax.ws.rs.core.MultivaluedMap;
+
 /**
  * Describe Resource Class or Root Resource Class. Resource Class is any Java
  * class that uses JAX-RS annotations to implement corresponding Web resource.
@@ -54,6 +58,21 @@ public interface AbstractResourceDescriptor extends ResourceDescriptor, ObjectMo
     * @return sub-resource methods
     */
    SubResourceMethodMap getSubResourceMethods();
+   
+   /**
+    * Optional data
+    * 
+    * @param key
+    * @return property by key 
+    */
+   List<String> getProperty(String key);
+   
+   /**
+    * Optional data
+    * 
+    * @return all properties
+    */
+   MultivaluedMap<String,String> getProperties();
 
    /**
     * @return See {@link UriPattern}

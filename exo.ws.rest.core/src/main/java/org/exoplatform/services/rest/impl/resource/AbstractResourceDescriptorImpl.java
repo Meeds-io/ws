@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.resource;
 
+import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.ComponentLifecycleScope;
@@ -66,6 +67,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -126,6 +128,11 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
     * Resource class fields.
     */
    private final List<FieldInjector> fields;
+   
+   /**
+    * Optional data
+    */
+   private MultivaluedMap<String, String> properties;
 
    /**
     * Constructs new instance of AbstractResourceDescriptor without path
@@ -220,6 +227,26 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
       processMethods();
    }
 
+   /**
+    * {@inheritDoc}
+    */
+   public MultivaluedMap<String, String> getProperties()
+   {
+      if (properties == null)
+         properties = new MultivaluedMapImpl();
+      return properties;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public List<String> getProperty(String key)
+   {
+      if (properties != null)
+         return properties.get(key);
+      return null;
+   }
+   
    /**
     * {@inheritDoc}
     */
