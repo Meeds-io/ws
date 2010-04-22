@@ -58,7 +58,7 @@ import javax.ws.rs.core.Response.Status;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public final class RequestDispatcher
+public class RequestDispatcher
 {
 
    /**
