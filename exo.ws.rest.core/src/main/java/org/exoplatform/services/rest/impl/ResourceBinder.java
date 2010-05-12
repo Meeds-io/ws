@@ -28,6 +28,7 @@ import org.exoplatform.services.rest.PerRequestObjectFactory;
 import org.exoplatform.services.rest.RequestFilter;
 import org.exoplatform.services.rest.ResponseFilter;
 import org.exoplatform.services.rest.SingletonObjectFactory;
+import org.exoplatform.services.rest.impl.method.MethodInvokerFactory;
 import org.exoplatform.services.rest.impl.resource.AbstractResourceDescriptorImpl;
 import org.exoplatform.services.rest.impl.resource.ResourceDescriptorValidator;
 import org.exoplatform.services.rest.method.MethodInvokerFilter;
@@ -54,7 +55,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 /**
  * Lookup for root resource eXo container components at startup and
  * register/unregister resources via specified methods.
- * 
+ *
  * @see AbstractResourceDescriptor
  * @see SingletonResourceFactory
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -78,7 +79,7 @@ public class ResourceBinder
    {
       /**
        * Compare two ResourceClass for order.
-       * 
+       *
        * @param o1 first ResourceClass to be compared
        * @param o2 second ResourceClass to be compared
        * @return positive , zero or negative dependent of {@link UriPattern}
@@ -112,13 +113,17 @@ public class ResourceBinder
     */
    protected final RuntimeDelegate rd;
 
+   private final MethodInvokerFactory invokerFactory;
+
    /**
     * @param containerContext eXo container context
     * @throws Exception if can't set instance of {@link RuntimeDelegate}
     */
    @SuppressWarnings("unchecked")
-   public ResourceBinder(ExoContainerContext containerContext) throws Exception
+   public ResourceBinder(ExoContainerContext containerContext, MethodInvokerFactory invokerFactory) throws Exception
    {
+      this.invokerFactory = invokerFactory;
+
       // Initialize RuntimeDelegate instance
       // This is first component in life cycle what needs.
       // TODO better solution to initialize RuntimeDelegate
@@ -148,6 +153,11 @@ public class ResourceBinder
          bind(resource);
       }
 
+   }
+
+   public ResourceBinder(ExoContainerContext containerContext) throws Exception
+   {
+      this(containerContext, null);
    }
 
    /**
@@ -250,7 +260,7 @@ public class ResourceBinder
     * Register supplied Object as root resource if it has valid JAX-RS
     * annotations and no one resource with the same UriPattern already
     * registered.
-    * 
+    *
     * @param resource candidate to be root resource
     * @return true if resource was bound and false if resource was not bound
     *         cause it is not root resource
@@ -264,7 +274,7 @@ public class ResourceBinder
       {
          try
          {
-            descriptor = new AbstractResourceDescriptorImpl(resource);
+            descriptor = new AbstractResourceDescriptorImpl(resource, invokerFactory);
          }
          catch (Exception e)
          {
@@ -335,7 +345,7 @@ public class ResourceBinder
       {
          try
          {
-            descriptor = new AbstractResourceDescriptorImpl(resourceClass);
+            descriptor = new AbstractResourceDescriptorImpl(resourceClass, invokerFactory);
          }
          catch (Exception e)
          {
@@ -394,7 +404,7 @@ public class ResourceBinder
 
    /**
     * Remove root resource of supplied class from root resource collection.
-    * 
+    *
     * @param clazz root resource class
     * @return true if resource was unbound false otherwise
     */
@@ -476,7 +486,9 @@ public class ResourceBinder
       synchronized (rootResources)
       {
          for (ObjectFactory<AbstractResourceDescriptor> f : rootResources)
+         {
             l.add(f.getObjectModel());
+         }
       }
       return l;
    }

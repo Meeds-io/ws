@@ -44,11 +44,11 @@ import javax.ws.rs.ext.MessageBodyReader;
 
 /**
  * Invoker for Resource Method, Sub-Resource Method and SubResource Locator.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public final class DefaultMethodInvoker implements MethodInvoker
+public class DefaultMethodInvoker implements MethodInvoker
 {
 
    /**
@@ -86,7 +86,9 @@ public final class DefaultMethodInvoker implements MethodInvoker
 
                Class<?> ac = a.annotationType();
                if (ac == MatrixParam.class || ac == QueryParam.class || ac == PathParam.class)
+               {
                   throw new WebApplicationException(e, Response.status(Response.Status.NOT_FOUND).build());
+               }
 
                throw new WebApplicationException(e, Response.status(Response.Status.BAD_REQUEST).build());
 
@@ -98,7 +100,9 @@ public final class DefaultMethodInvoker implements MethodInvoker
 
             InputStream entityStream = context.getContainerRequest().getEntityStream();
             if (entityStream == null)
+            {
                p[i++] = null;
+            }
             else
             {
                MediaType contentType = context.getContainerRequest().getMediaType();
@@ -110,14 +114,15 @@ public final class DefaultMethodInvoker implements MethodInvoker
                if (entityReader == null)
                {
                   if (LOG.isDebugEnabled())
+                  {
                      LOG.warn("Unsupported media type. ");
+                  }
 
                   throw new WebApplicationException(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
                }
 
                try
                {
-
                   p[i++] =
                      entityReader.readFrom(mp.getParameterClass(), mp.getGenericType(), mp.getAnnotations(),
                         contentType, headers, entityStream);
@@ -126,7 +131,9 @@ public final class DefaultMethodInvoker implements MethodInvoker
                {
 
                   if (LOG.isDebugEnabled())
+                  {
                      e.printStackTrace();
+                  }
 
                   throw new InternalException(e);
 
@@ -135,6 +142,11 @@ public final class DefaultMethodInvoker implements MethodInvoker
          }
 
       }
+      return invokeMethod(resource, methodResource, p);
+   }
+
+   protected Object invokeMethod(Object resource, GenericMethodResource methodResource, Object[] p)
+   {
       try
       {
          return methodResource.getMethod().invoke(resource, p);
@@ -152,12 +164,16 @@ public final class DefaultMethodInvoker implements MethodInvoker
       catch (InvocationTargetException invExc)
       {
          if (LOG.isDebugEnabled())
+         {
             invExc.printStackTrace();
+         }
          // get cause of exception that method produces
          Throwable cause = invExc.getCause();
          // if WebApplicationException than it may contain response
          if (WebApplicationException.class == cause.getClass())
+         {
             throw (WebApplicationException)cause;
+         }
 
          throw new InternalException(cause);
       }

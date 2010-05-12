@@ -27,6 +27,7 @@ import org.exoplatform.services.rest.ObjectFactory;
 import org.exoplatform.services.rest.SingletonObjectFactory;
 import org.exoplatform.services.rest.impl.header.HeaderHelper;
 import org.exoplatform.services.rest.impl.header.MediaTypeHelper;
+import org.exoplatform.services.rest.impl.method.MethodInvokerFactory;
 import org.exoplatform.services.rest.impl.resource.AbstractResourceDescriptorImpl;
 import org.exoplatform.services.rest.method.MethodInvoker;
 import org.exoplatform.services.rest.resource.AbstractResourceDescriptor;
@@ -54,7 +55,7 @@ import javax.ws.rs.core.Response.Status;
 
 /**
  * Lookup resource which can serve request.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
@@ -71,19 +72,32 @@ public class RequestDispatcher
     */
    protected final ResourceBinder resourceBinder;
 
+   private final MethodInvokerFactory invokerFactory;
+
    /**
     * Constructs new instance of RequestDispatcher.
-    * 
+    *
+    * @param resourceBinder See {@link ResourceBinder}
+    */
+   public RequestDispatcher(ResourceBinder resourceBinder, MethodInvokerFactory invokerFactory)
+   {
+      this.resourceBinder = resourceBinder;
+      this.invokerFactory = invokerFactory;
+   }
+
+   /**
+    * Constructs new instance of RequestDispatcher.
+    *
     * @param resourceBinder See {@link ResourceBinder}
     */
    public RequestDispatcher(ResourceBinder resourceBinder)
    {
-      this.resourceBinder = resourceBinder;
+      this(resourceBinder, null);
    }
 
    /**
     * Dispatch {@link ContainerRequest} to resource which can serve request.
-    * 
+    *
     * @param request See {@link GenericContainerRequest}
     * @param response See {@link GenericContainerResponse}
     */
@@ -114,7 +128,7 @@ public class RequestDispatcher
    /**
     * Get last element from path parameters. This element will be used as request
     * path for child resources.
-    * 
+    *
     * @param parameterValues See
     *          {@link ApplicationContextImpl#getParameterValues()}
     * @return last element from given list or empty string if last element is
@@ -129,7 +143,7 @@ public class RequestDispatcher
    /**
     * Process resource methods, sub-resource methods and sub-resource locators to
     * find the best one for serve request.
-    * 
+    *
     * @param request See {@link GenericContainerRequest}
     * @param response See {@link GenericContainerResponse}
     * @param context See {@link ApplicationContextImpl}
@@ -163,7 +177,9 @@ public class RequestDispatcher
          if (!match)
          {
             if (LOG.isDebugEnabled())
+            {
                LOG.debug("Not found resource method for method " + request.getMethod());
+            }
 
             return; // Error Response is preset
          }
@@ -190,8 +206,10 @@ public class RequestDispatcher
          if (!match && !hasAcceptableLocator)
          {
             if (LOG.isDebugEnabled())
+            {
                LOG.debug("Not found sub-resource methods nor sub-resource locators for path " + requestPath
                   + " and method " + request.getMethod());
+            }
 
             return; // Error Response is preset
          }
@@ -219,7 +237,7 @@ public class RequestDispatcher
 
    /**
     * Invoke resource methods.
-    * 
+    *
     * @param rmd See {@link ResourceMethodDescriptor}
     * @param resource instance of resource class
     * @param context See {@link ApplicationContextImpl}
@@ -241,7 +259,7 @@ public class RequestDispatcher
 
    /**
     * Invoke sub-resource methods.
-    * 
+    *
     * @param requestPath request path
     * @param srmd See {@link SubResourceMethodDescriptor}
     * @param resource instance of resource class
@@ -269,7 +287,7 @@ public class RequestDispatcher
 
    /**
     * Invoke sub-resource locators.
-    * 
+    *
     * @param requestPath request path
     * @param srld See {@link SubResourceLocatorDescriptor}
     * @param resource instance of resource class
@@ -295,7 +313,7 @@ public class RequestDispatcher
       MethodInvoker invoker = srld.getMethodInvoker();
       resource = invoker.invokeMethod(resource, srld, context);
 
-      AbstractResourceDescriptor descriptor = new AbstractResourceDescriptorImpl(resource);
+      AbstractResourceDescriptor descriptor = new AbstractResourceDescriptorImpl(resource, invokerFactory);
       SingletonObjectFactory<AbstractResourceDescriptor> locResource =
          new SingletonObjectFactory<AbstractResourceDescriptor>(descriptor, resource);
 
@@ -313,7 +331,7 @@ public class RequestDispatcher
     * then SubResourceLocatorDescriptor has higher priority. And finally if zero
     * was returned then UriPattern is equals, in this case
     * SubResourceMethodDescriptor must be selected.
-    * 
+    *
     * @param srmd See {@link SubResourceMethodDescriptor}
     * @param srld See {@link SubResourceLocatorDescriptor}
     * @return result of comparison sub-resources
@@ -323,14 +341,16 @@ public class RequestDispatcher
       int r = UriPattern.URIPATTERN_COMPARATOR.compare(srmd.getUriPattern(), srld.getUriPattern());
       // NOTE If patterns are the same sub-resource method has priority
       if (r == 0)
+      {
          return -1;
+      }
       return r;
    }
 
    /**
     * Process result of invoked method, and set {@link Response} parameters
     * dependent of returned object.
-    * 
+    *
     * @param o result of invoked method
     * @param returnType type of returned object
     * @param request See {@link GenericContainerRequest}
@@ -356,7 +376,9 @@ public class RequestDispatcher
          Response r = (Response)o;
          // If content-type is not set then add it
          if (r.getMetadata().getFirst(HttpHeaders.CONTENT_TYPE) == null && r.getEntity() != null)
+         {
             r.getMetadata().putSingle(HttpHeaders.CONTENT_TYPE, contentType);
+         }
 
          response.setResponse(r);
 
@@ -405,7 +427,9 @@ public class RequestDispatcher
          for (T rmd : rmds)
          {
             if (MediaTypeHelper.isConsume(rmd.consumes(), contentType))
+            {
                methods.add(rmd);
+            }
          }
       }
 
@@ -444,7 +468,9 @@ public class RequestDispatcher
             {
                i.next();
                if (n == p)
+               {
                   break; // get index p in list then stop removing
+               }
             }
          }
 
@@ -457,7 +483,7 @@ public class RequestDispatcher
 
    /**
     * Process sub-resource methods.
-    * 
+    *
     * @param srmm See {@link SubResourceLocatorMap}
     * @param requestedPath part of requested path
     * @param request See {@link GenericContainerRequest}
@@ -479,7 +505,9 @@ public class RequestDispatcher
          {
             int len = capturingValues.size();
             if (capturingValues.get(len - 1) != null && !"/".equals(capturingValues.get(len - 1)))
+            {
                continue;
+            }
 
             rmm = e.getValue();
             break;
@@ -500,7 +528,9 @@ public class RequestDispatcher
          // for cast, Iterator contains SubResourceMethodDescriptor
          Iterator i = l.iterator();
          while (i.hasNext())
+         {
             methods.add((SubResourceMethodDescriptor)i.next());
+         }
       }
 
       return match;
@@ -508,7 +538,7 @@ public class RequestDispatcher
 
    /**
     * Process sub-resource locators.
-    * 
+    *
     * @param srlm See {@link SubResourceLocatorMap}
     * @param requestedPath part of requested path
     * @param capturingValues the list for keeping template values
@@ -522,18 +552,20 @@ public class RequestDispatcher
       for (Map.Entry<UriPattern, SubResourceLocatorDescriptor> e : srlm.entrySet())
       {
          if (e.getKey().match(requestedPath, capturingValues))
+         {
             locators.add(e.getValue());
+         }
       }
 
       return !locators.isEmpty();
    }
-   
+
    /**
     * Get root resource
-    * 
-    * @param parameterValues is taken from context 
+    *
+    * @param parameterValues is taken from context
     * @param requestPath is taken from context
-    * @return root resource 
+    * @return root resource
     */
    protected ObjectFactory<AbstractResourceDescriptor> getRootResourse(List<String> parameterValues, String requestPath)
    {
@@ -557,7 +589,9 @@ public class RequestDispatcher
                      rc.getObjectModel().getSubResourceMethods().size()
                         + rc.getObjectModel().getSubResourceLocators().size();
                   if (subresnum == 0)
+                  {
                      continue;
+                  }
                }
                resourceFactory = rc;
                break;
@@ -570,12 +604,16 @@ public class RequestDispatcher
       {
 
          if (LOG.isDebugEnabled())
+         {
             LOG.debug("Root resource not found for " + requestPath);
+         }
 
          // Stop here, there is no matched root resource
          throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build());
       }
       else
+      {
          return resourceFactory;
+      }
    }
 }
