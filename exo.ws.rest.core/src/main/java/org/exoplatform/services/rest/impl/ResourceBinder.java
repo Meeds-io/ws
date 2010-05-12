@@ -113,7 +113,7 @@ public class ResourceBinder
     */
    protected final RuntimeDelegate rd;
 
-   private final MethodInvokerFactory invokerFactory;
+   protected final MethodInvokerFactory invokerFactory;
 
    /**
     * @param containerContext eXo container context
