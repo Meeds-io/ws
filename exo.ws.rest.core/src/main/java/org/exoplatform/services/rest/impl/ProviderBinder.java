@@ -118,7 +118,7 @@ public class ProviderBinder implements Providers
    /**
     * Add prepared providers.
     */
-   void init()
+   protected void init()
    {
       // TODO remove this hard code
       ByteEntityProvider baep = new ByteEntityProvider();
