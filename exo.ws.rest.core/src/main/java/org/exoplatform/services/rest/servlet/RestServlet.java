@@ -19,6 +19,7 @@
 package org.exoplatform.services.rest.servlet;
 
 import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.container.web.AbstractHttpServlet;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -32,7 +33,6 @@ import org.exoplatform.services.rest.impl.header.HeaderHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.SocketException;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +45,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
  * This servlet is front-end for the REST engine.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
@@ -66,6 +66,8 @@ public class RestServlet extends AbstractHttpServlet implements Connector
    protected void onService(ExoContainer container, HttpServletRequest httpRequest, HttpServletResponse httpResponse)
       throws IOException, ServletException
    {
+
+      RequestLifeCycle.begin(container);
 
       RequestHandler requestHandler = (RequestHandler)container.getComponentInstanceOfType(RequestHandler.class);
 
@@ -90,7 +92,7 @@ public class RestServlet extends AbstractHttpServlet implements Connector
          }
          else
          {
-            throw new ServletException(ioe);
+            throw ioe;
          }
       }
       catch (Exception e)
@@ -100,6 +102,7 @@ public class RestServlet extends AbstractHttpServlet implements Connector
       finally
       {
          EnvironmentContext.setCurrent(null);
+         RequestLifeCycle.end();
       }
    }
 
@@ -144,7 +147,9 @@ public class RestServlet extends AbstractHttpServlet implements Connector
       public void writeHeaders(GenericContainerResponse response) throws IOException
       {
          if (servletResponse.isCommitted())
+         {
             return;
+         }
 
          servletResponse.setStatus(response.getStatus());
 
@@ -158,7 +163,9 @@ public class RestServlet extends AbstractHttpServlet implements Connector
                {
                   String value = null;
                   if (o != null && (value = HeaderHelper.getHeaderAsString(o)) != null)
+                  {
                      servletResponse.addHeader(name, value);
+                  }
                }
             }
          }
