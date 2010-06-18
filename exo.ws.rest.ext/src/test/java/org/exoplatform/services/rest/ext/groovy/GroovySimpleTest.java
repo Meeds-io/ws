@@ -23,8 +23,6 @@ import org.exoplatform.services.rest.ext.BaseTest;
 import org.exoplatform.services.rest.impl.ContainerResponse;
 import org.exoplatform.services.rest.tools.ByteArrayContainerResponseWriter;
 
-import java.io.ByteArrayInputStream;
-
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
@@ -32,17 +30,24 @@ import java.io.ByteArrayInputStream;
 public class GroovySimpleTest extends BaseTest
 {
 
+   @Override
+   public void tearDown() throws Exception
+   {
+      groovyPublisher.resources.clear();
+      super.tearDown();
+   }
+
    public void testPerRequest() throws Exception
    {
-      publicationTest(false, "g1");
+      publicationTest(false, new BaseResourceId("g1"));
    }
 
    public void testSingleton() throws Exception
    {
-      publicationTest(true, "g2");
+      publicationTest(true, new BaseResourceId("g2"));
    }
 
-   private void publicationTest(boolean singleton, String name) throws Exception
+   private void publicationTest(boolean singleton, ResourceId resourceId) throws Exception
    {
       String script = //
          "@javax.ws.rs.Path(\"a\")" //
@@ -52,13 +57,15 @@ public class GroovySimpleTest extends BaseTest
             + "}";
 
       assertEquals(0, binder.getSize());
+      assertEquals(0, groovyPublisher.resources.size());
 
       if (singleton)
-         groovyPublisher.publishSingleton(new ByteArrayInputStream(script.getBytes()), name);
+         groovyPublisher.publishSingleton(script, resourceId);
       else
-         groovyPublisher.publishPerRequest(new ByteArrayInputStream(script.getBytes()), name);
+         groovyPublisher.publishPerRequest(script, resourceId);
 
       assertEquals(1, binder.getSize());
+      assertEquals(1, groovyPublisher.resources.size());
 
       String cs =
          binder.getResources().get(0).getObjectModel().getObjectClass().getProtectionDomain().getCodeSource()
@@ -69,6 +76,11 @@ public class GroovySimpleTest extends BaseTest
       ContainerResponse resp = service("GET", "/a/groovy", "", null, null, writer);
       assertEquals(200, resp.getStatus());
       assertEquals("hello groovy", new String(writer.getBody()));
+
+      groovyPublisher.unpublishResource(resourceId);
+
+      assertEquals(0, binder.getSize());
+      assertEquals(0, groovyPublisher.resources.size());
    }
 
 }

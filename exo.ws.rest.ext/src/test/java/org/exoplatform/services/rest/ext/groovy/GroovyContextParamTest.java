@@ -27,7 +27,8 @@ import java.io.InputStream;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @version $Id: GroovyContextParamTest.java 2647 2010-06-17 08:39:29Z aparfonov
+ *          $
  */
 public class GroovyContextParamTest extends BaseTest
 {
@@ -41,11 +42,23 @@ public class GroovyContextParamTest extends BaseTest
       assertNotNull(script);
    }
 
+   @Override
+   public void tearDown() throws Exception
+   {
+      groovyPublisher.resources.clear();
+      super.tearDown();
+   }
+
    public void testPerRequest() throws Exception
    {
       assertEquals(0, binder.getSize());
-      groovyPublisher.publishPerRequest(script, "g1");
+      assertEquals(0, groovyPublisher.resources.size());
+
+      groovyPublisher.publishPerRequest(script, new BaseResourceId("g1"));
+
       assertEquals(1, binder.getSize());
+      assertEquals(1, groovyPublisher.resources.size());
+
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
       ContainerResponse resp =
          service("GET", "http://localhost:8080/context/a/b", "http://localhost:8080/context", null, null, writer);

@@ -47,27 +47,33 @@ public class GroovyExoComponentTest extends BaseTest
    public void tearDown() throws Exception
    {
       container.unregisterComponent(Component1.class.getName());
+      groovyPublisher.resources.clear();
       super.tearDown();
    }
 
    public void testExoComponentPerRequest() throws Exception
    {
-      containerComponentTest(false, "g1");
+      containerComponentTest(false, new BaseResourceId("g1"));
    }
 
    public void testExoComponentSingleton() throws Exception
    {
-      containerComponentTest(true, "g1");
+      containerComponentTest(true, new BaseResourceId("g2"));
    }
 
-   private void containerComponentTest(boolean singleton, String name) throws Exception
+   private void containerComponentTest(boolean singleton, ResourceId resourceId) throws Exception
    {
       assertEquals(0, binder.getSize());
+      assertEquals(0, groovyPublisher.resources.size());
+
       if (singleton)
-         groovyPublisher.publishSingleton(script, name);
+         groovyPublisher.publishSingleton(script, resourceId);
       else
-         groovyPublisher.publishPerRequest(script, name);
+         groovyPublisher.publishPerRequest(script, resourceId);
+
       assertEquals(1, binder.getSize());
+      assertEquals(1, groovyPublisher.resources.size());
+
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
       ContainerResponse resp = service("GET", "/a/b", "", null, null, writer);
       assertEquals(200, resp.getStatus());

@@ -29,8 +29,14 @@ import org.exoplatform.services.script.groovy.GroovyScriptInstantiator;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
+ * Manage via {@link ResourceBinder} Groovy based RESTful services.
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
@@ -38,16 +44,19 @@ public class GroovyJaxrsPublisher
 {
 
    /** Default character set name. */
-   static final String DEFAULT_CHARSET_NAME = "UTF-8";
+   protected static final String DEFAULT_CHARSET_NAME = "UTF-8";
 
    /** Default character set. */
-   static final Charset DEFAULT_CHARSET = Charset.forName(DEFAULT_CHARSET_NAME);
+   protected static final Charset DEFAULT_CHARSET = Charset.forName(DEFAULT_CHARSET_NAME);
 
    protected final ResourceBinder binder;
 
    protected final GroovyScriptInstantiator instantiator;
 
    protected GroovyClassLoader gcl;
+
+   protected final Map<ResourceId, Class<?>> resources =
+      Collections.synchronizedMap(new HashMap<ResourceId, Class<?>>());
 
    /**
     * Create GroovyJaxrsPublisher which is able publish per-request and
@@ -67,32 +76,43 @@ public class GroovyJaxrsPublisher
    }
 
    /**
-    * Create GroovyJaxrsPublisher which is able public per-request resources
-    * only. This is default behavior for RESTful services. Any required
-    * dependencies for resource injected by {@link PerRequestObjectFactory} in
-    * runtime.
-    *
-    * @param binder resource binder
+    * @return get underling groovy class loader
     */
-   public GroovyJaxrsPublisher(ResourceBinder binder)
+   public GroovyClassLoader getGroovyClassLoader()
    {
-      ClassLoader cl = getClass().getClassLoader();
-      this.gcl = new GroovyClassLoader(cl);
-      this.binder = binder;
-      this.instantiator = null;
+      return gcl;
+   }
+
+   /**
+    * Check is groovy resource with specified id is published or not
+    *
+    * @param resourceId id of resource to be checked
+    * @return <code>true</code> if resource is published and <code>false</code>
+    *         otherwise
+    */
+   public boolean isPublished(ResourceId resourceId)
+   {
+      return resources.containsKey(resourceId);
    }
 
    /**
     * Parse given stream and publish result as per-request RESTful service.
     *
     * @param in stream which contains groovy source code of RESTful service
-    * @param name name of resource
+    * @param resourceId id to be assigned to resource
     * @return <code>true</code> if resource was published and <code>false</code>
     *         otherwise
+    * @throws NullPointerException if <code>resourceId == null</code>
     */
-   public boolean publishPerRequest(InputStream in, String name)
+   public boolean publishPerRequest(InputStream in, ResourceId resourceId)
    {
-      return publishPerRequest(createCodeSource(in, name));
+      Class<?> rc = gcl.parseClass(createCodeSource(in, resourceId.getId()));
+      boolean answ = binder.bind(rc);
+      if (answ)
+      {
+         resources.put(resourceId, rc);
+      }
+      return answ;
    }
 
    /**
@@ -100,48 +120,52 @@ public class GroovyJaxrsPublisher
     * service.
     *
     * @param source groovy source code of RESTful service
-    * @param name name of resource
+    * @param resourceId id to be assigned to resource
     * @return <code>true</code> if resource was published and <code>false</code>
     *         otherwise
+    * @throws NullPointerException if <code>resourceId == null</code>
     */
-   public boolean publishPerRequest(String source, String name)
+   public final boolean publishPerRequest(String source, ResourceId resourceId)
    {
-      byte[] bytes = source.getBytes(DEFAULT_CHARSET);
-      return publishPerRequest(new ByteArrayInputStream(bytes), name);
+      return publishPerRequest(source, DEFAULT_CHARSET, resourceId);
    }
 
    /**
-    * Parse given {@link GroovyCodeSource} and publish result as per-request
-    * RESTful service.
+    * Parse given <code>source</code> and publish result as per-request RESTful
+    * service.
     *
-    * @param gcs groovy code source which contains source code of RESTful
-    *        service
+    * @param source groovy source code of RESTful service
+    * @param charset source string charset. May be <code>null</code> than
+    *        default charset will be in use
+    * @param resourceId id to be assigned to resource
     * @return <code>true</code> if resource was published and <code>false</code>
     *         otherwise
+    * @throws UnsupportedCharsetException if <code>charset</code> is unsupported
+    * @throws NullPointerException if <code>resourceId == null</code>
     */
-   public boolean publishPerRequest(GroovyCodeSource gcs)
+   public final boolean publishPerRequest(String source, String charset, ResourceId resourceId)
    {
-      Class<?> rc = gcl.parseClass(gcs);
-      return binder.bind(rc);
+      return publishPerRequest(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId);
    }
 
    /**
     * Parse given stream and publish result as singleton RESTful service.
     *
     * @param in stream which contains groovy source code of RESTful service
-    * @param name name of resource
+    * @param resourceId id to be assigned to resource
     * @return <code>true</code> if resource was published and <code>false</code>
     *         otherwise
-    * @throws UnsupportedOperationException if publisher was created without
-    *         support of singleton resource, see
-    *         {@link #GroovyJaxrsPublisher(ResourceBinder)}
+    * @throws NullPointerException if <code>resourceId == null</code>
     */
-   public boolean publishSingleton(InputStream in, String name)
+   public boolean publishSingleton(InputStream in, ResourceId resourceId)
    {
-      if (instantiator == null)
-         throw new UnsupportedOperationException(
-            "Can't instantiate groovy script. GroovyScriptInstantiator is not set.");
-      return publishSingleton(createCodeSource(in, name));
+      Object r = instantiator.instantiateScript(createCodeSource(in, resourceId.getId()), gcl);
+      boolean answ = binder.bind(r);
+      if (answ)
+      {
+         resources.put(resourceId, r.getClass());
+      }
+      return answ;
    }
 
    /**
@@ -149,41 +173,32 @@ public class GroovyJaxrsPublisher
     * service.
     *
     * @param source groovy source code of RESTful service
-    * @param name name of resource
+    * @param resourceId name of resource
     * @return <code>true</code> if resource was published and <code>false</code>
     *         otherwise
-    * @throws UnsupportedOperationException if publisher was created without
-    *         support of singleton resource, see
-    *         {@link #GroovyJaxrsPublisher(ResourceBinder)}
+    * @throws NullPointerException if <code>resourceId == null</code>
     */
-   public boolean publishSingleton(String source, String name)
+   public final boolean publishSingleton(String source, ResourceId resourceId)
    {
-      if (instantiator == null)
-         throw new UnsupportedOperationException(
-            "Can't instantiate groovy script. GroovyScriptInstantiator is not set.");
-      byte[] bytes = source.getBytes(DEFAULT_CHARSET);
-      return publishSingleton(new ByteArrayInputStream(bytes), name);
+      return publishSingleton(source, DEFAULT_CHARSET, resourceId);
    }
 
    /**
-    * Parse given {@link GroovyCodeSource} and publish result as singleton
-    * RESTful service.
+    * Parse given <code>source</code> and publish result as singleton RESTful
+    * service.
     *
-    * @param gcs groovy code source which contains source code of RESTful
-    *        service
+    * @param source groovy source code of RESTful service
+    * @param charset source string charset. May be <code>null</code> than
+    *        default charset will be in use
+    * @param resourceId name of resource
     * @return <code>true</code> if resource was published and <code>false</code>
     *         otherwise
-    * @throws UnsupportedOperationException if publisher was created without
-    *         support of singleton resource, see
-    *         {@link #GroovyJaxrsPublisher(ResourceBinder)}
+    * @throws UnsupportedCharsetException if <code>charset</code> is unsupported
+    * @throws NullPointerException if <code>resourceId == null</code>
     */
-   public boolean publishSingleton(GroovyCodeSource gcs)
+   public final boolean publishSingleton(String source, String charset, ResourceId resourceId)
    {
-      if (instantiator == null)
-         throw new UnsupportedOperationException(
-            "Can't instantiate groovy script. GroovyScriptInstantiator is not set.");
-      Object r = instantiator.instantiateScript(gcs, gcl);
-      return binder.bind(r);
+      return publishSingleton(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId);
    }
 
    /**
@@ -200,6 +215,41 @@ public class GroovyJaxrsPublisher
    }
 
    /**
+    * Unpublish resource with specified id.
+    *
+    * @param resourceId id of resource to be unpublished
+    * @return <code>true</code> if resource was published and <code>false</code>
+    *         otherwise, e.g. because there is not resource corresponded to
+    *         supplied <code>resourceId</code>
+    */
+   public boolean unpublishResource(ResourceId resourceId)
+   {
+      Class<?> clazz = resources.get(resourceId);
+      boolean answ = false;
+      if (clazz != null)
+      {
+         answ = binder.unbind(clazz);
+      }
+      if (answ)
+      {
+         resources.remove(resourceId);
+      }
+      return answ;
+   }
+
+   private boolean publishPerRequest(String source, Charset charset, ResourceId resourceId)
+   {
+      byte[] bytes = source.getBytes(charset);
+      return publishPerRequest(new ByteArrayInputStream(bytes), resourceId);
+   }
+
+   private boolean publishSingleton(String source, Charset charset, ResourceId resourceId)
+   {
+      byte[] bytes = source.getBytes(charset);
+      return publishSingleton(new ByteArrayInputStream(bytes), resourceId);
+   }
+
+   /**
     * Create {@link GroovyCodeSource} from given stream and name. Code base
     * 'file:/groovy/script/jaxrs' will be used.
     *
@@ -209,8 +259,7 @@ public class GroovyJaxrsPublisher
     */
    protected GroovyCodeSource createCodeSource(InputStream in, String name)
    {
-      GroovyCodeSource gcs =
-         new GroovyCodeSource(in, name == null ? gcl.generateScriptName() : name, "/groovy/script/jaxrs");
+      GroovyCodeSource gcs = new GroovyCodeSource(in, name, "/groovy/script/jaxrs");
       gcs.setCachable(false);
       return gcs;
    }
