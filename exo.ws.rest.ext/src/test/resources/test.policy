@@ -9,6 +9,9 @@ grant codeBase "@MAIN_CLASSES@-" {
 grant codeBase "@TEST_CLASSES@-" {
    permission java.security.AllPermission;
 };
+grant codeBase "@PARENT@-" {
+   permission java.security.AllPermission;
+};
 
 grant codeBase "file:/groovy/script" {
 // be sure only  /groovy/script/jaxrs is restricted
