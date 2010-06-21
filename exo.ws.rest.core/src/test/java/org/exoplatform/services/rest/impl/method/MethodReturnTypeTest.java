@@ -30,7 +30,7 @@ import javax.ws.rs.core.Response;
 /**
  * Created by The eXo Platform SAS. <br/>
  * Date: 20 Jan 2009
- * 
+ *
  * @author <a href="mailto:dmitry.kataev@exoplatform.com.ua">Dmytro Katayev</a>
  * @version $Id: ResourceReturnTypeTest.java
  */
@@ -93,7 +93,7 @@ public class MethodReturnTypeTest extends AbstractResourceTest
 
       // void Results in an empty entity body with a 204 status code.
       assertEquals(204, service("GET", "/a/0", "", null, null).getStatus());
-      assertNull(service("GET", "/a/o", "", null, null).getEntity());
+      assertNull(service("GET", "/a/0", "", null, null).getEntity());
 
       // Response Results in an entity body mapped from the entity property of the
       // Response
