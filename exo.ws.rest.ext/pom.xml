@@ -118,7 +118,7 @@
 						</goals>
 						<configuration>
 							<tasks>
-								<echo>***** Creating Access Policy for tests ***** ${project.build.directory}/../..</echo>
+								<echo>***** Creating Access Policy for tests *****</echo>
 								<makeurl file="${settings.localRepository}" property="localRepositoryURL" />
 								<makeurl file="${project.build.outputDirectory}" property="outputDirectoryURL" />
 								<makeurl file="${project.build.testOutputDirectory}" property="testOutputDirectoryURL" />
