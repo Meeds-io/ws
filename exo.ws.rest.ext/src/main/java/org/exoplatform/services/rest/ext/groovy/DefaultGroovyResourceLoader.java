@@ -26,13 +26,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @version $Id: DefaultGroovyResourceLoader.java 2680 2010-06-22 11:43:00Z
+ *          aparfonov $
  */
 public class DefaultGroovyResourceLoader implements GroovyResourceLoader
 {
@@ -66,9 +70,32 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
    /**
     * {@inheritDoc}
     */
-   public URL loadGroovySource(String filename) throws MalformedURLException
+   public final URL loadGroovySource(String classname) throws MalformedURLException
    {
-      filename = filename.replace('.', File.separatorChar) + ".groovy";
+      final String filename = classname.replace('.', File.separatorChar) + ".groovy";
+      try
+      {
+         return AccessController.doPrivileged(new PrivilegedExceptionAction<URL>()
+         {
+            public URL run() throws Exception
+            {
+               return getResource(filename);
+            }
+         });
+      }
+      catch (PrivilegedActionException e)
+      {
+         Throwable cause = e.getCause();
+         if (cause instanceof Error)
+            throw (Error)cause;
+         if (cause instanceof RuntimeException)
+            throw (RuntimeException)cause;
+         throw (MalformedURLException)cause;
+      }
+   }
+
+   protected URL getResource(String filename) throws MalformedURLException
+   {
       filename = filename.intern();
       URL resource = null;
       synchronized (filename)
@@ -81,7 +108,6 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
             {
                resource = new URL(root, filename);
             }
-            //System.out.println(resource);
             try
             {
                InputStream script = resource.openStream();
@@ -103,6 +129,7 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
             resources.remove(filename);
          }
       }
+
       return resource;
    }
 
