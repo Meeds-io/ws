@@ -18,7 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.resource;
 
-import org.exoplatform.services.rest.AbstractResourceTest;
+import org.exoplatform.services.rest.BaseTest;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 
 import javax.ws.rs.Consumes;
@@ -32,7 +32,7 @@ import javax.ws.rs.core.MultivaluedMap;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class AcceptResourceTest extends AbstractResourceTest
+public class AcceptResourceTest extends BaseTest
 {
 
    @Path("/a")
@@ -204,14 +204,14 @@ public class AcceptResourceTest extends AbstractResourceTest
    {
       MultivaluedMap<String, String> h = new MultivaluedMapImpl();
       h.putSingle("content-type", contentType);
-      return (String)service("POST", "/a", "", h, null).getEntity();
+      return (String)launcher.service("POST", "/a", "", h, null, null).getEntity();
    }
 
    private String testAcceptedMediaType(String acceptMediaType) throws Exception
    {
       MultivaluedMap<String, String> h = new MultivaluedMapImpl();
       h.putSingle("accept", acceptMediaType);
-      return (String)service("GET", "/a", "", h, null).getEntity();
+      return (String)launcher.service("GET", "/a", "", h, null, null).getEntity();
    }
 
    private String testComplex(String contentType, String acceptMediaType) throws Exception
@@ -219,6 +219,6 @@ public class AcceptResourceTest extends AbstractResourceTest
       MultivaluedMap<String, String> h = new MultivaluedMapImpl();
       h.putSingle("content-type", contentType);
       h.putSingle("accept", acceptMediaType);
-      return (String)service("POST", "/a", "", h, null).getEntity();
+      return (String)launcher.service("POST", "/a", "", h, null, null).getEntity();
    }
 }

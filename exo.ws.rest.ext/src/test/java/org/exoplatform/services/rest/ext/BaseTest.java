@@ -22,27 +22,12 @@ package org.exoplatform.services.rest.ext;
 import junit.framework.TestCase;
 
 import org.exoplatform.container.StandaloneContainer;
-import org.exoplatform.services.rest.ContainerResponseWriter;
 import org.exoplatform.services.rest.ext.groovy.GroovyJaxrsPublisher;
 import org.exoplatform.services.rest.impl.ApplicationContextImpl;
-import org.exoplatform.services.rest.impl.ContainerRequest;
-import org.exoplatform.services.rest.impl.ContainerResponse;
-import org.exoplatform.services.rest.impl.EnvironmentContext;
-import org.exoplatform.services.rest.impl.InputHeadersMap;
-import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 import org.exoplatform.services.rest.impl.ProviderBinder;
 import org.exoplatform.services.rest.impl.RequestHandlerImpl;
 import org.exoplatform.services.rest.impl.ResourceBinder;
-import org.exoplatform.services.rest.tools.DummyContainerResponseWriter;
-import org.exoplatform.services.test.mock.MockHttpServletRequest;
-
-import java.io.ByteArrayInputStream;
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.MultivaluedMap;
+import org.exoplatform.services.rest.tools.ResourceLauncher;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -60,6 +45,8 @@ public abstract class BaseTest extends TestCase
 
    protected GroovyJaxrsPublisher groovyPublisher;
 
+   protected ResourceLauncher launcher;
+
    public void setUp() throws Exception
    {
       StandaloneContainer.setConfigurationPath("src/test/resources/conf/standalone/test-configuration.xml");
@@ -72,40 +59,11 @@ public abstract class BaseTest extends TestCase
       ApplicationContextImpl.setCurrent(new ApplicationContextImpl(null, null, providers));
       binder.clear();
       groovyPublisher = (GroovyJaxrsPublisher)container.getComponentInstanceOfType(GroovyJaxrsPublisher.class);
+      launcher = new ResourceLauncher(requestHandler);
    }
 
    public void tearDown() throws Exception
    {
-   }
-
-   public ContainerResponse service(String method, String requestURI, String baseURI,
-      Map<String, List<String>> headers, byte[] data, ContainerResponseWriter writer) throws Exception
-   {
-
-      if (headers == null)
-         headers = new MultivaluedMapImpl();
-
-      ByteArrayInputStream in = null;
-      if (data != null)
-         in = new ByteArrayInputStream(data);
-
-      EnvironmentContext envctx = new EnvironmentContext();
-      HttpServletRequest httpRequest =
-         new MockHttpServletRequest(requestURI, in, in != null ? in.available() : 0, method, headers);
-      envctx.put(HttpServletRequest.class, httpRequest);
-      EnvironmentContext.setCurrent(envctx);
-      ContainerRequest request =
-         new ContainerRequest(method, new URI(requestURI), new URI(baseURI), in, new InputHeadersMap(headers));
-      ContainerResponse response = new ContainerResponse(writer);
-      requestHandler.handleRequest(request, response);
-      return response;
-   }
-
-   public ContainerResponse service(String method, String requestURI, String baseURI,
-      MultivaluedMap<String, String> headers, byte[] data) throws Exception
-   {
-      return service(method, requestURI, baseURI, headers, data, new DummyContainerResponseWriter());
-
    }
 
 }

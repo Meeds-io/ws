@@ -19,15 +19,19 @@
 package org.exoplatform.services.rest.impl.provider;
 
 import org.apache.commons.fileupload.FileItem;
-import org.exoplatform.services.rest.AbstractResourceTest;
+import org.exoplatform.services.rest.BaseTest;
+import org.exoplatform.services.rest.impl.EnvironmentContext;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
+import org.exoplatform.services.test.mock.MockHttpServletRequest;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
@@ -38,7 +42,7 @@ import javax.ws.rs.core.MultivaluedMap;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class FormEntityTest extends AbstractResourceTest
+public class FormEntityTest extends BaseTest
 {
 
    @Path("/")
@@ -72,8 +76,8 @@ public class FormEntityTest extends AbstractResourceTest
       MultivaluedMap<String, String> h = new MultivaluedMapImpl();
       h.putSingle("content-type", "application/x-www-form-urlencoded");
       h.putSingle("content-length", "" + data.length);
-      assertEquals(204, service("POST", "/a", "", h, data).getStatus());
-      assertEquals(204, service("POST", "/b", "", h, data).getStatus());
+      assertEquals(204, launcher.service("POST", "/a", "", h, data, null).getStatus());
+      assertEquals(204, launcher.service("POST", "/b", "", h, data, null).getStatus());
       unregistry(r1);
    }
 
@@ -190,7 +194,15 @@ public class FormEntityTest extends AbstractResourceTest
       h.putSingle("content-type", "multipart/form-data; boundary=abcdef");
 
       byte[] data = out.toByteArray();
-      assertEquals(204, service("POST", "/", "", h, data).getStatus());
+
+      EnvironmentContext envctx = new EnvironmentContext();
+
+      HttpServletRequest httpRequest =
+         new MockHttpServletRequest("/", new ByteArrayInputStream(data), data.length, "POST", h);
+      envctx.put(HttpServletRequest.class, httpRequest);
+
+      assertEquals(204, launcher.service("POST", "/", "", h, data, envctx).getStatus());
+
       unregistry(r2);
    }
 

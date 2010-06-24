@@ -18,7 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.method;
 
-import org.exoplatform.services.rest.AbstractResourceTest;
+import org.exoplatform.services.rest.BaseTest;
 import org.exoplatform.services.rest.Property;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 import org.exoplatform.services.rest.impl.RequestHandlerImpl;
@@ -46,7 +46,7 @@ import javax.ws.rs.core.UriInfo;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class ParametersInjectionTest extends AbstractResourceTest
+public class ParametersInjectionTest extends BaseTest
 {
 
    @Path("/a/{x}")
@@ -222,46 +222,46 @@ public class ParametersInjectionTest extends AbstractResourceTest
    {
       Resource1 r1 = new Resource1();
       registry(r1);
-      assertEquals(204, service("GET", "/a/test/0/test", "", null, null).getStatus());
-      assertEquals(204, service("GET", "/a/test/1/test", "", null, null).getStatus());
-      assertEquals(204, service("GET", "/a/test/2/test", "", null, null).getStatus());
-      assertEquals(204, service("GET", "/a/test/3/test", "", null, null).getStatus());
-      assertEquals(204, service("GET", "/a/3333/4/2222", "", null, null).getStatus());
-      assertEquals(204, service("GET", "/a/5555/5/4444", "", null, null).getStatus());
-      assertEquals(204, service("GET", "/a/test/6/test", "", null, null).getStatus());
-      assertEquals(204, service("GET", "/a/test/7/test?x=1&y=2&x=3&y=4&x=5", "", null, null).getStatus());
+      assertEquals(204, launcher.service("GET", "/a/test/0/test", "", null, null, null).getStatus());
+      assertEquals(204, launcher.service("GET", "/a/test/1/test", "", null, null, null).getStatus());
+      assertEquals(204, launcher.service("GET", "/a/test/2/test", "", null, null, null).getStatus());
+      assertEquals(204, launcher.service("GET", "/a/test/3/test", "", null, null, null).getStatus());
+      assertEquals(204, launcher.service("GET", "/a/3333/4/2222", "", null, null, null).getStatus());
+      assertEquals(204, launcher.service("GET", "/a/5555/5/4444", "", null, null, null).getStatus());
+      assertEquals(204, launcher.service("GET", "/a/test/6/test", "", null, null, null).getStatus());
+      assertEquals(204, launcher.service("GET", "/a/test/7/test?x=1&y=2&x=3&y=4&x=5", "", null, null, null).getStatus());
 
       MultivaluedMap<String, String> h = new MultivaluedMapImpl();
       h.putSingle("foo", "to be or not to be");
       h.putSingle("bar", "to be or not to be");
-      assertEquals(204, service("GET", "/a/test/8/test", "", h, null).getStatus());
+      assertEquals(204, launcher.service("GET", "/a/test/8/test", "", h, null, null).getStatus());
 
       h.clear();
       h.putSingle("Content-Type", "application/x-www-form-urlencoded");
-      assertEquals(204, service("POST", "/a/test/9/test", "", h,
-         "bar=to%20be%20or%20not%20to%20be&foo=to%20be%20or%20not%20to%20be".getBytes("UTF-8")).getStatus());
+      assertEquals(204, launcher.service("POST", "/a/test/9/test", "", h,
+         "bar=to%20be%20or%20not%20to%20be&foo=to%20be%20or%20not%20to%20be".getBytes("UTF-8"), null).getStatus());
 
       h.clear();
       h.putSingle("Cookie",
          "$Version=1;foo=foo;$Domain=exo.com;$Path=/exo,$Version=1;bar=ar;$Domain=exo.com;$Path=/exo");
-      assertEquals(204, service("GET", "/a/test/11/test", "", h, null).getStatus());
+      assertEquals(204, launcher.service("GET", "/a/test/11/test", "", h, null, null).getStatus());
 
-      assertEquals(204, service("GET", "/a/111/12/222", "", null, null).getStatus());
+      assertEquals(204, launcher.service("GET", "/a/111/12/222", "", null, null, null).getStatus());
 
-      assertEquals("111", service("GET", "/a/111/13", "", null, null).getEntity());
-      assertEquals("222", service("GET", "/a/111/13?query=222", "", null, null).getEntity());
+      assertEquals("111", launcher.service("GET", "/a/111/13", "", null, null, null).getEntity());
+      assertEquals("222", launcher.service("GET", "/a/111/13?query=222", "", null, null, null).getEntity());
 
       try
       {
-         assertEquals("hello", service("GET", "/a/111/14", "", null, null).getEntity());
+         assertEquals("hello", launcher.service("GET", "/a/111/14", "", null, null, null).getEntity());
          RequestHandlerImpl.setProperty("prop1", "to be or not to be");
-         assertEquals("to be or not to be", service("GET", "/a/111/14", "", null, null).getEntity());
+         assertEquals("to be or not to be", launcher.service("GET", "/a/111/14", "", null, null, null).getEntity());
       }
       finally
       {
          RequestHandlerImpl.setProperty("prop1", null);
       }
-      
+
       unregistry(r1);
    }
 

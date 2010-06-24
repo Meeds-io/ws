@@ -18,10 +18,11 @@
  */
 package org.exoplatform.services.rest.impl;
 
-import org.exoplatform.services.rest.AbstractResourceTest;
+import org.exoplatform.services.rest.BaseTest;
 import org.exoplatform.services.rest.Filter;
 import org.exoplatform.services.rest.GenericContainerResponse;
 import org.exoplatform.services.rest.ResponseFilter;
+import org.exoplatform.services.test.mock.MockHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.POST;
@@ -37,7 +38,7 @@ import javax.ws.rs.ext.Providers;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class ResponseFilterTest extends AbstractResourceTest
+public class ResponseFilterTest extends BaseTest
 {
 
    @Filter
@@ -99,7 +100,7 @@ public class ResponseFilterTest extends AbstractResourceTest
       @Produces("text/plain")
       public String m1()
       {
-         // text/plain will be overridden in response filter 
+         // text/plain will be overridden in response filter
          return "{\"name\":\"andrew\", \"password\":\"hello\"}";
       }
 
@@ -111,18 +112,23 @@ public class ResponseFilterTest extends AbstractResourceTest
    {
       Resource1 r = new Resource1();
       registry(r);
-      ContainerResponse resp = service("POST", "/a", "", null, null);
+
+      EnvironmentContext envctx = new EnvironmentContext();
+      HttpServletRequest httpRequest = new MockHttpServletRequest("/a", null, 0, "POST", null);
+      envctx.put(HttpServletRequest.class, httpRequest);
+
+      ContainerResponse resp = launcher.service("POST", "/a", "", null, null, envctx);
       assertEquals(204, resp.getStatus());
 
       // should not be any changes after add this
       providers.addResponseFilter(new ResponseFilter2());
-      resp = service("POST", "/a", "", null, null);
+      resp = launcher.service("POST", "/a", "", null, null, envctx);
       assertEquals(204, resp.getStatus());
 
       // add response filter and try again
       providers.addResponseFilter(ResponseFilter1.class);
 
-      resp = service("POST", "/a", "", null, null);
+      resp = launcher.service("POST", "/a", "", null, null, envctx);
       assertEquals(200, resp.getStatus());
       assertEquals("text/plain", resp.getContentType().toString());
       assertEquals("to be or not to be", resp.getEntity());
@@ -134,7 +140,7 @@ public class ResponseFilterTest extends AbstractResourceTest
    {
       Resource1 r = new Resource1();
       registry(r);
-      ContainerResponse resp = service("POST", "/a/b/c/d/e", "", null, null);
+      ContainerResponse resp = launcher.service("POST", "/a/b/c/d/e", "", null, null, null);
       assertEquals(200, resp.getStatus());
       assertEquals("text/plain", resp.getContentType().toString());
       assertEquals("{\"name\":\"andrew\", \"password\":\"hello\"}", resp.getEntity());
@@ -142,7 +148,7 @@ public class ResponseFilterTest extends AbstractResourceTest
       // add response filter and try again
       providers.addResponseFilter(new ResponseFilter2());
 
-      resp = service("POST", "/a/b/c/d/e", "", null, null);
+      resp = launcher.service("POST", "/a/b/c/d/e", "", null, null, null);
       assertEquals(200, resp.getStatus());
       assertEquals("application/json", resp.getContentType().toString());
       assertEquals("{\"name\":\"andrew\", \"password\":\"hello\"}", resp.getEntity());

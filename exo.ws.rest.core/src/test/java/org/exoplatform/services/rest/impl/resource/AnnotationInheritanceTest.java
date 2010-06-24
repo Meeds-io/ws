@@ -18,7 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.resource;
 
-import org.exoplatform.services.rest.AbstractResourceTest;
+import org.exoplatform.services.rest.BaseTest;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -28,11 +28,11 @@ import javax.ws.rs.core.MediaType;
 /**
  * Created by The eXo Platform SAS. <br/>
  * Date: 23 Jan 2009
- * 
+ *
  * @author <a href="mailto:dmitry.kataev@exoplatform.com.ua">Dmytro Katayev</a>
  * @version $Id: AnnotationInheritanceTest.java
  */
-public class AnnotationInheritanceTest extends AbstractResourceTest
+public class AnnotationInheritanceTest extends BaseTest
 {
 
    public static interface ResourceInterface
@@ -61,7 +61,7 @@ public class AnnotationInheritanceTest extends AbstractResourceTest
       }
    }
 
-   // 
+   //
 
    public static interface ResourceInterface1
    {
@@ -102,16 +102,16 @@ public class AnnotationInheritanceTest extends AbstractResourceTest
 
       registry(resource1);
 
-      assertEquals(200, service("GET", "/a", "", null, null).getStatus());
-      assertEquals("m0", service("GET", "/a", "", null, null).getEntity());
-      assertEquals(MediaType.TEXT_XML_TYPE, service("GET", "/a", "", null, null).getContentType());
+      assertEquals(200, launcher.service("GET", "/a", "", null, null, null).getStatus());
+      assertEquals("m0", launcher.service("GET", "/a", "", null, null, null).getEntity());
+      assertEquals(MediaType.TEXT_XML_TYPE, launcher.service("GET", "/a", "", null, null, null).getContentType());
 
       unregistry(resource1);
 
       registry(resource2);
-      assertEquals(200, service("GET", "/a", "", null, null).getStatus());
-      assertEquals("m0", service("GET", "/a", "", null, null).getEntity());
-      assertEquals(MediaType.APPLICATION_ATOM_XML_TYPE, service("GET", "/a", "", null, null).getContentType());
+      assertEquals(200, launcher.service("GET", "/a", "", null, null, null).getStatus());
+      assertEquals("m0", launcher.service("GET", "/a", "", null, null, null).getEntity());
+      assertEquals(MediaType.APPLICATION_ATOM_XML_TYPE, launcher.service("GET", "/a", "", null, null, null).getContentType());
       unregistry(resource2);
 
    }

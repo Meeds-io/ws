@@ -18,7 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.resource;
 
-import org.exoplatform.services.rest.AbstractResourceTest;
+import org.exoplatform.services.rest.BaseTest;
 import org.exoplatform.services.rest.impl.header.HeaderHelper;
 
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ import javax.ws.rs.core.UriInfo;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class MatchedURIsAndResourcesTest extends AbstractResourceTest
+public class MatchedURIsAndResourcesTest extends BaseTest
 {
 
    @Path("/a/b")
@@ -114,10 +114,10 @@ public class MatchedURIsAndResourcesTest extends AbstractResourceTest
    {
       Resource1 r1 = new Resource1();
       registry(r1);
-      assertEquals("/1,/a/b", service("GET", "http://localhost/test/a/b/1", "http://localhost/test", null, null)
-         .getEntity());
-      assertEquals("Resource1", service("GET", "http://localhost/test/a/b/2", "http://localhost/test", null, null)
-         .getEntity());
+      assertEquals("/1,/a/b", launcher.service("GET", "http://localhost/test/a/b/1", "http://localhost/test", null,
+         null, null).getEntity());
+      assertEquals("Resource1", launcher.service("GET", "http://localhost/test/a/b/2", "http://localhost/test", null,
+         null, null).getEntity());
       unregistry(r1);
    }
 
@@ -125,10 +125,10 @@ public class MatchedURIsAndResourcesTest extends AbstractResourceTest
    {
       Resource1 r1 = new Resource1();
       registry(r1);
-      assertEquals("/1,/sub,/a/b", service("GET", "http://localhost/test/a/b/sub/1", "http://localhost/test", null,
-         null).getEntity());
-      assertEquals("SubResource1,Resource1", service("GET", "http://localhost/test/a/b/sub/2", "http://localhost/test",
-         null, null).getEntity());
+      assertEquals("/1,/sub,/a/b", launcher.service("GET", "http://localhost/test/a/b/sub/1", "http://localhost/test",
+         null, null, null).getEntity());
+      assertEquals("SubResource1,Resource1", launcher.service("GET", "http://localhost/test/a/b/sub/2",
+         "http://localhost/test", null, null, null).getEntity());
       unregistry(r1);
    }
 
@@ -136,10 +136,10 @@ public class MatchedURIsAndResourcesTest extends AbstractResourceTest
    {
       Resource1 r1 = new Resource1();
       registry(r1);
-      assertEquals("/1,/sub-sub,/sub,/a/b", service("GET", "http://localhost/test/a/b/sub/sub-sub/1",
-         "http://localhost/test", null, null).getEntity());
-      assertEquals("SubResource2,SubResource1,Resource1", service("GET", "http://localhost/test/a/b/sub/sub-sub/2",
-         "http://localhost/test", null, null).getEntity());
+      assertEquals("/1,/sub-sub,/sub,/a/b", launcher.service("GET", "http://localhost/test/a/b/sub/sub-sub/1",
+         "http://localhost/test", null, null, null).getEntity());
+      assertEquals("SubResource2,SubResource1,Resource1", launcher.service("GET",
+         "http://localhost/test/a/b/sub/sub-sub/2", "http://localhost/test", null, null, null).getEntity());
       unregistry(r1);
    }
 }

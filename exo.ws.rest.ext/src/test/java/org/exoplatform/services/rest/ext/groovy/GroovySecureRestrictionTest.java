@@ -47,7 +47,7 @@ public class GroovySecureRestrictionTest extends BaseTest
    {
       groovyPublisher.publishPerRequest(script, new BaseResourceId("g1"));
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-      ContainerResponse resp = service("GET", "/a/b", "", null, null, writer);
+      ContainerResponse resp = launcher.service("GET", "/a/b", "", null, null, writer, null);
       assertEquals(500, resp.getStatus());
       assertTrue(new String(writer.getBody()).startsWith("access denied"));
    }

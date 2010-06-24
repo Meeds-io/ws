@@ -25,6 +25,7 @@ import org.exoplatform.services.rest.impl.ApplicationContextImpl;
 import org.exoplatform.services.rest.impl.ProviderBinder;
 import org.exoplatform.services.rest.impl.RequestHandlerImpl;
 import org.exoplatform.services.rest.impl.ResourceBinder;
+import org.exoplatform.services.rest.tools.ResourceLauncher;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -41,6 +42,8 @@ public abstract class BaseTest extends TestCase
 
    protected RequestHandlerImpl requestHandler;
 
+   protected ResourceLauncher launcher;
+
    public void setUp() throws Exception
    {
       StandaloneContainer.setConfigurationPath("src/test/resources/conf/standalone/test-configuration.xml");
@@ -53,6 +56,7 @@ public abstract class BaseTest extends TestCase
       //    System.out.println("##########################"+providers);
       ApplicationContextImpl.setCurrent(new ApplicationContextImpl(null, null, providers));
       binder.clear();
+      launcher = new ResourceLauncher(requestHandler);
    }
 
    public void tearDown() throws Exception

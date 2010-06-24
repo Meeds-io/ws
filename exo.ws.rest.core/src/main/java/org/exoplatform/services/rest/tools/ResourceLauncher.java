@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2009 eXo Platform SAS.
+/**
+ * Copyright (C) 2010 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -16,37 +16,49 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.exoplatform.services.rest;
 
+package org.exoplatform.services.rest.tools;
+
+import org.exoplatform.services.rest.ContainerResponseWriter;
+import org.exoplatform.services.rest.RequestHandler;
 import org.exoplatform.services.rest.impl.ContainerRequest;
 import org.exoplatform.services.rest.impl.ContainerResponse;
 import org.exoplatform.services.rest.impl.EnvironmentContext;
 import org.exoplatform.services.rest.impl.InputHeadersMap;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
-import org.exoplatform.services.rest.tools.DummyContainerResponseWriter;
-import org.exoplatform.services.test.mock.MockHttpServletRequest;
 
 import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.MultivaluedMap;
-
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @version $Id$
  */
-public abstract class AbstractResourceTest extends BaseTest
+public class ResourceLauncher
 {
+   private final RequestHandler requestHandler;
 
-   //  public void setUp() throws Exception {
-   //    super.setUp();
-   //  }
+   public ResourceLauncher(RequestHandler requestHandler)
+   {
+      this.requestHandler = requestHandler;
+   }
 
+   /**
+    * @param method HTTP method
+    * @param requestURI full requested URI
+    * @param baseURI base requested URI
+    * @param headers HTTP headers
+    * @param data data
+    * @param writer response writer
+    * @param env environment context
+    * @return response
+    * @throws Exception if any error occurs
+    */
    public ContainerResponse service(String method, String requestURI, String baseURI,
-      Map<String, List<String>> headers, byte[] data, ContainerResponseWriter writer) throws Exception
+      Map<String, List<String>> headers, byte[] data, ContainerResponseWriter writer, EnvironmentContext env)
+      throws Exception
    {
 
       if (headers == null)
@@ -56,11 +68,13 @@ public abstract class AbstractResourceTest extends BaseTest
       if (data != null)
          in = new ByteArrayInputStream(data);
 
-      EnvironmentContext envctx = new EnvironmentContext();
-      HttpServletRequest httpRequest =
-         new MockHttpServletRequest("", in, in != null ? in.available() : 0, method, headers);
-      envctx.put(HttpServletRequest.class, httpRequest);
-      EnvironmentContext.setCurrent(envctx);
+      if (env == null)
+         env = new EnvironmentContext();
+      EnvironmentContext.setCurrent(env);
+
+      if (writer == null)
+         writer = new DummyContainerResponseWriter();
+
       ContainerRequest request =
          new ContainerRequest(method, new URI(requestURI), new URI(baseURI), in, new InputHeadersMap(headers));
       ContainerResponse response = new ContainerResponse(writer);
@@ -68,11 +82,20 @@ public abstract class AbstractResourceTest extends BaseTest
       return response;
    }
 
+   /**
+    * @param method HTTP method
+    * @param requestURI full requested URI
+    * @param baseURI base requested URI
+    * @param headers HTTP headers
+    * @param data data
+    * @param env environment context
+    * @return response
+    * @throws Exception if any error occurs
+    */
    public ContainerResponse service(String method, String requestURI, String baseURI,
-      MultivaluedMap<String, String> headers, byte[] data) throws Exception
+      Map<String, List<String>> headers, byte[] data, EnvironmentContext env) throws Exception
    {
-      return service(method, requestURI, baseURI, headers, data, new DummyContainerResponseWriter());
-
+      return service(method, requestURI, baseURI, headers, data, new DummyContainerResponseWriter(), env);
    }
 
 }

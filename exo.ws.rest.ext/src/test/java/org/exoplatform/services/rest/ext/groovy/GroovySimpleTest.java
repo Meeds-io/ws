@@ -73,7 +73,7 @@ public class GroovySimpleTest extends BaseTest
       assertEquals("file:/groovy/script/jaxrs", cs);
 
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-      ContainerResponse resp = service("GET", "/a/groovy", "", null, null, writer);
+      ContainerResponse resp = launcher.service("GET", "/a/groovy", "", null, null, writer, null);
       assertEquals(200, resp.getStatus());
       assertEquals("hello groovy", new String(writer.getBody()));
 

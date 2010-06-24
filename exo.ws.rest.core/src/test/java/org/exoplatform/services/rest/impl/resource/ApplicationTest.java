@@ -18,7 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.resource;
 
-import org.exoplatform.services.rest.AbstractResourceTest;
+import org.exoplatform.services.rest.BaseTest;
 import org.exoplatform.services.rest.Filter;
 import org.exoplatform.services.rest.GenericContainerRequest;
 import org.exoplatform.services.rest.GenericContainerResponse;
@@ -41,7 +41,7 @@ import javax.ws.rs.ext.Provider;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class ApplicationTest extends AbstractResourceTest
+public class ApplicationTest extends BaseTest
 {
 
    public static class Application1 extends javax.ws.rs.core.Application
@@ -151,7 +151,7 @@ public class ApplicationTest extends AbstractResourceTest
       }
 
    }
-   
+
    @Filter
    public static class MethodInvokerFilter1 implements MethodInvokerFilter
    {
@@ -160,9 +160,9 @@ public class ApplicationTest extends AbstractResourceTest
       {
          invFilter = true;
       }
-      
+
    }
-   
+
    @Filter
    public static class RequestFilter1 implements RequestFilter
    {
@@ -171,9 +171,9 @@ public class ApplicationTest extends AbstractResourceTest
       {
          requestFilter = true;
       }
-      
+
    }
-   
+
    @Filter
    public static class ResponseFilter1 implements ResponseFilter
    {
@@ -182,7 +182,7 @@ public class ApplicationTest extends AbstractResourceTest
       {
          responseFilter = true;
       }
-      
+
    }
 
    public void testRegistry()
@@ -199,40 +199,40 @@ public class ApplicationTest extends AbstractResourceTest
    private static boolean requestFilter = false;
    private static boolean responseFilter = false;
    private static boolean invFilter = false;
-   
+
    public void testAsResources() throws Exception
    {
       binder.addApplication(new Application1());
       // per-request
-      ContainerResponse resp = service("GET", "/a", "", null, null);
+      ContainerResponse resp = launcher.service("GET", "/a", "", null, null, null);
       assertEquals(200, resp.getStatus());
       String hash10 = (String)resp.getEntity();
-      resp = service("GET", "/a", "", null, null);
+      resp = launcher.service("GET", "/a", "", null, null, null);
       String hash11 = (String)resp.getEntity();
       // new instance of resource for each request
       assertFalse(hash10.equals(hash11));
 
       // singleton
-      resp = service("GET", "/c", "", null, null);
+      resp = launcher.service("GET", "/c", "", null, null, null);
       assertEquals(200, resp.getStatus());
       String hash20 = (String)resp.getEntity();
-      resp = service("GET", "/c", "", null, null);
+      resp = launcher.service("GET", "/c", "", null, null, null);
       String hash21 = (String)resp.getEntity();
       // singleton resource
       assertTrue(hash20.equals(hash21));
 
       // check per-request ExceptionMapper as example of provider
-      resp = service("GET", "/b", "", null, null);
+      resp = launcher.service("GET", "/b", "", null, null, null);
       // should be 200 status instead 500 if ExceptionMapper works correct
       assertEquals(200, resp.getStatus());
       assertEquals("test Runtime Exception", resp.getEntity());
 
       // check singleton ExceptionMapper as example of provider
-      resp = service("GET", "/d", "", null, null);
+      resp = launcher.service("GET", "/d", "", null, null, null);
       // should be 200 status instead 500 if ExceptionMapper works correct
       assertEquals(200, resp.getStatus());
       assertEquals("test Illegal State Exception", resp.getEntity());
-      
+
       // check are filters were visited
       assertTrue(requestFilter);
       assertTrue(responseFilter);

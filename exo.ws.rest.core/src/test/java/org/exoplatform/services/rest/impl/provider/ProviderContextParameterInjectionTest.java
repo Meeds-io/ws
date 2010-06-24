@@ -18,10 +18,13 @@
  */
 package org.exoplatform.services.rest.impl.provider;
 
-import org.exoplatform.services.rest.AbstractResourceTest;
+import org.exoplatform.services.rest.BaseTest;
 import org.exoplatform.services.rest.impl.ContainerResponse;
+import org.exoplatform.services.rest.impl.EnvironmentContext;
 import org.exoplatform.services.rest.provider.EntityProvider;
+import org.exoplatform.services.test.mock.MockHttpServletRequest;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,6 +33,7 @@ import java.lang.reflect.Type;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -49,7 +53,7 @@ import javax.ws.rs.ext.Providers;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class ProviderContextParameterInjectionTest extends AbstractResourceTest
+public class ProviderContextParameterInjectionTest extends BaseTest
 {
 
    public static class MockEntity
@@ -191,7 +195,7 @@ public class ProviderContextParameterInjectionTest extends AbstractResourceTest
       @Context
       private Providers providers;
 
-      @GET
+      @POST
       @Path("1")
       public MockEntity m0(MockEntity me)
       {
@@ -221,13 +225,23 @@ public class ProviderContextParameterInjectionTest extends AbstractResourceTest
    {
       registry(Resource1.class);
 
-      ContainerResponse resp = service("GET", "/a/1", "", null, "to be or not to be".getBytes());
+      EnvironmentContext envctx = new EnvironmentContext();
+
+      HttpServletRequest httpRequest =
+         new MockHttpServletRequest("/a/1", new ByteArrayInputStream("to be or not to be".getBytes()), 18, "POST", null);
+      envctx.put(HttpServletRequest.class, httpRequest);
+
+      ContainerResponse resp = launcher.service("POST", "/a/1", "", null, "to be or not to be".getBytes(), envctx);
       assertEquals("to be", ((MockEntity)resp.getEntity()).entity);
 
-      resp = service("GET", "/a/2", "", null, null);
+      httpRequest = new MockHttpServletRequest("/a/2", null, 0, "GET", null);
+      envctx.put(HttpServletRequest.class, httpRequest);
+      resp = launcher.service("GET", "/a/2", "", null, null, envctx);
       assertEquals(200, resp.getStatus());
 
-      resp = service("GET", "/a/3", "", null, null);
+      httpRequest = new MockHttpServletRequest("/a/3", null, 0, "GET", null);
+      envctx.put(HttpServletRequest.class, httpRequest);
+      resp = launcher.service("GET", "/a/3", "", null, null, envctx);
       assertEquals(200, resp.getStatus());
       assertEquals("to be to not to be", resp.getEntity());
 

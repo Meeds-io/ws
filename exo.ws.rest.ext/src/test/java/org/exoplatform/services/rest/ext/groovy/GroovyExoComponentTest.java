@@ -75,7 +75,7 @@ public class GroovyExoComponentTest extends BaseTest
       assertEquals(1, groovyPublisher.resources.size());
 
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-      ContainerResponse resp = service("GET", "/a/b", "", null, null, writer);
+      ContainerResponse resp = launcher.service("GET", "/a/b", "", null, null, writer, null);
       assertEquals(200, resp.getStatus());
       assertEquals("exo container's component", new String(writer.getBody()));
    }

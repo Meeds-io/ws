@@ -18,7 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.resource;
 
-import org.exoplatform.services.rest.AbstractResourceTest;
+import org.exoplatform.services.rest.BaseTest;
 import org.exoplatform.services.rest.InitialProperties;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 import org.exoplatform.services.rest.impl.header.HeaderHelper;
@@ -38,7 +38,7 @@ import javax.ws.rs.ext.Providers;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class ContextParametersInjectionTest extends AbstractResourceTest
+public class ContextParametersInjectionTest extends BaseTest
 {
 
    @Path("/a/b")
@@ -231,17 +231,19 @@ public class ContextParametersInjectionTest extends AbstractResourceTest
 
    private void injectionTest() throws Exception
    {
-      assertEquals("http://localhost/test/a/b/c", service("GET", "http://localhost/test/a/b/c",
-         "http://localhost/test", null, null).getEntity());
+      assertEquals("http://localhost/test/a/b/c", launcher.service("GET", "http://localhost/test/a/b/c",
+         "http://localhost/test", null, null, null).getEntity());
       MultivaluedMap<String, String> h = new MultivaluedMapImpl();
       h.add("Accept", "text/xml");
       h.add("Accept", "text/plain;q=0.7");
-      assertEquals("text/xml,text/plain;q=0.7", service("GET", "http://localhost/test/a/b/d", "http://localhost/test",
-         h, null).getEntity());
-      assertEquals("GET", service("GET", "http://localhost/test/a/b/e", "http://localhost/test", null, null)
-         .getEntity());
-      assertEquals(204, service("GET", "http://localhost/test/a/b/f", "http://localhost/test", null, null).getStatus());
-      assertEquals(204, service("GET", "http://localhost/test/a/b/g", "http://localhost/test", null, null).getStatus());
+      assertEquals("text/xml,text/plain;q=0.7", launcher.service("GET", "http://localhost/test/a/b/d",
+         "http://localhost/test", h, null, null).getEntity());
+      assertEquals("GET", launcher.service("GET", "http://localhost/test/a/b/e", "http://localhost/test", null, null,
+         null).getEntity());
+      assertEquals(204, launcher.service("GET", "http://localhost/test/a/b/f", "http://localhost/test", null, null,
+         null).getStatus());
+      assertEquals(204, launcher.service("GET", "http://localhost/test/a/b/g", "http://localhost/test", null, null,
+         null).getStatus());
    }
 
 }

@@ -18,13 +18,15 @@
  */
 package org.exoplatform.services.rest.impl.method;
 
-import org.exoplatform.services.rest.AbstractResourceTest;
+import org.exoplatform.services.rest.BaseTest;
 import org.exoplatform.services.rest.Filter;
+import org.exoplatform.services.rest.impl.EnvironmentContext;
 import org.exoplatform.services.rest.impl.ResourceBinder;
 import org.exoplatform.services.rest.method.MethodInvokerFilter;
 import org.exoplatform.services.rest.resource.GenericMethodResource;
 import org.exoplatform.services.rest.resource.ResourceMethodDescriptor;
 import org.exoplatform.services.rest.resource.SubResourceMethodDescriptor;
+import org.exoplatform.services.test.mock.MockHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -40,7 +42,7 @@ import javax.ws.rs.ext.Providers;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class MethodInvokerFilterTest extends AbstractResourceTest
+public class MethodInvokerFilterTest extends BaseTest
 {
 
    @Filter
@@ -132,11 +134,26 @@ public class MethodInvokerFilterTest extends AbstractResourceTest
    {
       Resource1 r = new Resource1();
       registry(r);
-      assertEquals(204, service("GET", "/a/b", "", null, null).getStatus());
-      assertEquals(204, service("GET", "/a", "", null, null).getStatus());
+
+      EnvironmentContext envctx = new EnvironmentContext();
+
+      HttpServletRequest httpRequest = new MockHttpServletRequest("/a/b", null, 0, "GET", null);
+      envctx.put(HttpServletRequest.class, httpRequest);
+      assertEquals(204, launcher.service("GET", "/a/b", "", null, null, envctx).getStatus());
+
+      httpRequest = new MockHttpServletRequest("/a", null, 0, "GET", null);
+      envctx.put(HttpServletRequest.class, httpRequest);
+      assertEquals(204, launcher.service("GET", "/a", "", null, null, envctx).getStatus());
+
       providers.addMethodInvokerFilter(MethodInvokerFilter1.class);
-      assertEquals(400, service("GET", "/a/b", "", null, null).getStatus());
-      assertEquals(204, service("GET", "/a", "", null, null).getStatus());
+
+      httpRequest = new MockHttpServletRequest("/a/b", null, 0, "GET", null);
+      envctx.put(HttpServletRequest.class, httpRequest);
+      assertEquals(400, launcher.service("GET", "/a/b", "", null, null, envctx).getStatus());
+
+      httpRequest = new MockHttpServletRequest("/a", null, 0, "GET", null);
+      envctx.put(HttpServletRequest.class, httpRequest);
+      assertEquals(204, launcher.service("GET", "/a", "", null, null, envctx).getStatus());
       unregistry(r);
    }
 
@@ -144,11 +161,11 @@ public class MethodInvokerFilterTest extends AbstractResourceTest
    {
       Resource2 r = new Resource2();
       registry(r);
-      assertEquals(204, service("GET", "/b/c", "", null, null).getStatus());
-      assertEquals(204, service("GET", "/b/d", "", null, null).getStatus());
+      assertEquals(204, launcher.service("GET", "/b/c", "", null, null, null).getStatus());
+      assertEquals(204, launcher.service("GET", "/b/d", "", null, null, null).getStatus());
       providers.addMethodInvokerFilter(new MethodInvokerFilter2());
-      assertEquals(400, service("GET", "/b/c", "", null, null).getStatus());
-      assertEquals(204, service("GET", "/b/d", "", null, null).getStatus());
+      assertEquals(400, launcher.service("GET", "/b/c", "", null, null, null).getStatus());
+      assertEquals(204, launcher.service("GET", "/b/d", "", null, null, null).getStatus());
       unregistry(r);
    }
 

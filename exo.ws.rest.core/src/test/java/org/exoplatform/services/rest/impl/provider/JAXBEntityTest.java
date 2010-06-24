@@ -18,7 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.provider;
 
-import org.exoplatform.services.rest.AbstractResourceTest;
+import org.exoplatform.services.rest.BaseTest;
 import org.exoplatform.services.rest.generated.Book;
 import org.exoplatform.services.rest.impl.ContainerResponse;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
@@ -36,7 +36,7 @@ import javax.xml.bind.JAXBElement;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class JAXBEntityTest extends AbstractResourceTest
+public class JAXBEntityTest extends BaseTest
 {
 
    @Path("/")
@@ -79,7 +79,7 @@ public class JAXBEntityTest extends AbstractResourceTest
          book.setAuthor("William Shakespeare");
          book.setTitle("Hamlet");
          book.setSendByPost(true);
-         // ignore some fields 
+         // ignore some fields
          return book;
       }
 
@@ -91,7 +91,7 @@ public class JAXBEntityTest extends AbstractResourceTest
          book.setAuthor("William Shakespeare\n");
          book.setTitle("Hamlet\n");
          book.setSendByPost(false);
-         // ignore some fields 
+         // ignore some fields
          return book;
       }
    }
@@ -111,10 +111,10 @@ public class JAXBEntityTest extends AbstractResourceTest
       h.putSingle("content-type", "application/xml");
       byte[] data = XML_DATA.getBytes("UTF-8");
       h.putSingle("content-length", "" + data.length);
-      assertEquals(204, service("POST", "/a", "", h, data).getStatus());
+      assertEquals(204, launcher.service("POST", "/a", "", h, data, null).getStatus());
 
       // Object transfered via XML (JAXB)
-      assertEquals(204, service("POST", "/b", "", h, data).getStatus());
+      assertEquals(204, launcher.service("POST", "/b", "", h, data, null).getStatus());
       unregistry(r1);
    }
 
@@ -127,7 +127,7 @@ public class JAXBEntityTest extends AbstractResourceTest
       // Resource2#m1()
       h.putSingle("accept", "application/xml");
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-      ContainerResponse response = service("GET", "/", "", h, null, writer);
+      ContainerResponse response = launcher.service("GET", "/", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("application/xml", response.getContentType().toString());
       Book book = (Book)response.getEntity();
@@ -137,7 +137,7 @@ public class JAXBEntityTest extends AbstractResourceTest
 
       // Resource2#m2()
       writer = new ByteArrayContainerResponseWriter();
-      response = service("POST", "/", "", h, null, writer);
+      response = launcher.service("POST", "/", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("application/xml", response.getContentType().toString());
       book = (Book)response.getEntity();

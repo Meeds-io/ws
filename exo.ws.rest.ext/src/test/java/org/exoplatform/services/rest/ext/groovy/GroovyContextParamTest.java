@@ -21,9 +21,13 @@ package org.exoplatform.services.rest.ext.groovy;
 
 import org.exoplatform.services.rest.ext.BaseTest;
 import org.exoplatform.services.rest.impl.ContainerResponse;
+import org.exoplatform.services.rest.impl.EnvironmentContext;
 import org.exoplatform.services.rest.tools.ByteArrayContainerResponseWriter;
+import org.exoplatform.services.test.mock.MockHttpServletRequest;
 
 import java.io.InputStream;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -60,8 +64,16 @@ public class GroovyContextParamTest extends BaseTest
       assertEquals(1, groovyPublisher.resources.size());
 
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+
+      EnvironmentContext envctx = new EnvironmentContext();
+
+      HttpServletRequest httpRequest =
+         new MockHttpServletRequest("http://localhost:8080/context/a/b", null, 0, "GET", null);
+      envctx.put(HttpServletRequest.class, httpRequest);
+
       ContainerResponse resp =
-         service("GET", "http://localhost:8080/context/a/b", "http://localhost:8080/context", null, null, writer);
+         launcher.service("GET", "http://localhost:8080/context/a/b", "http://localhost:8080/context", null, null,
+            writer, envctx);
       assertEquals(200, resp.getStatus());
       assertEquals("GET\n/context/a/b", new String(writer.getBody()));
    }

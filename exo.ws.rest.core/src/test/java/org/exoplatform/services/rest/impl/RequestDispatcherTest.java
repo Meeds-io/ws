@@ -18,9 +18,10 @@
  */
 package org.exoplatform.services.rest.impl;
 
-import org.exoplatform.services.rest.AbstractResourceTest;
+import org.exoplatform.services.rest.BaseTest;
 import org.exoplatform.services.rest.GenericContainerResponse;
 import org.exoplatform.services.rest.Property;
+import org.exoplatform.services.test.mock.MockHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Encoded;
@@ -39,7 +40,7 @@ import javax.ws.rs.core.UriInfo;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class RequestDispatcherTest extends AbstractResourceTest
+public class RequestDispatcherTest extends BaseTest
 {
 
    @Path("/a")
@@ -107,12 +108,12 @@ public class RequestDispatcherTest extends AbstractResourceTest
    {
       Resource1 r1 = new Resource1();
       registry(r1);
-      assertEquals("m0", service("POST", "/a", "", null, null).getEntity());
-      assertEquals("m1", service("POST", "/a/b", "", null, null).getEntity());
-      assertEquals("m2.0", service("POST", "/a/b/c", "", null, null).getEntity());
-      assertEquals("m2.1", service("POST", "/a/b/c/d", "", null, null).getEntity());
-      assertEquals("m3.0", service("POST", "/a/b/c/d/e", "", null, null).getEntity());
-      assertEquals("m3.1", service("POST", "/a/b/c/d/e/f", "", null, null).getEntity());
+      assertEquals("m0", launcher.service("POST", "/a", "", null, null, null).getEntity());
+      assertEquals("m1", launcher.service("POST", "/a/b", "", null, null, null).getEntity());
+      assertEquals("m2.0", launcher.service("POST", "/a/b/c", "", null, null, null).getEntity());
+      assertEquals("m2.1", launcher.service("POST", "/a/b/c/d", "", null, null, null).getEntity());
+      assertEquals("m3.0", launcher.service("POST", "/a/b/c/d/e", "", null, null, null).getEntity());
+      assertEquals("m3.1", launcher.service("POST", "/a/b/c/d/e/f", "", null, null, null).getEntity());
       unregistry(r1);
    }
 
@@ -153,10 +154,10 @@ public class RequestDispatcherTest extends AbstractResourceTest
    {
       Resource2 r2 = new Resource2();
       registry(r2);
-      assertEquals("m0", service("POST", "/", "", null, null).getEntity());
-      assertEquals("m1", service("POST", "/a", "", null, null).getEntity());
-      assertEquals("#x y", service("POST", "/1/a/b%20/c/%23x%20y", "", null, null).getEntity());
-      assertEquals("%23x%20y", service("POST", "/2/a/b%20/c/%23x%20y", "", null, null).getEntity());
+      assertEquals("m0", launcher.service("POST", "/", "", null, null, null).getEntity());
+      assertEquals("m1", launcher.service("POST", "/a", "", null, null, null).getEntity());
+      assertEquals("#x y", launcher.service("POST", "/1/a/b%20/c/%23x%20y", "", null, null, null).getEntity());
+      assertEquals("%23x%20y", launcher.service("POST", "/2/a/b%20/c/%23x%20y", "", null, null, null).getEntity());
       unregistry(r2);
    }
 
@@ -208,9 +209,9 @@ public class RequestDispatcherTest extends AbstractResourceTest
    public void testResourceConstructorAndFields() throws Exception
    {
       registry(Resource3.class);
-      assertEquals("/a/b/c/d/m0", service("GET", "/a/b/c/d/m0", "", null, null).getEntity());
-      assertEquals("c", service("GET", "/a/b/c/d/m1", "", null, null).getEntity());
-      assertEquals("d", service("GET", "/a/b/c/d/m2", "", null, null).getEntity());
+      assertEquals("/a/b/c/d/m0", launcher.service("GET", "/a/b/c/d/m0", "", null, null, null).getEntity());
+      assertEquals("c", launcher.service("GET", "/a/b/c/d/m1", "", null, null, null).getEntity());
+      assertEquals("d", launcher.service("GET", "/a/b/c/d/m2", "", null, null, null).getEntity());
       unregistry(Resource3.class);
    }
 
@@ -258,7 +259,14 @@ public class RequestDispatcherTest extends AbstractResourceTest
    {
       container.registerComponentInstance(TestContainerComponent.class.getName(), new TestContainerComponent());
       registry(Resource4.class);
-      service("GET", "/aaa/bbb", "", null, null);
+
+      EnvironmentContext envctx = new EnvironmentContext();
+
+      HttpServletRequest httpRequest = new MockHttpServletRequest("/aaa/bbb", null, 0, "GET", null);
+      envctx.put(HttpServletRequest.class, httpRequest);
+
+      launcher.service("GET", "/aaa/bbb", "", null, null, envctx);
+
       unregistry(Resource4.class);
    }
 
@@ -287,12 +295,13 @@ public class RequestDispatcherTest extends AbstractResourceTest
    public void testResourceConstructorFail() throws Exception
    {
       registry(ResourceFail.class);
-      GenericContainerResponse resp = service("GET", "/_a/b/c/d/m0", "", null, null);
+      GenericContainerResponse resp = launcher.service("GET", "/_a/b/c/d/m0", "", null, null, null);
       String entity = (String)resp.getEntity();
       assertTrue(entity.startsWith("Can't instantiate resource "));
       assertEquals(javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), resp.getStatus());
       unregistry(ResourceFail.class);
    }
+
    //--------------------------------------
 
    @Path("a/{b}/{c}")
@@ -328,16 +337,16 @@ public class RequestDispatcherTest extends AbstractResourceTest
    public void testResource5() throws Exception
    {
       registry(Resource5.class);
-      service("GET", "/a/b/c/d?q1=q1&q2=q2", "", null, null);
+      launcher.service("GET", "/a/b/c/d?q1=q1&q2=q2", "", null, null, null);
       unregistry(Resource5.class);
    }
 
    //--------------------------------------
-   
+
    public void testFieldSuperClass() throws Exception
    {
       registry(EndResource.class);
-      service("GET", "/a", "", null, null);
+      launcher.service("GET", "/a", "", null, null, null);
       unregistry(EndResource.class);
    }
 
@@ -348,7 +357,7 @@ public class RequestDispatcherTest extends AbstractResourceTest
 
       @Context
       public Request request;
-      
+
       @Context
       protected UriInfo something;
    }
@@ -365,7 +374,7 @@ public class RequestDispatcherTest extends AbstractResourceTest
    {
       @Context
       private HttpHeaders header;
-      
+
       @Context
       private SecurityContext something;
 
@@ -382,40 +391,40 @@ public class RequestDispatcherTest extends AbstractResourceTest
          assertNotNull(header);
       }
    }
-   
+
    // -----------------------------------------------
-   
+
    public void testPropertyInjection() throws Exception
    {
       registry(Resource6.class);
       RequestHandlerImpl.setProperty("prop1", "hello");
       RequestHandlerImpl.setProperty("prop2", "test");
-      service("GET", "/a", "", null, null);
+      launcher.service("GET", "/a", "", null, null, null);
       unregistry(Resource6.class);
-      
+
    }
 
    @Path("a")
    public static class Resource6
    {
-      
+
       @Property("prop1")
       private String prop1;
-      
+
       private final String prop2;
-      
+
       public Resource6(@Property("prop2") String cProp)
       {
          this.prop2 = cProp;
       }
-      
+
       @GET
       public void m1()
       {
          assertEquals("hello", prop1);
          assertEquals("test", prop2);
       }
-      
+
    }
-   
+
 }

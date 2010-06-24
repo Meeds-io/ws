@@ -18,10 +18,11 @@
  */
 package org.exoplatform.services.rest.impl;
 
-import org.exoplatform.services.rest.AbstractResourceTest;
+import org.exoplatform.services.rest.BaseTest;
 import org.exoplatform.services.rest.Filter;
 import org.exoplatform.services.rest.GenericContainerRequest;
 import org.exoplatform.services.rest.RequestFilter;
+import org.exoplatform.services.test.mock.MockHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -37,7 +38,7 @@ import javax.ws.rs.ext.Providers;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class RequestFilterTest extends AbstractResourceTest
+public class RequestFilterTest extends BaseTest
 {
 
    @Filter
@@ -110,7 +111,7 @@ public class RequestFilterTest extends AbstractResourceTest
    public void testWithoutFilter1() throws Exception
    {
       registry(Resource1.class);
-      ContainerResponse resp = service("GET", "/a", "", null, null);
+      ContainerResponse resp = launcher.service("GET", "/a", "", null, null, null);
       assertEquals(405, resp.getStatus());
       assertEquals(1, resp.getHttpHeaders().get("allow").size());
       assertTrue(resp.getHttpHeaders().get("allow").get(0).toString().contains("POST"));
@@ -124,8 +125,12 @@ public class RequestFilterTest extends AbstractResourceTest
       // add filter that can change method
       providers.addRequestFilter(RequestFilter1.class);
 
+      EnvironmentContext envctx = new EnvironmentContext();
+      HttpServletRequest httpRequest = new MockHttpServletRequest("/a", null, 0, "GET", null);
+      envctx.put(HttpServletRequest.class, httpRequest);
+
       // should get status 204
-      ContainerResponse resp = service("GET", "/a", "", null, null);
+      ContainerResponse resp = launcher.service("GET", "/a", "", null, null, envctx);
       assertEquals(204, resp.getStatus());
 
       unregistry(Resource1.class);
@@ -135,7 +140,7 @@ public class RequestFilterTest extends AbstractResourceTest
    public void testFilter2() throws Exception
    {
       registry(Resource1.class);
-      ContainerResponse resp = service("GET", "/a/b/c/d/e", "", null, null);
+      ContainerResponse resp = launcher.service("GET", "/a/b/c/d/e", "", null, null, null);
       assertEquals(405, resp.getStatus());
       assertEquals(1, resp.getHttpHeaders().get("allow").size());
       assertTrue(resp.getHttpHeaders().get("allow").get(0).toString().contains("DELETE"));
@@ -144,7 +149,7 @@ public class RequestFilterTest extends AbstractResourceTest
       providers.addRequestFilter(new RequestFilter2());
 
       // not should get status 204
-      resp = service("GET", "/a/b/c/d/e", "", null, null);
+      resp = launcher.service("GET", "/a/b/c/d/e", "", null, null, null);
       assertEquals(204, resp.getStatus());
 
       unregistry(Resource1.class);

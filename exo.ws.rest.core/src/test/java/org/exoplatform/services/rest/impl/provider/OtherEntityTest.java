@@ -18,7 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.provider;
 
-import org.exoplatform.services.rest.AbstractResourceTest;
+import org.exoplatform.services.rest.BaseTest;
 import org.exoplatform.services.rest.impl.ContainerResponse;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 import org.exoplatform.services.rest.tools.ByteArrayContainerResponseWriter;
@@ -52,7 +52,7 @@ import javax.xml.transform.stream.StreamSource;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class OtherEntityTest extends AbstractResourceTest
+public class OtherEntityTest extends BaseTest
 {
 
    @Path("/")
@@ -136,24 +136,24 @@ public class OtherEntityTest extends AbstractResourceTest
 
       // next types allowed for any content-type
       //    h.putSingle("content-type", "application/octet-stream");
-      assertEquals(204, service("POST", "/bytes", "", h, data).getStatus());
+      assertEquals(204, launcher.service("POST", "/bytes", "", h, data, null).getStatus());
 
-      assertEquals(204, service("POST", "/string", "", h, data).getStatus());
+      assertEquals(204, launcher.service("POST", "/string", "", h, data, null).getStatus());
 
-      assertEquals(204, service("POST", "/stream", "", h, data).getStatus());
+      assertEquals(204, launcher.service("POST", "/stream", "", h, data, null).getStatus());
 
-      assertEquals(204, service("POST", "/reader", "", h, data).getStatus());
+      assertEquals(204, launcher.service("POST", "/reader", "", h, data, null).getStatus());
 
       // next types required application/xml, text/xml or
       // application/xhtml+xml content-type
       h.putSingle("content-type", "application/xml");
       data = XML_DATA.getBytes("UTF-8");
       h.putSingle("content-length", "" + data.length);
-      assertEquals(204, service("POST", "/dom", "", h, data).getStatus());
+      assertEquals(204, launcher.service("POST", "/dom", "", h, data, null).getStatus());
 
-      assertEquals(204, service("POST", "/sax", "", h, data).getStatus());
+      assertEquals(204, launcher.service("POST", "/sax", "", h, data, null).getStatus());
 
-      assertEquals(204, service("POST", "/ss", "", h, data).getStatus());
+      assertEquals(204, launcher.service("POST", "/ss", "", h, data, null).getStatus());
 
       unregistry(r1);
    }
@@ -249,24 +249,24 @@ public class OtherEntityTest extends AbstractResourceTest
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
 
       h.putSingle("accept", "text/plain");
-      ContainerResponse response = service("GET", "/bytes", "", h, null, writer);
+      ContainerResponse response = launcher.service("GET", "/bytes", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("application/octet-stream", response.getContentType().toString());
       assertEquals("to be or not to be".getBytes("UTF-8").length + "", response.getHttpHeaders().getFirst(
          HttpHeaders.CONTENT_LENGTH).toString());
       assertEquals("to be or not to be", new String(writer.getBody()));
 
-      response = service("GET", "/string", "", h, null, writer);
+      response = launcher.service("GET", "/string", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("text/plain", response.getContentType().toString());
       assertEquals("to be or not to be", new String(writer.getBody()));
 
-      response = service("GET", "/stream", "", h, null, writer);
+      response = launcher.service("GET", "/stream", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("application/octet-stream", response.getContentType().toString());
       assertEquals("to be or not to be", new String(writer.getBody()));
 
-      response = service("GET", "/reader", "", h, null, writer);
+      response = launcher.service("GET", "/reader", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("text/plain", response.getContentType().toString());
       assertEquals("to be or not to be", new String(writer.getBody()));
@@ -275,33 +275,33 @@ public class OtherEntityTest extends AbstractResourceTest
       String xml = pattern.matcher(XML_DATA).replaceFirst("");
 
       h.putSingle("accept", "application/xml");
-      response = service("GET", "/dom", "", h, null, writer);
+      response = launcher.service("GET", "/dom", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("application/xml", response.getContentType().toString());
       String result = new String(writer.getBody());
       result = pattern.matcher(result).replaceFirst("");
       assertEquals(xml, result);
 
-      response = service("GET", "/sax", "", h, null, writer);
+      response = launcher.service("GET", "/sax", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("application/xml", response.getContentType().toString());
       result = new String(writer.getBody());
       result = pattern.matcher(result).replaceFirst("");
       assertEquals(xml, result);
 
-      response = service("GET", "/ss", "", h, null, writer);
+      response = launcher.service("GET", "/ss", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("application/xml", response.getContentType().toString());
       result = new String(writer.getBody());
       result = pattern.matcher(result).replaceFirst("");
       assertEquals(xml, result);
 
-      response = service("GET", "/so", "", h, null, writer);
+      response = launcher.service("GET", "/so", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("application/octet-stream", response.getContentType().toString());
       assertEquals("to be or not to be", new String(writer.getBody()));
 
-      response = service("GET", "/response", "", h, null, writer);
+      response = launcher.service("GET", "/response", "", h, null, writer, null);
       assertEquals(200, response.getStatus());
       assertEquals("text/plain", response.getContentType().toString());
       assertEquals("to be or not to be".getBytes("UTF-8").length + "", response.getHttpHeaders().getFirst(

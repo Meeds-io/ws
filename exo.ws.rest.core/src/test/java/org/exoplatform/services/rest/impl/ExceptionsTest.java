@@ -18,7 +18,7 @@
  */
 package org.exoplatform.services.rest.impl;
 
-import org.exoplatform.services.rest.AbstractResourceTest;
+import org.exoplatform.services.rest.BaseTest;
 import org.exoplatform.services.rest.ExtHttpHeaders;
 import org.exoplatform.services.rest.tools.ByteArrayContainerResponseWriter;
 
@@ -34,7 +34,7 @@ import javax.ws.rs.core.Response;
  * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>
  * @version $Id: ExceptionsTest
  */
-public class ExceptionsTest extends AbstractResourceTest
+public class ExceptionsTest extends BaseTest
 {
 
    @Path("a")
@@ -100,7 +100,7 @@ public class ExceptionsTest extends AbstractResourceTest
    public void testErrorResponse() throws Exception
    {
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-      ContainerResponse response = service("GET", "/a/4", "", null, null, writer);
+      ContainerResponse response = launcher.service("GET", "/a/4", "", null, null, writer, null);
       assertEquals(500, response.getStatus());
       String entity = new String(writer.getBody());
       assertEquals(errorMessage, entity);
@@ -110,7 +110,7 @@ public class ExceptionsTest extends AbstractResourceTest
    public void testUncheckedException() throws Exception
    {
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-      ContainerResponse response = service("GET", "/a/3", "", null, null, writer);
+      ContainerResponse response = launcher.service("GET", "/a/3", "", null, null, writer, null);
       assertEquals(500, response.getStatus());
       String entity = new String(writer.getBody());
       assertEquals(errorMessage, entity);
@@ -120,7 +120,7 @@ public class ExceptionsTest extends AbstractResourceTest
    public void testWebApplicationExceptionWithCause() throws Exception
    {
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-      ContainerResponse response = service("GET", "/a/0", "", null, null, writer);
+      ContainerResponse response = launcher.service("GET", "/a/0", "", null, null, writer, null);
       assertEquals(500, response.getStatus());
       String entity = new String(writer.getBody());
       assertEquals(new Exception(errorMessage).toString(), entity);
@@ -130,7 +130,7 @@ public class ExceptionsTest extends AbstractResourceTest
    public void testWebApplicationExceptionWithoutCause() throws Exception
    {
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-      ContainerResponse response = service("GET", "/a/2", "", null, null, writer);
+      ContainerResponse response = launcher.service("GET", "/a/2", "", null, null, writer, null);
       assertEquals(500, response.getStatus());
       assertNull(response.getEntity());
       assertNull(response.getHttpHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
@@ -139,7 +139,7 @@ public class ExceptionsTest extends AbstractResourceTest
    public void testWebApplicationExceptionWithResponse() throws Exception
    {
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-      ContainerResponse response = service("GET", "/a/1", "", null, null, writer);
+      ContainerResponse response = launcher.service("GET", "/a/1", "", null, null, writer, null);
       assertEquals(500, response.getStatus());
       String entity = new String(writer.getBody());
       assertEquals(errorMessage, entity);
