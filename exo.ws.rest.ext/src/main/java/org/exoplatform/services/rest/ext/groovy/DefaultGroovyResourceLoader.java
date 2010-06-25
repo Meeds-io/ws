@@ -21,7 +21,6 @@ package org.exoplatform.services.rest.ext.groovy;
 
 import groovy.lang.GroovyResourceLoader;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -72,7 +71,7 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
     */
    public final URL loadGroovySource(String classname) throws MalformedURLException
    {
-      final String filename = classname.replace('.', File.separatorChar) + ".groovy";
+      final String filename = classname.replace('.', '/') + ".groovy";
       try
       {
          return AccessController.doPrivileged(new PrivilegedExceptionAction<URL>()
