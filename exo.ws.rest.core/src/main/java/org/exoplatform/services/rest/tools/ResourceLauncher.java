@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Request launcher. It can be useful for testing services.
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
