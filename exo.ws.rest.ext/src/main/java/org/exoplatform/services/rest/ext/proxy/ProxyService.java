@@ -78,8 +78,8 @@ public class ProxyService implements ResourceContainer
          URL url = new URL(urlParam);
          HTTPConnection conn = new HTTPConnection(url);
          conn.setTimeout(DEFAULT_CONNECT_TIMEOUT_MS);
-         NVPair[] headerPairs =
-            toNVPair(headers.getRequestHeaders(), Collections.singleton(HttpHeaders.HOST.toLowerCase()));
+         NVPair[] headerPairs = toNVPair(headers.getRequestHeaders(), //
+            Collections.singleton(new CaseInsensitiveStringWrapper(HttpHeaders.HOST)));
          conn.setAllowUserInteraction(false);
          NVPair credentials = getCredentials(url);
          if (credentials != null)
@@ -89,11 +89,16 @@ public class ProxyService implements ResourceContainer
          HTTPResponse resp = conn.Delete(url.getFile(), headerPairs);
          if (resp.getStatusCode() >= 300)
          {
-            LOG.warn("DELETE Received : " + resp.getReasonLine());
-            byte[] data = resp.getData();
-            if (data != null)
+            if (LOG.isDebugEnabled())
             {
-               LOG.warn("DELETE Received : " + new String(data));
+               // Do not read data if debug is off.
+               // Client may get empty response, may not read stream twice.
+               LOG.debug("DELETE. received status " + resp.getStatusCode() + ", " + resp.getReasonLine());
+               byte[] data = resp.getData();
+               if (data != null)
+               {
+                  LOG.debug("DELETE. Text : " + new String(data));
+               }
             }
          }
          return createResponse(resp);
@@ -129,8 +134,8 @@ public class ProxyService implements ResourceContainer
          URL url = new URL(urlParam);
          HTTPConnection conn = new HTTPConnection(url);
          conn.setTimeout(DEFAULT_CONNECT_TIMEOUT_MS);
-         NVPair[] headerPairs =
-            toNVPair(headers.getRequestHeaders(), Collections.singleton(HttpHeaders.HOST.toLowerCase()));
+         NVPair[] headerPairs = toNVPair(headers.getRequestHeaders(), //
+            Collections.singleton(new CaseInsensitiveStringWrapper(HttpHeaders.HOST)));
          conn.setAllowUserInteraction(false);
          NVPair credentials = getCredentials(url);
          if (credentials != null)
@@ -140,11 +145,16 @@ public class ProxyService implements ResourceContainer
          HTTPResponse resp = conn.Get(url.getFile(), (NVPair[])null, headerPairs);
          if (resp.getStatusCode() >= 300)
          {
-            LOG.warn("GET Received: " + resp.getReasonLine());
-            byte[] data = resp.getData();
-            if (data != null)
+            if (LOG.isDebugEnabled())
             {
-               LOG.warn("GET Received: " + new String(data));
+               // Do not read data if debug is off.
+               // Client may get empty response, may not read stream twice.
+               LOG.debug("GET. received status " + resp.getStatusCode() + ", " + resp.getReasonLine());
+               byte[] data = resp.getData();
+               if (data != null)
+               {
+                  LOG.debug("GET. Text : " + new String(data));
+               }
             }
          }
          return createResponse(resp);
@@ -182,8 +192,8 @@ public class ProxyService implements ResourceContainer
          URL url = new URL(urlParam);
          HTTPConnection conn = new HTTPConnection(url);
          conn.setTimeout(DEFAULT_CONNECT_TIMEOUT_MS);
-         NVPair[] headerPairs =
-            toNVPair(headers.getRequestHeaders(), Collections.singleton(HttpHeaders.HOST.toLowerCase()));
+         NVPair[] headerPairs = toNVPair(headers.getRequestHeaders(), //
+            Collections.singleton(new CaseInsensitiveStringWrapper(HttpHeaders.HOST)));
          conn.setAllowUserInteraction(false);
          NVPair credentials = getCredentials(url);
          if (credentials != null)
@@ -210,11 +220,16 @@ public class ProxyService implements ResourceContainer
 
          if (resp.getStatusCode() >= 300)
          {
-            LOG.warn("POST Received: " + resp.getReasonLine());
-            byte[] data = resp.getData();
-            if (data != null)
+            if (LOG.isDebugEnabled())
             {
-               LOG.warn("POST Received: " + new String(data));
+               // Do not read data if debug is off.
+               // Client may get empty response, may not read stream twice.
+               LOG.debug("POST. received status " + resp.getStatusCode() + ", " + resp.getReasonLine());
+               byte[] data = resp.getData();
+               if (data != null)
+               {
+                  LOG.debug("POST. Text : " + new String(data));
+               }
             }
          }
          return createResponse(resp);
@@ -252,8 +267,8 @@ public class ProxyService implements ResourceContainer
          URL url = new URL(urlParam);
          HTTPConnection conn = new HTTPConnection(url);
          conn.setTimeout(DEFAULT_CONNECT_TIMEOUT_MS);
-         NVPair[] headerPairs =
-            toNVPair(headers.getRequestHeaders(), Collections.singleton(HttpHeaders.HOST.toLowerCase()));
+         NVPair[] headerPairs = toNVPair(headers.getRequestHeaders(), //
+            Collections.singleton(new CaseInsensitiveStringWrapper(HttpHeaders.HOST)));
          conn.setAllowUserInteraction(false);
          NVPair credentials = getCredentials(url);
          if (credentials != null)
@@ -280,11 +295,16 @@ public class ProxyService implements ResourceContainer
 
          if (resp.getStatusCode() >= 300)
          {
-            LOG.warn("PUT Received : " + resp.getReasonLine());
-            byte[] data = resp.getData();
-            if (data != null)
+            if (LOG.isDebugEnabled())
             {
-               LOG.warn("PUT Received : " + new String(data));
+               // Do not read data if debug is off.
+               // Client may get empty response, may not read stream twice.
+               LOG.debug("PUT. received status " + resp.getStatusCode() + ", " + resp.getReasonLine());
+               byte[] data = resp.getData();
+               if (data != null)
+               {
+                  LOG.debug("PUT Received : " + new String(data));
+               }
             }
          }
          return createResponse(resp);
@@ -371,12 +391,12 @@ public class ProxyService implements ResourceContainer
       return credentials;
    }
 
-   private NVPair[] toNVPair(MultivaluedMap<String, String> map, Set<String> skip)
+   private NVPair[] toNVPair(MultivaluedMap<String, String> map, Set<CaseInsensitiveStringWrapper> skip)
    {
       List<NVPair> hds = new ArrayList<NVPair>();
       for (Entry<String, List<String>> e : map.entrySet())
       {
-         if (!skip.contains(e.getKey()))
+         if (!skip.contains(new CaseInsensitiveStringWrapper(e.getKey())))
          {
             for (String v : e.getValue())
             {
@@ -386,4 +406,50 @@ public class ProxyService implements ResourceContainer
       }
       return hds.toArray(new NVPair[hds.size()]);
    }
+
+   private class CaseInsensitiveStringWrapper
+   {
+
+      private final String string;
+
+      private final String caselessString;
+
+      CaseInsensitiveStringWrapper(String string)
+      {
+         this.string = string;
+         if (string != null)
+         {
+            this.caselessString = string.toLowerCase();
+         }
+         else
+         {
+            this.caselessString = null;
+         }
+      }
+
+      public String toString()
+      {
+         return string == null ? "null" : string;
+      }
+
+      @Override
+      public boolean equals(Object obj)
+      {
+         if (obj == null)
+            return false;
+         if (obj.getClass() != getClass())
+            return false;
+         CaseInsensitiveStringWrapper other = (CaseInsensitiveStringWrapper)obj;
+         return (caselessString == null && other.caselessString == null)
+            || (caselessString != null && caselessString.equals(other.caselessString));
+      }
+
+      @Override
+      public int hashCode()
+      {
+         return caselessString == null ? 0 : caselessString.hashCode();
+      }
+
+   }
+
 }
