@@ -79,7 +79,7 @@ public class BaseConnector extends Connector
       if (resp.getStatusCode() >= 300)
       {
          LOG.error("Received Error: " + resp.getReasonLine());
-         LOG.error(resp.getText());
+         LOG.error(new String(resp.getData()));
       }
       return resp;
    }
@@ -105,7 +105,7 @@ public class BaseConnector extends Connector
       if (resp.getStatusCode() >= 300)
       {
          LOG.error("Received Error: " + resp.getReasonLine());
-         LOG.error(resp.getText());
+         LOG.error(new String(resp.getData()));
       }
       return resp;
    }
@@ -131,7 +131,7 @@ public class BaseConnector extends Connector
       if (resp.getStatusCode() >= 300)
       {
          LOG.error("Received Error: " + resp.getReasonLine());
-         LOG.error(resp.getText());
+         LOG.error(new String(resp.getData()));
       }
       return resp;
    }
@@ -154,7 +154,7 @@ public class BaseConnector extends Connector
       if (resp.getStatusCode() >= 300)
       {
          LOG.error("Received Error: " + resp.getReasonLine());
-         LOG.error(resp.getText());
+         LOG.error(new String(resp.getData()));
       }
       return resp;
    }
