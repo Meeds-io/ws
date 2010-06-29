@@ -128,11 +128,14 @@ public class HTTPResponse implements HTTPClientModuleConstants
       this.timeout = timeout;
       try
       {
-         this.OriginalURI = new URI(orig.getRequestURI());
+         int qp = orig.getRequestURI().indexOf('?');
+         this.OriginalURI =
+            new URI(orig.getConnection().getProtocol(), null, orig.getConnection().getHost(), orig.getConnection()
+               .getPort(), qp < 0 ? orig.getRequestURI() : orig.getRequestURI().substring(0, qp), qp < 0 ? null : orig
+               .getRequestURI().substring(qp + 1), null);
       }
       catch (ParseException pe)
       {
-         log.error("Error while create OriginalURI from request URI sring representation: " + pe.getMessage());
       }
       this.method = orig.getMethod();
    }
