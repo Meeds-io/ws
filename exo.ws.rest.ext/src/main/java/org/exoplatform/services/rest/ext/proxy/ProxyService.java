@@ -207,7 +207,7 @@ public class ProxyService implements ResourceContainer
             resp = conn.Post(url.getFile(), stream, headerPairs);
             byte[] buf = new byte[1024];
             int r = -1;
-            while ((r = entity.read()) != -1)
+            while ((r = entity.read(buf)) != -1)
             {
                stream.write(buf, 0, r);
             }
@@ -282,7 +282,7 @@ public class ProxyService implements ResourceContainer
             resp = conn.Put(url.getFile(), stream, headerPairs);
             byte[] buf = new byte[1024];
             int r = -1;
-            while ((r = entity.read()) != -1)
+            while ((r = entity.read(buf)) != -1)
             {
                stream.write(buf, 0, r);
             }
