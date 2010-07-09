@@ -159,7 +159,7 @@ public class ResourceBinder
                if (expirationDate > 0 && expirationDate < System.currentTimeMillis())
                {
                   iter.remove();
-                  for (ResourceListener listener: resourceListeners)
+                  for (ResourceListener listener : resourceListeners)
                   {
                      listener.resourceRemoved(next.getObjectModel());
                   }
@@ -201,8 +201,14 @@ public class ResourceBinder
     * @throws Exception if can't set instance of {@link RuntimeDelegate}
     * @see MethodInvokerFactory
     */
-   @SuppressWarnings("unchecked")
    public ResourceBinder(ExoContainerContext containerContext, MethodInvokerFactory invokerFactory) throws Exception
+   {
+      this(containerContext, null, invokerFactory);
+   }
+
+   @SuppressWarnings("unchecked")
+   protected ResourceBinder(ExoContainerContext containerContext, ResourceCleaner cleaner,
+      MethodInvokerFactory invokerFactory) throws Exception
    {
       this.invokerFactory = invokerFactory;
 
@@ -242,9 +248,9 @@ public class ResourceBinder
          }
       }
 
-      Thread cleaner = new Thread(new ResourceCleaner(60));
-      cleaner.setDaemon(true);
-      cleaner.start();
+      Thread thread = new Thread(cleaner == null ? new ResourceCleaner(60) : cleaner);
+      thread.setDaemon(true);
+      thread.start();
    }
 
    /**
@@ -459,7 +465,7 @@ public class ResourceBinder
          }
          rootResources.add(resourceFactory);
          Collections.sort(rootResources, RESOURCE_COMPARATOR);
-         for (ResourceListener listener: resourceListeners)
+         for (ResourceListener listener : resourceListeners)
          {
             listener.resourceAdded(resourceFactory.getObjectModel());
          }
@@ -635,7 +641,7 @@ public class ResourceBinder
          }
          if (resource != null)
          {
-            for (ResourceListener listener: resourceListeners)
+            for (ResourceListener listener : resourceListeners)
             {
                listener.resourceRemoved(resource.getObjectModel());
             }
@@ -673,7 +679,7 @@ public class ResourceBinder
          }
          if (resource != null)
          {
-            for (ResourceListener listener: resourceListeners)
+            for (ResourceListener listener : resourceListeners)
             {
                listener.resourceRemoved(resource.getObjectModel());
             }
