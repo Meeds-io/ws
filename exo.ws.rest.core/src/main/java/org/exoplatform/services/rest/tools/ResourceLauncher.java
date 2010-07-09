@@ -77,8 +77,10 @@ public class ResourceLauncher
       if (writer == null)
          writer = new DummyContainerResponseWriter();
 
+      //      ContainerRequest request =
+      //         new ContainerRequest(method, new URI(requestURI), new URI(baseURI), in, new InputHeadersMap(headers));
       ContainerRequest request =
-         new ContainerRequest(method, new URI(requestURI), new URI(baseURI), in, new InputHeadersMap(headers));
+         new DummySecurityContext(method, new URI(requestURI), new URI(baseURI), in, new InputHeadersMap(headers));
       ContainerResponse response = new ContainerResponse(writer);
       requestHandler.handleRequest(request, response);
       return response;

@@ -28,15 +28,16 @@ import org.exoplatform.services.rest.method.MethodInvoker;
 import org.exoplatform.services.rest.method.MethodInvokerFilter;
 import org.exoplatform.services.rest.resource.GenericMethodResource;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -84,13 +85,16 @@ public class DefaultMethodInvoker implements MethodInvoker
             catch (Exception e)
             {
 
+               String msg = "Not able resolve method parameter " + mp;
                Class<?> ac = a.annotationType();
                if (ac == MatrixParam.class || ac == QueryParam.class || ac == PathParam.class)
                {
-                  throw new WebApplicationException(e, Response.status(Response.Status.NOT_FOUND).build());
+                  throw new WebApplicationException(e, Response.status(Response.Status.NOT_FOUND).entity(msg).type(
+                     MediaType.TEXT_PLAIN).build());
                }
 
-               throw new WebApplicationException(e, Response.status(Response.Status.BAD_REQUEST).build());
+               throw new WebApplicationException(e, Response.status(Response.Status.BAD_REQUEST).entity(msg).type(
+                  MediaType.TEXT_PLAIN).build());
 
             }
 
@@ -106,37 +110,62 @@ public class DefaultMethodInvoker implements MethodInvoker
             else
             {
                MediaType contentType = context.getContainerRequest().getMediaType();
-               MultivaluedMap<String, String> headers = context.getContainerRequest().getRequestHeaders();
 
                MessageBodyReader entityReader =
                   context.getProviders().getMessageBodyReader(mp.getParameterClass(), mp.getGenericType(),
                      mp.getAnnotations(), contentType);
                if (entityReader == null)
                {
-                  if (LOG.isDebugEnabled())
+                  List<String> contentLength =
+                     context.getContainerRequest().getRequestHeader(HttpHeaders.CONTENT_LENGTH);
+                  int length = 0;
+                  if (contentLength != null && contentLength.size() > 0)
                   {
-                     LOG.warn("Unsupported media type. ");
+                     length = Integer.parseInt(contentLength.get(0));
                   }
 
-                  throw new WebApplicationException(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
-               }
-
-               try
-               {
-                  p[i++] =
-                     entityReader.readFrom(mp.getParameterClass(), mp.getGenericType(), mp.getAnnotations(),
-                        contentType, headers, entityStream);
-               }
-               catch (IOException e)
-               {
-
-                  if (LOG.isDebugEnabled())
+                  if (contentType == null && length == 0)
                   {
-                     e.printStackTrace();
+                     // If both Content-Length and Content-Type is not set
+                     // consider there is no content. In this case we not able
+                     // to determine reader required for content but
+                     // 'Unsupported Media Type' (415) status looks strange if
+                     // there is no content at all.
+                     p[i++] = null;
                   }
-
-                  throw new InternalException(e);
-
+                  else
+                  {
+                     String msg =
+                        "Media type " + contentType + " is not supported. There is no corresponded entity reader.";
+                     if (LOG.isDebugEnabled())
+                     {
+                        LOG.warn(msg);
+                     }
+                     throw new WebApplicationException(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).entity(
+                        msg).type(MediaType.TEXT_PLAIN).build());
+                  }
+               }
+               else
+               {
+                  try
+                  {
+                     MultivaluedMap<String, String> headers = context.getContainerRequest().getRequestHeaders();
+                     p[i++] =
+                        entityReader.readFrom(mp.getParameterClass(), mp.getGenericType(), mp.getAnnotations(),
+                           contentType, headers, entityStream);
+                  }
+                  catch (Exception e)
+                  {
+                     if (LOG.isDebugEnabled())
+                     {
+                        e.printStackTrace();
+                     }
+                     if (e instanceof WebApplicationException)
+                     {
+                        throw (WebApplicationException)e;
+                     }
+                     throw new InternalException(e);
+                  }
                }
             }
          }

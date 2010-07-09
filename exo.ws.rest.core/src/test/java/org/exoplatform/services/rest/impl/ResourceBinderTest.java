@@ -45,14 +45,14 @@ public class ResourceBinderTest extends BaseTest
 
    public void testBind()
    {
-      binder.bind(Resource.class);
+      binder.addResource(Resource.class, null);
       assertEquals(1, binder.getSize());
    }
 
    public void testUnbind()
    {
-      binder.bind(Resource.class);
-      binder.unbind(Resource.class);
+      binder.addResource(Resource.class, null);
+      binder.removeResource(Resource.class);
       assertEquals(0, binder.getSize());
    }
 
@@ -95,24 +95,51 @@ public class ResourceBinderTest extends BaseTest
 
    public void testSameResourceURI()
    {
-      assertTrue(binder.bind(SameURIResource1.class));
+      binder.addResource(SameURIResource1.class, null);
       assertEquals(1, binder.getSize());
-      assertFalse(binder.bind(SameURIResource2.class));
+      try
+      {
+         binder.addResource(SameURIResource2.class, null);
+      }
+      catch (ResourcePublicationException e)
+      {
+      }
       assertEquals(1, binder.getSize());
+
       binder.clear();
-      assertTrue(binder.bind(SameURIResource2.class));
+      binder.addResource(SameURIResource2.class, null);
       assertEquals(1, binder.getSize());
-      assertFalse(binder.bind(SameURIResource1.class));
+      try
+      {
+         binder.addResource(SameURIResource1.class, null);
+      }
+      catch (ResourcePublicationException e)
+      {
+      }
       assertEquals(1, binder.getSize());
+
       binder.clear();
-      assertTrue(binder.bind(new SameURIResource1()));
+      binder.addResource(new SameURIResource1(), null);
       assertEquals(1, binder.getSize());
-      assertFalse(binder.bind(new SameURIResource2()));
+      try
+      {
+         binder.addResource(new SameURIResource2(), null);
+      }
+      catch (ResourcePublicationException e)
+      {
+      }
       assertEquals(1, binder.getSize());
+
       binder.clear();
-      assertTrue(binder.bind(new SameURIResource2()));
+      binder.addResource(new SameURIResource2(), null);
       assertEquals(1, binder.getSize());
-      assertFalse(binder.bind(new SameURIResource1()));
+      try
+      {
+         binder.addResource(new SameURIResource1(), null);
+      }
+      catch (ResourcePublicationException e)
+      {
+      }
       assertEquals(1, binder.getSize());
    }
 

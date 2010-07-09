@@ -62,14 +62,10 @@ import javax.ws.rs.core.Response.Status;
 public class RequestDispatcher
 {
 
-   /**
-    * Logger.
-    */
+   /** Logger. */
    private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.RequestDispatcher");
 
-   /**
-    * See {@link ResourceBinder}.
-    */
+   /** See {@link ResourceBinder}. */
    protected final ResourceBinder resourceBinder;
 
    private final MethodInvokerFactory invokerFactory;
@@ -370,7 +366,6 @@ public class RequestDispatcher
       if (returnType == void.class || o == null)
       {
          response.setResponse(Response.noContent().build());
-
       }
       else if (Response.class.isAssignableFrom(returnType))
       {
@@ -380,19 +375,14 @@ public class RequestDispatcher
          {
             r.getMetadata().putSingle(HttpHeaders.CONTENT_TYPE, contentType);
          }
-
          response.setResponse(r);
-
       }
       else if (GenericEntity.class.isAssignableFrom(returnType))
       {
-
          response.setResponse(Response.ok(o, contentType).build());
-
       }
       else
       {
-
          response.setResponse(Response.ok(o, contentType).build());
       }
 
@@ -565,60 +555,28 @@ public class RequestDispatcher
    }
 
    /**
-    * Get root resource
+    * Get root resource.
     *
     * @param parameterValues is taken from context
     * @param requestPath is taken from context
     * @return root resource
+    * @throws WebApplicationException if there is no matched root resources.
+    *         Exception with prepared error response with 'Not Found' status
     */
    protected ObjectFactory<AbstractResourceDescriptor> getRootResourse(List<String> parameterValues, String requestPath)
    {
-      ObjectFactory<AbstractResourceDescriptor> resourceFactory = null;
-      List<ObjectFactory<AbstractResourceDescriptor>> resources = resourceBinder.getResources();
-      // be sure no new entries added
-      synchronized (resources)
-      {
-         for (ObjectFactory<AbstractResourceDescriptor> rc : resources)
-         {
-            if (rc.getObjectModel().getUriPattern().match(requestPath, parameterValues))
-            {
-               // all times will at least 1
-               int len = parameterValues.size();
-               // If capturing group contains last element and this element is
-               // neither null nor '/' then ResourceClass must contains at least one
-               // sub-resource method or sub-resource locator.
-               if (parameterValues.get(len - 1) != null && !parameterValues.get(len - 1).equals("/"))
-               {
-                  int subresnum =
-                     rc.getObjectModel().getSubResourceMethods().size()
-                        + rc.getObjectModel().getSubResourceLocators().size();
-                  if (subresnum == 0)
-                  {
-                     continue;
-                  }
-               }
-               resourceFactory = rc;
-               break;
-            }
-         }
-
-      }
-
+      ObjectFactory<AbstractResourceDescriptor> resourceFactory =
+         resourceBinder.getMatchedResource(requestPath, parameterValues);
       if (resourceFactory == null)
       {
-
          if (LOG.isDebugEnabled())
          {
             LOG.debug("Root resource not found for " + requestPath);
          }
-
          // Stop here, there is no matched root resource
          throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity(
             "There is no any resources matched to request path " + requestPath).type(MediaType.TEXT_PLAIN).build());
       }
-      else
-      {
-         return resourceFactory;
-      }
+      return resourceFactory;
    }
 }

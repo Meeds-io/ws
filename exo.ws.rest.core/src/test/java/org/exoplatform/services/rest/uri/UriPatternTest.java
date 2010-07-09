@@ -129,15 +129,28 @@ public class UriPatternTest extends TestCase
 
    }
 
-   private static void testMatch(String pattern, String uri, String[] values)
+   private boolean log = false;
+
+   private void testMatch(String pattern, String uri, String[] values)
    {
       UriPattern p = new UriPattern(pattern);
-      System.out.println("URI:        " + uri);
-      System.out.println("REGEX:      " + p.getRegex());
+      if (log)
+      {
+         System.out.println("URI:        " + uri);
+         System.out.println("REGEX:      " + p.getRegex());
+         System.out.println("PATTERN:    " + pattern);
+         System.out.println("TEMPLATE:   " + p.getTemplate());
+      }
+
       List<String> l = new ArrayList<String>();
       assertTrue(p.match(uri, l));
-      System.out.println("PARAMETERS: " + p.getParameterNames());
-      System.out.println("VARIABLES:  " + l);
+
+      if (log)
+      {
+         System.out.println("PARAMETERS: " + p.getParameterNames());
+         System.out.println("VARIABLES:  " + l);
+         System.out.println();
+      }
       assertEquals(values.length, l.size());
       int i = 0;
       for (String t : l)

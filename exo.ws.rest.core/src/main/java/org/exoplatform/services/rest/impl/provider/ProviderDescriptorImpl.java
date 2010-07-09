@@ -23,6 +23,7 @@ import org.exoplatform.services.rest.ConstructorDescriptor;
 import org.exoplatform.services.rest.FieldInjector;
 import org.exoplatform.services.rest.impl.ConstructorDescriptorImpl;
 import org.exoplatform.services.rest.impl.FieldInjectorImpl;
+import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 import org.exoplatform.services.rest.impl.header.MediaTypeHelper;
 import org.exoplatform.services.rest.provider.ProviderDescriptor;
 import org.exoplatform.services.rest.resource.ResourceDescriptorVisitor;
@@ -35,6 +36,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -50,7 +52,7 @@ public class ProviderDescriptorImpl implements ProviderDescriptor
 
    /**
     * Resource class constructors.
-    * 
+    *
     * @see {@link ConstructorDescriptor}
     */
    private final List<ConstructorDescriptor> constructors;
@@ -71,6 +73,9 @@ public class ProviderDescriptorImpl implements ProviderDescriptor
     * {@link javax.ws.rs.Produces} .
     */
    private final List<MediaType> produces;
+
+   /** Optional data. */
+   private MultivaluedMap<String, String> properties;
 
    /**
     * @param providerClass provider class
@@ -163,6 +168,30 @@ public class ProviderDescriptorImpl implements ProviderDescriptor
    public Class<?> getObjectClass()
    {
       return providerClass;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public MultivaluedMap<String, String> getProperties()
+   {
+      if (properties == null)
+      {
+         properties = new MultivaluedMapImpl();
+      }
+      return properties;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public List<String> getProperty(String key)
+   {
+      if (properties != null)
+      {
+         return properties.get(key);
+      }
+      return null;
    }
 
    /**

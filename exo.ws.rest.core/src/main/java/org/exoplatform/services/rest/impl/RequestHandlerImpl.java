@@ -18,21 +18,6 @@
  */
 package org.exoplatform.services.rest.impl;
 
-import java.io.File;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.ext.ExceptionMapper;
-
 import org.exoplatform.container.component.ComponentPlugin;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
@@ -53,6 +38,21 @@ import org.exoplatform.services.rest.method.MethodInvokerFilter;
 import org.exoplatform.services.rest.provider.EntityProvider;
 import org.picocontainer.Startable;
 
+import java.io.File;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.ext.ExceptionMapper;
+
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
@@ -67,7 +67,7 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
 
    /**
     * Application properties. Properties from this map will be copied to ApplicationContext
-    * and may be accessible via method {@link ApplicationContextImpl#getProperties()}. 
+    * and may be accessible via method {@link ApplicationContextImpl#getProperties()}.
     */
    private static final Map<String, String> properties = new HashMap<String, String>();
 
@@ -90,7 +90,7 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
 
    /**
     * Constructs new instance of {@link RequestHandler}.
-    * 
+    *
     * @param dispatcher See {@link RequestDispatcher}
     * @param params init parameters
     */
@@ -248,7 +248,7 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
 
    /**
     * Create error response with specified status and body message.
-    *  
+    *
     * @param status response status
     * @param message response message
     * @return response
@@ -267,7 +267,7 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
 
    /**
     * Get JAXR header for response status.
-    * 
+    *
     * @param status response status
     * @return JAXRS header or null.
     */
@@ -372,7 +372,7 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
 
    /**
     * Processing {@link ComponentPlugin} for injection external components.
-    * 
+    *
     * @param plugin See {@link ComponentPlugin}
     */
    @SuppressWarnings("unchecked")

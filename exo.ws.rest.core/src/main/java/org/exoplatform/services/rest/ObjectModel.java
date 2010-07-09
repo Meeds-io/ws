@@ -20,9 +20,11 @@ package org.exoplatform.services.rest;
 
 import java.util.List;
 
+import javax.ws.rs.core.MultivaluedMap;
+
 /**
  * Abstract description of object.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
@@ -30,7 +32,7 @@ public interface ObjectModel
 {
 
    /**
-    * @return collections constructor, MAY return empty collection or null if
+    * @return collections constructor, return empty collection not null if
     *         object is singleton. There is no setter for this to add new
     *         ConstructorInjector use
     *         <code>ObjectModel.getConstructorDescriptors().add(ConstructorInjector)</code>
@@ -38,8 +40,8 @@ public interface ObjectModel
    List<ConstructorDescriptor> getConstructorDescriptors();
 
    /**
-    * @return collections of object fields, MAY return empty collection or null
-    *         if object is singleton. There is no setter for this to add new
+    * @return collections of object fields, return empty collection not null if
+    *         object is singleton. There is no setter for this to add new
     *         ConstructorInjector use
     *         <code>ObjectModel.getFieldInjectors().add(FieldInjector)</code>
     */
@@ -49,5 +51,20 @@ public interface ObjectModel
     * @return {@link Class} of object
     */
    Class<?> getObjectClass();
+
+   /**
+    * @param key
+    * @return property by key
+    * @see #getProperties()
+    */
+   List<String> getProperty(String key);
+
+   /**
+    * Optional attributes.
+    *
+    * @return all properties. If there is no any optional attributes then empty
+    *         map returned never <code>null</code>
+    */
+   MultivaluedMap<String, String> getProperties();
 
 }

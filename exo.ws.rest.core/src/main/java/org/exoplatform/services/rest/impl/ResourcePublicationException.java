@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2009 eXo Platform SAS.
+/**
+ * Copyright (C) 2010 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -16,44 +16,24 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.exoplatform.services.rest.impl.resource;
+
+package org.exoplatform.services.rest.impl;
 
 /**
- * Describe the Path annotation, see {@link javax.ws.rs.Path}.
+ * Throws if root resource can't be published, e.g. resource can't be registered
+ * because to conflict of root path
  *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: $
+ * @version $Id$
  */
-public class PathValue
+public class ResourcePublicationException extends RuntimeException
 {
 
-   /**
-    * URI template, see {@link javax.ws.rs.Path#value()} .
-    */
-   private final String path;
+   private static final long serialVersionUID = -7293299406099524107L;
 
-   /**
-    * @param path URI template
-    */
-   public PathValue(String path)
+   public ResourcePublicationException(String message)
    {
-      this.path = path;
-   }
-
-   /**
-    * @return URI template string
-    */
-   public String getPath()
-   {
-      return path;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public String toString()
-   {
-      return "(" + path + ")";
+      super(message);
    }
 
 }

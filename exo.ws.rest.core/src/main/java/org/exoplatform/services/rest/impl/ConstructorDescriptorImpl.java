@@ -233,11 +233,14 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
             }
             catch (Exception e)
             {
+               String msg = "Not able resolve constructor parameter " + cp;
                Class<?> ac = a.annotationType();
                if (ac == MatrixParam.class || ac == QueryParam.class || ac == PathParam.class)
-                  throw new WebApplicationException(e, Response.status(Response.Status.NOT_FOUND).build());
+                  throw new WebApplicationException(e, Response.status(Response.Status.NOT_FOUND).entity(msg).type(
+                     MediaType.TEXT_PLAIN).build());
 
-               throw new WebApplicationException(e, Response.status(Response.Status.BAD_REQUEST).build());
+               throw new WebApplicationException(e, Response.status(Response.Status.BAD_REQUEST).entity(msg).type(
+                  MediaType.TEXT_PLAIN).build());
             }
          }
          else

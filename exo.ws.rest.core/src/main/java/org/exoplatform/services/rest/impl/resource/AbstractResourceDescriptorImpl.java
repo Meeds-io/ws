@@ -131,9 +131,7 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
     */
    private final List<FieldInjector> fields;
 
-   /**
-    * Optional data
-    */
+   /** Optional data. */
    private MultivaluedMap<String, String> properties;
 
    private final MethodInvokerFactory invokerFactory;

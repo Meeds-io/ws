@@ -63,28 +63,28 @@ public abstract class BaseTest extends TestCase
    {
    }
 
-   public boolean registry(Object resource) throws Exception
+   public void registry(Object resource) throws Exception
    {
       //    container.registerComponentInstance(resource);
-      return binder.bind(resource);
+      binder.addResource(resource, null);
    }
 
-   public boolean registry(Class<?> resourceClass) throws Exception
+   public void registry(Class<?> resourceClass) throws Exception
    {
       //    container.registerComponentImplementation(resourceClass.getName(), resourceClass);
-      return binder.bind(resourceClass);
+      binder.addResource(resourceClass, null);
    }
 
-   public boolean unregistry(Object resource)
+   public void unregistry(Object resource)
    {
       //    container.unregisterComponentByInstance(resource);
-      return binder.unbind(resource.getClass());
+      binder.removeResource(resource.getClass());
    }
 
-   public boolean unregistry(Class<?> resourceClass)
+   public void unregistry(Class<?> resourceClass)
    {
       //    container.unregisterComponent(resourceClass.getName());
-      return binder.unbind(resourceClass);
+      binder.removeResource(resourceClass);
    }
 
 }
