@@ -68,6 +68,12 @@ import javax.ws.rs.ext.RuntimeDelegate;
 public class ResourceBinder
 {
 
+   /**
+    * Name of property which may contains resource expiration date. Date
+    * expected as string representation of java.util.Date in long format.
+    */
+   public static final String RESOURCE_EXPIRED = "resource.expiration.date";
+
    /** Logger. */
    private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.ResourceBinder");
 
@@ -93,11 +99,80 @@ public class ResourceBinder
          }
       };
 
+   static boolean cleanerStop = false;
+
+   protected class ResourceCleaner implements Runnable
+   {
+
+      private final int cleanerDelay;
+
+      /**
+       * @param cleanerDelay cleaner process delay in seconds
+       */
+      public ResourceCleaner(int cleanerDelay)
+      {
+         this.cleanerDelay = cleanerDelay;
+      }
+
+      public void run()
+      {
+         while (!cleanerStop)
+         {
+            try
+            {
+               Thread.sleep(cleanerDelay * 1000L);
+            }
+            catch (InterruptedException e)
+            {
+               ;
+            }
+            if (!cleanerStop)
+            {
+               processResources();
+            }
+         }
+      }
+
+      protected void processResources()
+      {
+         if (LOG.isDebugEnabled())
+            LOG.debug("Start resource cleaner");
+
+         synchronized (rootResources)
+         {
+            for (Iterator<ObjectFactory<AbstractResourceDescriptor>> iter = rootResources.iterator(); iter.hasNext();)
+            {
+               ObjectFactory<AbstractResourceDescriptor> next = iter.next();
+               List<String> str = next.getObjectModel().getProperty(RESOURCE_EXPIRED);
+               long expirationDate = -1;
+               if (str != null && str.size() > 0)
+               {
+                  try
+                  {
+                     expirationDate = Long.parseLong(str.get(0));
+                  }
+                  catch (NumberFormatException e)
+                  {
+                     ;
+                  }
+               }
+               if (expirationDate > 0 && expirationDate < System.currentTimeMillis())
+               {
+                  iter.remove();
+                  for (ResourceListener listener: resourceListeners)
+                  {
+                     listener.resourceRemoved(next.getObjectModel());
+                  }
+                  if (LOG.isDebugEnabled())
+                     LOG.debug("Remove expired resource: " + next.getObjectModel());
+               }
+            }
+         }
+      }
+   }
+
    /** Validator. */
    protected final ResourceDescriptorVisitor rdv = ResourceDescriptorValidator.getInstance();
-
-   /** Amount of available root resources. */
-   protected int size = 0;
 
    /** @see RuntimeDelegate */
    protected final RuntimeDelegate rd;
@@ -111,6 +186,9 @@ public class ResourceBinder
    /** List of all available root resources. */
    protected final List<ObjectFactory<AbstractResourceDescriptor>> rootResources =
       new ArrayList<ObjectFactory<AbstractResourceDescriptor>>();
+
+   /** Resource listeners. */
+   protected final List<ResourceListener> resourceListeners = new ArrayList<ResourceListener>();
 
    public ResourceBinder(ExoContainerContext containerContext) throws Exception
    {
@@ -163,6 +241,10 @@ public class ResourceBinder
             LOG.error("Failed add JAX-RS resource " + resource.getClass().getName(), e);
          }
       }
+
+      Thread cleaner = new Thread(new ResourceCleaner(60));
+      cleaner.setDaemon(true);
+      cleaner.start();
    }
 
    /**
@@ -377,10 +459,26 @@ public class ResourceBinder
          }
          rootResources.add(resourceFactory);
          Collections.sort(rootResources, RESOURCE_COMPARATOR);
-         size++;
+         for (ResourceListener listener: resourceListeners)
+         {
+            listener.resourceAdded(resourceFactory.getObjectModel());
+         }
          if (LOG.isDebugEnabled())
             LOG.debug("Add resource: " + resourceFactory.getObjectModel());
       }
+   }
+
+   /**
+    * Register new resource listener.
+    *
+    * @param listener listener
+    * @see ResourceListener
+    */
+   public void addResourceListener(ResourceListener listener)
+   {
+      resourceListeners.add(listener);
+      if (LOG.isDebugEnabled())
+         LOG.debug("Resource listener added: " + listener);
    }
 
    /**
@@ -437,7 +535,6 @@ public class ResourceBinder
       synchronized (rootResources)
       {
          rootResources.clear();
-         size = 0;
       }
    }
 
@@ -493,7 +590,7 @@ public class ResourceBinder
    @Deprecated
    public List<AbstractResourceDescriptor> getRootResources()
    {
-      List<AbstractResourceDescriptor> l = new ArrayList<AbstractResourceDescriptor>(size);
+      List<AbstractResourceDescriptor> l = new ArrayList<AbstractResourceDescriptor>(rootResources.size());
       synchronized (rootResources)
       {
          for (ObjectFactory<AbstractResourceDescriptor> f : rootResources)
@@ -509,7 +606,7 @@ public class ResourceBinder
     */
    public int getSize()
    {
-      return size;
+      return rootResources.size();
    }
 
    /**
@@ -538,7 +635,10 @@ public class ResourceBinder
          }
          if (resource != null)
          {
-            size--;
+            for (ResourceListener listener: resourceListeners)
+            {
+               listener.resourceRemoved(resource.getObjectModel());
+            }
             if (LOG.isDebugEnabled())
                LOG.debug("Remove resource: " + resource.getObjectModel());
          }
@@ -573,7 +673,10 @@ public class ResourceBinder
          }
          if (resource != null)
          {
-            size--;
+            for (ResourceListener listener: resourceListeners)
+            {
+               listener.resourceRemoved(resource.getObjectModel());
+            }
             if (LOG.isDebugEnabled())
                LOG.debug("Remove resource: " + resource.getObjectModel());
          }
