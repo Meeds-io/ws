@@ -60,12 +60,13 @@ public class GroovySimpleTest extends BaseTest
       assertEquals(0, groovyPublisher.resources.size());
 
       if (singleton)
-         groovyPublisher.publishSingleton(script, resourceId);
+         groovyPublisher.publishSingleton(script, resourceId, null);
       else
-         groovyPublisher.publishPerRequest(script, resourceId);
+         groovyPublisher.publishPerRequest(script, resourceId, null);
 
       assertEquals(1, binder.getSize());
       assertEquals(1, groovyPublisher.resources.size());
+      assertTrue(groovyPublisher.isPublished(resourceId));
 
       String cs =
          binder.getResources().get(0).getObjectModel().getObjectClass().getProtectionDomain().getCodeSource()

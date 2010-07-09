@@ -58,7 +58,7 @@ public class GroovyContextParamTest extends BaseTest
       assertEquals(0, binder.getSize());
       assertEquals(0, groovyPublisher.resources.size());
 
-      groovyPublisher.publishPerRequest(script, new BaseResourceId("g1"));
+      groovyPublisher.publishPerRequest(script, new BaseResourceId("g1"), null);
 
       assertEquals(1, binder.getSize());
       assertEquals(1, groovyPublisher.resources.size());

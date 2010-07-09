@@ -48,7 +48,7 @@ public class GroovyDependenciesTest extends BaseTest
 
    public void testDependency() throws Exception
    {
-      groovyPublisher.publishPerRequest(script, new BaseResourceId("GMain1"));
+      groovyPublisher.publishPerRequest(script, new BaseResourceId("GMain1"), null);
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
       ContainerResponse resp = launcher.service("GET", "/a", "", null, null, writer, null);
       assertEquals(200, resp.getStatus());

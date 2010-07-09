@@ -67,9 +67,9 @@ public class GroovyExoComponentTest extends BaseTest
       assertEquals(0, groovyPublisher.resources.size());
 
       if (singleton)
-         groovyPublisher.publishSingleton(script, resourceId);
+         groovyPublisher.publishSingleton(script, resourceId, null);
       else
-         groovyPublisher.publishPerRequest(script, resourceId);
+         groovyPublisher.publishPerRequest(script, resourceId, null);
 
       assertEquals(1, binder.getSize());
       assertEquals(1, groovyPublisher.resources.size());

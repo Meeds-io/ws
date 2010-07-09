@@ -22,8 +22,12 @@ package org.exoplatform.services.rest.ext.groovy;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyCodeSource;
 
+import org.exoplatform.services.rest.ObjectFactory;
 import org.exoplatform.services.rest.PerRequestObjectFactory;
 import org.exoplatform.services.rest.impl.ResourceBinder;
+import org.exoplatform.services.rest.impl.ResourcePublicationException;
+import org.exoplatform.services.rest.resource.AbstractResourceDescriptor;
+import org.exoplatform.services.rest.uri.UriPattern;
 import org.exoplatform.services.script.groovy.GroovyScriptInstantiator;
 
 import java.io.ByteArrayInputStream;
@@ -32,7 +36,11 @@ import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.ws.rs.Path;
+import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * Manage via {@link ResourceBinder} Groovy based RESTful services.
@@ -55,8 +63,7 @@ public class GroovyJaxrsPublisher
 
    protected GroovyClassLoader gcl;
 
-   protected final Map<ResourceId, Class<?>> resources =
-      Collections.synchronizedMap(new HashMap<ResourceId, Class<?>>());
+   protected final Map<ResourceId, String> resources = Collections.synchronizedMap(new HashMap<ResourceId, String>());
 
    /**
     * Create GroovyJaxrsPublisher which is able publish per-request and
@@ -84,6 +91,33 @@ public class GroovyJaxrsPublisher
    }
 
    /**
+    * Get resource corresponded to specified id <code>resourceId</code> .
+    *
+    * @param resourceId resource id
+    * @return resource or <code>null</code>
+    */
+   public ObjectFactory<AbstractResourceDescriptor> getResource(ResourceId resourceId)
+   {
+      String path = resources.get(resourceId);
+      if (path == null)
+         return null;
+
+      UriPattern pattern = new UriPattern(path);
+      List<ObjectFactory<AbstractResourceDescriptor>> rootResources = binder.getResources();
+      synchronized (rootResources)
+      {
+         for (ObjectFactory<AbstractResourceDescriptor> res : rootResources)
+         {
+            if (res.getObjectModel().getUriPattern().equals(pattern))
+               return res;
+         }
+      }
+      // If resource not exists any more but still in mapping.
+      resources.remove(resourceId);
+      return null;
+   }
+
+   /**
     * Check is groovy resource with specified id is published or not
     *
     * @param resourceId id of resource to be checked
@@ -92,7 +126,7 @@ public class GroovyJaxrsPublisher
     */
    public boolean isPublished(ResourceId resourceId)
    {
-      return resources.containsKey(resourceId);
+      return null != getResource(resourceId);
    }
 
    /**
@@ -100,19 +134,17 @@ public class GroovyJaxrsPublisher
     *
     * @param in stream which contains groovy source code of RESTful service
     * @param resourceId id to be assigned to resource
-    * @return <code>true</code> if resource was published and <code>false</code>
-    *         otherwise
+    * @param properties optional resource properties. This parameter may be
+    *        <code>null</code>
     * @throws NullPointerException if <code>resourceId == null</code>
+    * @throws ResourcePublicationException see
+    *         {@link ResourceBinder#addResource(Class, MultivaluedMap)}
     */
-   public boolean publishPerRequest(InputStream in, ResourceId resourceId)
+   public void publishPerRequest(InputStream in, ResourceId resourceId, MultivaluedMap<String, String> properties)
    {
       Class<?> rc = gcl.parseClass(createCodeSource(in, resourceId.getId()));
-      boolean answ = binder.bind(rc);
-      if (answ)
-      {
-         resources.put(resourceId, rc);
-      }
-      return answ;
+      binder.addResource(rc, properties);
+      resources.put(resourceId, rc.getAnnotation(Path.class).value());
    }
 
    /**
@@ -121,13 +153,15 @@ public class GroovyJaxrsPublisher
     *
     * @param source groovy source code of RESTful service
     * @param resourceId id to be assigned to resource
-    * @return <code>true</code> if resource was published and <code>false</code>
-    *         otherwise
+    * @param properties optional resource properties. This parameter may be
+    *        <code>null</code>
     * @throws NullPointerException if <code>resourceId == null</code>
+    * @throws ResourcePublicationException see
+    *         {@link ResourceBinder#addResource(Class, MultivaluedMap)}
     */
-   public final boolean publishPerRequest(String source, ResourceId resourceId)
+   public final void publishPerRequest(String source, ResourceId resourceId, MultivaluedMap<String, String> properties)
    {
-      return publishPerRequest(source, DEFAULT_CHARSET, resourceId);
+      publishPerRequest(source, DEFAULT_CHARSET, resourceId, properties);
    }
 
    /**
@@ -138,14 +172,17 @@ public class GroovyJaxrsPublisher
     * @param charset source string charset. May be <code>null</code> than
     *        default charset will be in use
     * @param resourceId id to be assigned to resource
-    * @return <code>true</code> if resource was published and <code>false</code>
-    *         otherwise
+    * @param properties optional resource properties. This parameter may be
+    *        <code>null</code>.
     * @throws UnsupportedCharsetException if <code>charset</code> is unsupported
     * @throws NullPointerException if <code>resourceId == null</code>
+    * @throws ResourcePublicationException see
+    *         {@link ResourceBinder#addResource(Class, MultivaluedMap)}
     */
-   public final boolean publishPerRequest(String source, String charset, ResourceId resourceId)
+   public final void publishPerRequest(String source, String charset, ResourceId resourceId,
+      MultivaluedMap<String, String> properties)
    {
-      return publishPerRequest(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId);
+      publishPerRequest(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId, properties);
    }
 
    /**
@@ -153,19 +190,17 @@ public class GroovyJaxrsPublisher
     *
     * @param in stream which contains groovy source code of RESTful service
     * @param resourceId id to be assigned to resource
-    * @return <code>true</code> if resource was published and <code>false</code>
-    *         otherwise
+    * @param properties optional resource properties. This parameter may be
+    *        <code>null</code>
     * @throws NullPointerException if <code>resourceId == null</code>
+    * @throws ResourcePublicationException see
+    *         {@link ResourceBinder#addResource(Object, MultivaluedMap)}
     */
-   public boolean publishSingleton(InputStream in, ResourceId resourceId)
+   public void publishSingleton(InputStream in, ResourceId resourceId, MultivaluedMap<String, String> properties)
    {
       Object r = instantiator.instantiateScript(createCodeSource(in, resourceId.getId()), gcl);
-      boolean answ = binder.bind(r);
-      if (answ)
-      {
-         resources.put(resourceId, r.getClass());
-      }
-      return answ;
+      binder.addResource(r, properties);
+      resources.put(resourceId, r.getClass().getAnnotation(Path.class).value());
    }
 
    /**
@@ -174,13 +209,15 @@ public class GroovyJaxrsPublisher
     *
     * @param source groovy source code of RESTful service
     * @param resourceId name of resource
-    * @return <code>true</code> if resource was published and <code>false</code>
-    *         otherwise
+    * @param properties optional resource properties. This parameter may be
+    *        <code>null</code>.
     * @throws NullPointerException if <code>resourceId == null</code>
+    * @throws ResourcePublicationException see
+    *         {@link ResourceBinder#addResource(Object, MultivaluedMap)}
     */
-   public final boolean publishSingleton(String source, ResourceId resourceId)
+   public final void publishSingleton(String source, ResourceId resourceId, MultivaluedMap<String, String> properties)
    {
-      return publishSingleton(source, DEFAULT_CHARSET, resourceId);
+      publishSingleton(source, DEFAULT_CHARSET, resourceId, properties);
    }
 
    /**
@@ -191,14 +228,17 @@ public class GroovyJaxrsPublisher
     * @param charset source string charset. May be <code>null</code> than
     *        default charset will be in use
     * @param resourceId name of resource
-    * @return <code>true</code> if resource was published and <code>false</code>
-    *         otherwise
+    * @param properties optional resource properties. This parameter may be
+    *        <code>null</code>.
     * @throws UnsupportedCharsetException if <code>charset</code> is unsupported
     * @throws NullPointerException if <code>resourceId == null</code>
+    * @throws ResourcePublicationException see
+    *         {@link ResourceBinder#addResource(Object, MultivaluedMap)}
     */
-   public final boolean publishSingleton(String source, String charset, ResourceId resourceId)
+   public final void publishSingleton(String source, String charset, ResourceId resourceId,
+      MultivaluedMap<String, String> properties)
    {
-      return publishSingleton(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId);
+      publishSingleton(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId, properties);
    }
 
    /**
@@ -222,31 +262,33 @@ public class GroovyJaxrsPublisher
     *         otherwise, e.g. because there is not resource corresponded to
     *         supplied <code>resourceId</code>
     */
-   public boolean unpublishResource(ResourceId resourceId)
+   public ObjectFactory<AbstractResourceDescriptor> unpublishResource(ResourceId resourceId)
    {
-      Class<?> clazz = resources.get(resourceId);
-      boolean answ = false;
-      if (clazz != null)
+      String path = resources.get(resourceId);
+      if (path == null)
       {
-         answ = binder.unbind(clazz);
+         return null;
       }
-      if (answ)
+      ObjectFactory<AbstractResourceDescriptor> resource = binder.removeResource(path);
+      if (resource != null)
       {
          resources.remove(resourceId);
       }
-      return answ;
+      return resource;
    }
 
-   private boolean publishPerRequest(String source, Charset charset, ResourceId resourceId)
+   private void publishPerRequest(String source, Charset charset, ResourceId resourceId,
+      MultivaluedMap<String, String> properties)
    {
       byte[] bytes = source.getBytes(charset);
-      return publishPerRequest(new ByteArrayInputStream(bytes), resourceId);
+      publishPerRequest(new ByteArrayInputStream(bytes), resourceId, properties);
    }
 
-   private boolean publishSingleton(String source, Charset charset, ResourceId resourceId)
+   private void publishSingleton(String source, Charset charset, ResourceId resourceId,
+      MultivaluedMap<String, String> properties)
    {
       byte[] bytes = source.getBytes(charset);
-      return publishSingleton(new ByteArrayInputStream(bytes), resourceId);
+      publishSingleton(new ByteArrayInputStream(bytes), resourceId, properties);
    }
 
    /**
