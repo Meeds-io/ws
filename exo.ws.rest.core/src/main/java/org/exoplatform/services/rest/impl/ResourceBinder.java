@@ -39,6 +39,7 @@ import org.exoplatform.services.rest.resource.AbstractResourceDescriptor;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.rest.resource.ResourceDescriptorVisitor;
 import org.exoplatform.services.rest.uri.UriPattern;
+import org.picocontainer.Startable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,7 +66,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class ResourceBinder
+public class ResourceBinder implements Startable
 {
 
    /**
@@ -99,7 +100,7 @@ public class ResourceBinder
          }
       };
 
-   static boolean cleanerStop = false;
+   protected boolean cleanerStop = false;
 
    protected class ResourceCleaner implements Runnable
    {
@@ -190,6 +191,8 @@ public class ResourceBinder
    /** Resource listeners. */
    protected final List<ResourceListener> resourceListeners = new ArrayList<ResourceListener>();
 
+   protected final ExoContainer container;
+
    public ResourceBinder(ExoContainerContext containerContext) throws Exception
    {
       this(containerContext, null);
@@ -203,54 +206,13 @@ public class ResourceBinder
     */
    public ResourceBinder(ExoContainerContext containerContext, MethodInvokerFactory invokerFactory) throws Exception
    {
-      this(containerContext, null, invokerFactory);
-   }
-
-   @SuppressWarnings("unchecked")
-   protected ResourceBinder(ExoContainerContext containerContext, ResourceCleaner cleaner,
-      MethodInvokerFactory invokerFactory) throws Exception
-   {
       this.invokerFactory = invokerFactory;
-
       // Initialize RuntimeDelegate instance
       // This is first component in life cycle what needs.
       // TODO better solution to initialize RuntimeDelegate
       RuntimeDelegate.setInstance(new RuntimeDelegateImpl());
       rd = RuntimeDelegate.getInstance();
-
-      ExoContainer container = containerContext.getContainer();
-
-      // Lookup Applications
-      List<Application> al = container.getComponentInstancesOfType(Application.class);
-      for (Application a : al)
-      {
-         try
-         {
-            addApplication(a);
-         }
-         catch (Exception e)
-         {
-            LOG.error("Failed add JAX-RS application " + a.getClass().getName(), e);
-         }
-      }
-
-      // Lookup all object which implements ResourceContainer interface and
-      // process them to be add as root resources.
-      for (Object resource : container.getComponentInstancesOfType(ResourceContainer.class))
-      {
-         try
-         {
-            addResource(resource, null);
-         }
-         catch (Exception e)
-         {
-            LOG.error("Failed add JAX-RS resource " + resource.getClass().getName(), e);
-         }
-      }
-
-      Thread thread = new Thread(cleaner == null ? new ResourceCleaner(60) : cleaner);
-      thread.setDaemon(true);
-      thread.start();
+      container = containerContext.getContainer();
    }
 
    /**
@@ -716,4 +678,71 @@ public class ResourceBinder
       return null != removeResource(path);
    }
 
+   /**
+    * {@inheritDoc}
+    */
+   @SuppressWarnings("unchecked")
+   public void start()
+   {
+      // Lookup Applications
+      List<Application> al = container.getComponentInstancesOfType(Application.class);
+      for (Application a : al)
+      {
+         try
+         {
+            addApplication(a);
+         }
+         catch (Exception e)
+         {
+            LOG.error("Failed add JAX-RS application " + a.getClass().getName(), e);
+         }
+      }
+
+      // Lookup all object which implements ResourceContainer interface and
+      // process them to be add as root resources.
+      for (Object resource : container.getComponentInstancesOfType(ResourceContainer.class))
+      {
+         try
+         {
+            addResource(resource, null);
+         }
+         catch (Exception e)
+         {
+            LOG.error("Failed add JAX-RS resource " + resource.getClass().getName(), e);
+         }
+      }
+
+      startResourceCleaner();
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public void stop()
+   {
+      cleanerStop = true;
+   }
+
+   /**
+    * Start resource cleaner which periodically check all available resources
+    * and remove expired. Expired date may be specified by adding special
+    * property (see {@link #RESOURCE_EXPIRED}) when resource added. In example
+    * below resource will be expired in one minute. By default resources check
+    * one time per minute so live time less than one minute is not guaranteed.
+    *
+    * <pre>
+    * ResourceBinder binder = ...
+    * Class<?> resource = ...
+    * MultivaluedMap<String, String> properties = new MultivaluedMapImpl();
+    * properties.putSingle("resource.expiration.date",
+    *    Long.toString(System.currentTimeMillis() + 60000L));
+    * binder.addResource(resource, properties);
+    * </pre>
+    */
+   protected void startResourceCleaner()
+   {
+      Thread thread = new Thread(new ResourceCleaner(60));
+      thread.setDaemon(true);
+      thread.start();
+   }
 }

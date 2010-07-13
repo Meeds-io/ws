@@ -329,8 +329,6 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
     */
    public void stop()
    {
-      // TODO improve
-      ResourceBinder.cleanerStop = true;
    }
 
    //
