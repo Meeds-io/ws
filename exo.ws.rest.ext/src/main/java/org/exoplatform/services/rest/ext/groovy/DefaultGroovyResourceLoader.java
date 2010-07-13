@@ -110,7 +110,6 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
       URL resource = null;
       synchronized (filename)
       {
-         System.out.println(">>>>>>>> "+resources.size());
          resource = resources.get(filename);
          boolean inCache = resource != null;
          for (URL root : roots)
