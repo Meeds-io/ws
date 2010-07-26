@@ -30,6 +30,7 @@ import org.exoplatform.ws.frameworks.json.BookWrapper;
 import org.exoplatform.ws.frameworks.json.JavaMapBean;
 import org.exoplatform.ws.frameworks.json.StringEnum;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
+import org.exoplatform.ws.frameworks.json.value.impl.ArrayValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -151,7 +152,7 @@ public class JsonGeneratorTest extends TestCase
       assertEquals(l.get(2).getTitle(), iterator.next().getElement("title").getStringValue());
    }
 
-   public void test2() throws Exception
+   public void testBeanWithCollections() throws Exception
    {
       JavaMapBean mb = new JavaMapBean();
       Map<String, Book> m = new HashMap<String, Book>();
@@ -201,7 +202,7 @@ public class JsonGeneratorTest extends TestCase
       assertNotNull(jsonValue.getElement("mapList"));
       assertEquals("JUnit in Action", jsonValue.getElement("mapList").getElement("3").getElements().next().getElement(
          "title").getStringValue());
-      // System.out.println(jsonValue);
+      System.out.println(jsonValue);
    }
 
    public void testBeanWithTransientField() throws Exception
@@ -227,7 +228,7 @@ public class JsonGeneratorTest extends TestCase
       be.setCounts(new StringEnum[]{StringEnum.ONE, StringEnum.TWO});
       be.setCountList(Arrays.asList(StringEnum.ONE, StringEnum.TWO, StringEnum.TREE));
       JsonValue jsonValue = new JsonGeneratorImpl().createJsonObject(be);
-      //System.out.println(jsonValue);
+      System.out.println(jsonValue);
 
       assertEquals("name", jsonValue.getElement("name").getStringValue());
 
@@ -260,7 +261,7 @@ public class JsonGeneratorTest extends TestCase
       BeanWithBookEnum be = new BeanWithBookEnum();
       be.setBook(BookEnum.JUNIT_IN_ACTION);
       JsonValue jsonValue = new JsonGeneratorImpl().createJsonObject(be);
-      //System.out.println(jsonValue);
+      System.out.println(jsonValue);
       assertEquals(BookEnum.JUNIT_IN_ACTION.name(), jsonValue.getElement("book").getStringValue());
    }
 

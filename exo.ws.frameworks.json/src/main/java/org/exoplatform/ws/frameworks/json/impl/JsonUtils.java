@@ -30,128 +30,79 @@ import java.util.Map;
 public final class JsonUtils
 {
 
-   /**
-    * Must not be created.
-    */
+   /** Must not be created. */
    private JsonUtils()
    {
    }
 
    static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
-   /**
-    * Known types.
-    */
    public enum Types {
 
-      /**
-       * Byte.
-       */
+      /** Byte. */
       BYTE,
 
-      /**
-       * Short.
-       */
+      /** Short. */
       SHORT,
 
-      /**
-       * Integer.
-       */
+      /** Integer. */
       INT,
 
-      /**
-       * Long.
-       */
+      /** Long. */
       LONG,
 
-      /**
-       * Float.
-       */
+      /** Float. */
       FLOAT,
 
-      /**
-       * Double.
-       */
+      /** Double. */
       DOUBLE,
 
-      /**
-       * Boolean.
-       */
+      /** Boolean. */
       BOOLEAN,
 
-      /**
-       * Char.
-       */
+      /** Char. */
       CHAR,
 
-      /**
-       * String.
-       */
+      /** String. */
       STRING,
 
-      /**
-       * Corresponding to null value.
-       */
+      /** Corresponding to null value. */
       NULL,
 
-      /**
-       * Array of Bytes.
-       */
+      /** Array of bytes. */
       ARRAY_BYTE,
 
-      /**
-       * Array of Shorts.
-       */
+      /** Array of shorts. */
       ARRAY_SHORT,
 
-      /**
-       * Array of Integers.
-       */
+      /** Array of ints. */
       ARRAY_INT,
 
-      /**
-       * Array of Longs.
-       */
+      /** Array of longs. */
       ARRAY_LONG,
 
-      /**
-       * Array of Floats.
-       */
+      /** Array of floats. */
       ARRAY_FLOAT,
 
-      /**
-       * Array of Doubles.
-       */
+      /** Array of doubles. */
       ARRAY_DOUBLE,
 
-      /**
-       * Array of Booleans.
-       */
+      /** Array of booleans. */
       ARRAY_BOOLEAN,
 
-      /**
-       * Array of Chars.
-       */
+      /** Array of chars. */
       ARRAY_CHAR,
 
-      /**
-       * Array of Strings.
-       */
+      /** Array of strings. */
       ARRAY_STRING,
 
-      /**
-       * Array of Java Objects (beans).
-       */
+      /** Array of Java Objects (beans). */
       ARRAY_OBJECT,
 
-      /**
-       * Collection.
-       */
+      /** Collection. */
       COLLECTION,
 
-      /**
-       * Map.
-       */
+      /** Map. */
       MAP,
 
       /**
@@ -164,24 +115,16 @@ public final class JsonUtils
     * Types of Json tokens.
     */
    public enum JsonToken {
-      /**
-       * JSON object, "key":{value1, ... } .
-       */
+      /** JSON object, "key":{value1, ... } . */
       object,
 
-      /**
-       * JSON array "key":[value1, ... ] .
-       */
+      /** JSON array "key":[value1, ... ] . */
       array,
 
-      /**
-       * Key.
-       */
+      /** Key. */
       key,
 
-      /**
-       * Value.
-       */
+      /** Value. */
       value
    }
 
@@ -289,36 +232,55 @@ public final class JsonUtils
    }
 
    /**
-    * Check is given Object is known.
+    * Check is given object has on of types:
+    * <ol>
+    * <li><code>null</code></li>
+    * <li>Primitive type</li>
+    * <li>Primitive type wrapper</li>
+    * <li>String</li>
+    * <li>Array of T where T satisfies 2 or 3 or 4</>
+    * </ol>
     * 
-    * @param o Object.
-    * @return true if Object is known, false otherwise.
+    * @param o Object
+    * @return <code>true</code> if Object has one of described above type,
+    * <code>false</code> otherwise
     */
    public static boolean isKnownType(Object o)
    {
-      if (o == null)
-         return true;
-      return isKnownType(o.getClass());
+      return o == null || isKnownType(o.getClass());
    }
 
    /**
-    * Check is given Class is known.
+    * Check is given class object represents:
+    * <ol>
+    * <li>Primitive type</li>
+    * <li>Primitive type wrapper</li>
+    * <li>String</li>
+    * <li>Array of T where T satisfies 1 or 2 or 3</>
+    * </ol>
     * 
-    * @param clazz Class.
-    * @return true if Class is known, false otherwise.
+    * @param clazz class.
+    * @return <code>true</code> if class object represent one of described
+    * above, <code>false</code> otherwise
     */
    public static boolean isKnownType(Class<?> clazz)
    {
-      if (KNOWN_TYPES.get(clazz.getName()) != null)
-         return true;
-      return false;
+      return KNOWN_TYPES.get(clazz.getName()) != null;
    }
 
    /**
-    * Get 'type' of Object. @see {@link KNOWN_TYPES} .
+    * Get corresponding {@link Types} for specified Object. If object is NOT :
+    * <ol>
+    * <li>Known type (primitive, String, array of primitive or String)</li>
+    * <li>Array</li>
+    * <li>Collection&lt;?&gt;</li>
+    * <li>Map&lt;String, ?&gt;</li>
+    * </ol>
+    * then <code>null</null> will be returned
     * 
     * @param o Object.
-    * @return 'type'.
+    * @return {@link Types} or <code>null</code> (see above)
+    * @see {@link KNOWN_TYPES}.
     */
    public static Types getType(Object o)
    {
@@ -338,10 +300,19 @@ public final class JsonUtils
    }
 
    /**
-    * Get 'type' of Class. @see {@link KNOWN_TYPES} .
+    * Get corresponding {@link Types} for specified class. If class object is
+    * NOT :
+    * <ol>
+    * <li>Known type (primitive, String, array of primitive or String)</li>
+    * <li>Array</li>
+    * <li>Collection</li>
+    * <li>Map</li>
+    * </ol>
+    * then <code>null</null> will be returned
     * 
-    * @param clazz Class.
-    * @return 'type'.
+    * @param o Object.
+    * @return {@link Types} or <code>null</code> (see above)
+    * @see {@link KNOWN_TYPES}.
     */
    public static Types getType(Class<?> clazz)
    {

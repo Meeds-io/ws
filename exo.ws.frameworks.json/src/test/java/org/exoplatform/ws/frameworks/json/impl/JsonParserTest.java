@@ -31,6 +31,7 @@ import org.exoplatform.ws.frameworks.json.JsonHandler;
 import org.exoplatform.ws.frameworks.json.JsonParser;
 import org.exoplatform.ws.frameworks.json.StringEnum;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
+import org.exoplatform.ws.frameworks.json.value.impl.ArrayValue;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
@@ -271,6 +272,18 @@ public class JsonParserTest extends TestCase
       //System.out.println(jsonValue);
       BeanWithBookEnum o = (BeanWithBookEnum)new BeanBuilder().createObject(BeanWithBookEnum.class, jsonValue);
       assertEquals(BookEnum.BEGINNING_C, o.getBook());
+   }
+   
+   public void testArray() throws Exception
+   {
+      String source = "{\"array\":[\"a\",\"b\",\"c\"]}";
+      JsonParser parser = new JsonParserImpl();
+      JsonHandler jsonHandler = new JsonDefaultHandler();
+      parser.parse(new ByteArrayInputStream(source.getBytes()), jsonHandler);
+      JsonValue jsonValue = jsonHandler.getJsonObject();
+      System.out.println(jsonValue.getElement("array").isArray());
+      
+   
    }
 
 }

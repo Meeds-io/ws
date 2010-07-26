@@ -18,17 +18,6 @@
  */
 package org.exoplatform.ws.frameworks.json.impl;
 
-import org.exoplatform.ws.frameworks.json.JsonGenerator;
-import org.exoplatform.ws.frameworks.json.impl.JsonUtils.Types;
-import org.exoplatform.ws.frameworks.json.value.JsonValue;
-import org.exoplatform.ws.frameworks.json.value.impl.ArrayValue;
-import org.exoplatform.ws.frameworks.json.value.impl.BooleanValue;
-import org.exoplatform.ws.frameworks.json.value.impl.DoubleValue;
-import org.exoplatform.ws.frameworks.json.value.impl.LongValue;
-import org.exoplatform.ws.frameworks.json.value.impl.NullValue;
-import org.exoplatform.ws.frameworks.json.value.impl.ObjectValue;
-import org.exoplatform.ws.frameworks.json.value.impl.StringValue;
-
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -41,12 +30,149 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.exoplatform.ws.frameworks.json.JsonGenerator;
+import org.exoplatform.ws.frameworks.json.impl.JsonUtils.Types;
+import org.exoplatform.ws.frameworks.json.value.JsonValue;
+import org.exoplatform.ws.frameworks.json.value.impl.ArrayValue;
+import org.exoplatform.ws.frameworks.json.value.impl.BooleanValue;
+import org.exoplatform.ws.frameworks.json.value.impl.DoubleValue;
+import org.exoplatform.ws.frameworks.json.value.impl.LongValue;
+import org.exoplatform.ws.frameworks.json.value.impl.NullValue;
+import org.exoplatform.ws.frameworks.json.value.impl.ObjectValue;
+import org.exoplatform.ws.frameworks.json.value.impl.StringValue;
+
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: JsonGeneratorImpl.java 34417 2009-07-23 14:42:56Z dkatayev $
  */
 public class JsonGeneratorImpl implements JsonGenerator
 {
+
+   /**
+    * {@inheritDoc}
+    */
+   public JsonValue createJsonArray(Collection<?> collection) throws JsonException
+   {
+      if (collection == null)
+         return new NullValue();
+
+      JsonValue jsonArray = new ArrayValue();
+      for (Object o : collection)
+      {
+         // If :
+         // 1. Known types (primitive, String, array of primitive or String)
+         // 2. Array of any object (expect for Java Bean) 
+         // 3. Collection<?>
+         // 4. Map<String, ?>
+         if (JsonUtils.getType(o) != null)
+            jsonArray.addElement(createJsonValue(o));
+         else
+            jsonArray.addElement(createJsonObject(o));
+      }
+      return jsonArray;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public JsonValue createJsonArray(Object array) throws JsonException
+   {
+      if (array == null)
+         return new NullValue();
+
+      Types t = JsonUtils.getType(array);
+      JsonValue jsonArray = new ArrayValue();
+      int length = Array.getLength(array);
+      if (t == Types.ARRAY_BOOLEAN)
+      {
+         for (int i = 0; i < length; i++)
+            jsonArray.addElement(new BooleanValue(Array.getBoolean(array, i)));
+      }
+      else if (t == Types.ARRAY_BYTE)
+      {
+         for (int i = 0; i < length; i++)
+            jsonArray.addElement(new LongValue(Array.getByte(array, i)));
+      }
+      else if (t == Types.ARRAY_SHORT)
+      {
+         for (int i = 0; i < length; i++)
+            jsonArray.addElement(new LongValue(Array.getShort(array, i)));
+      }
+      else if (t == Types.ARRAY_INT)
+      {
+         for (int i = 0; i < length; i++)
+            jsonArray.addElement(new LongValue(Array.getInt(array, i)));
+      }
+      else if (t == Types.ARRAY_LONG)
+      {
+         for (int i = 0; i < length; i++)
+            jsonArray.addElement(new LongValue(Array.getLong(array, i)));
+      }
+      else if (t == Types.ARRAY_FLOAT)
+      {
+         for (int i = 0; i < length; i++)
+            jsonArray.addElement(new DoubleValue(Array.getFloat(array, i)));
+      }
+      else if (t == Types.ARRAY_DOUBLE)
+      {
+         for (int i = 0; i < length; i++)
+            jsonArray.addElement(new DoubleValue(Array.getDouble(array, i)));
+      }
+      else if (t == Types.ARRAY_CHAR)
+      {
+         for (int i = 0; i < length; i++)
+            jsonArray.addElement(new StringValue(Character.toString(Array.getChar(array, i))));
+      }
+      else if (t == Types.ARRAY_STRING)
+      {
+         for (int i = 0; i < length; i++)
+            jsonArray.addElement(new StringValue((String)Array.get(array, i)));
+      }
+      else if (t == Types.ARRAY_OBJECT)
+      {
+         for (int i = 0; i < length; i++)
+         {
+            Object el = Array.get(array, i);
+            // If :
+            // 1. Known types (primitive, String, array of primitive or String)
+            // 2. Array of any object (expect for Java Bean) 
+            // 3. Collection<?>
+            // 4. Map<String, ?>
+            if (JsonUtils.getType(el) != null)
+               jsonArray.addElement(createJsonValue(el));
+            else
+               jsonArray.addElement(createJsonObject(el));
+         }
+      }
+      else
+      {
+         throw new JsonException("Invalid argument, must be array.");
+      }
+      return jsonArray;
+   }
+
+   public JsonValue createJsonObject(Map<String, Object> map) throws JsonException
+   {
+      if (map == null)
+         return new NullValue();
+
+      JsonValue jsonObject = new ObjectValue();
+      Set<String> keys = map.keySet();
+      for (String k : keys)
+      {
+         Object o = map.get(k);
+         // If :
+         // 1. Known types (primitive, String, array of primitive or String)
+         // 2. Array of any object (expect for Java Bean) 
+         // 3. Collection<?>
+         // 4. Map<String, ?>
+         if (JsonUtils.getType(o) != null)
+            jsonObject.addElement(k, createJsonValue(o));
+         else
+            jsonObject.addElement(k, createJsonObject(o));
+      }
+      return jsonObject;
+   }
 
    /**
     * {@inheritDoc}
@@ -93,6 +219,11 @@ public class JsonGeneratorImpl implements JsonGenerator
                   // Get result of invoke method get...
                   Object invokeResult = method.invoke(object, new Object[0]);
 
+                  // If :
+                  // 1. Known types (primitive, String, array of primitive or String)
+                  // 2. Array of any object (expect for Java Bean) 
+                  // 3. Collection<?>
+                  // 4. Map<String, ?>
                   if (JsonUtils.getType(invokeResult) != null)
                   {
                      jsonRootValue.addElement(key, createJsonValue(invokeResult));
@@ -125,7 +256,7 @@ public class JsonGeneratorImpl implements JsonGenerator
     * @throws JsonException if any errors occurs.
     */
    @SuppressWarnings("unchecked")
-   protected JsonValue createJsonValue(Object object) throws JsonException
+   private JsonValue createJsonValue(Object object) throws JsonException
    {
       Types t = JsonUtils.getType(object);
       switch (t)
@@ -300,16 +431,14 @@ public class JsonGeneratorImpl implements JsonGenerator
     * @param clazz the class.
     * @return list of fields which must be skiped.
     */
-   private static List<String> getTransientFields(Class<?> clazz)
+   private List<String> getTransientFields(Class<?> clazz)
    {
       List<String> l = new ArrayList<String>();
       Field[] fields = clazz.getDeclaredFields();
       for (Field f : fields)
       {
          if (Modifier.isTransient(f.getModifiers()))
-         {
             l.add(f.getName());
-         }
       }
       return l;
    }
