@@ -37,6 +37,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,6 +48,18 @@ import java.util.Set;
  */
 public class JsonGeneratorImpl implements JsonGenerator
 {
+
+   static final Collection<String> SKIP_METHODS = new HashSet<String>();
+
+   static
+   {
+      // Prevent discovering of Java class.
+      SKIP_METHODS.add("getClass");
+      // Since we need support for Groovy must skip this.
+      // All "Groovy Objects" implements interface groovy.lang.GroovyObject
+      // and has method getMetaClass. Not need to discover it.
+      SKIP_METHODS.add("getMetaClass");
+   }
 
    /**
     * {@inheritDoc}
@@ -61,24 +74,28 @@ public class JsonGeneratorImpl implements JsonGenerator
 
       for (Method method : methods)
       {
-         String name = method.getName();
+         String methodName = method.getName();
 
          /*
-          * Method must be as follow: 1. Name starts from "get" plus at least one
-          * character or starts from "is" plus one more character and return
-          * boolean type; 2. Must be without parameters; 3. Not "getClass" method;
+          * Method must be as follow:
+          * 1. Name starts from "get" plus at least one character or starts from
+          * "is" plus at least one more character and return boolean type
+          * 2. Must be without parameters
+          * 3. Must not be in list of skipped methods
           */
+
          String key = null;
-         if (name.startsWith("get") && name.length() > 3 && method.getParameterTypes().length == 0
-            && !"getClass".equals(name))
+         if (!SKIP_METHODS.contains(methodName) && method.getParameterTypes().length == 0)
          {
-            key = name.substring(3);
-         }
-         else if (name.startsWith("is") && name.length() > 2
-            && (method.getReturnType() == Boolean.class || method.getReturnType() == boolean.class)
-            && method.getParameterTypes().length == 0)
-         {
-            key = name.substring(2);
+            if (methodName.startsWith("get") && methodName.length() > 3)
+            {
+               key = methodName.substring(3);
+            }
+            else if (methodName.startsWith("is") && methodName.length() > 2
+               && (method.getReturnType() == Boolean.class || method.getReturnType() == boolean.class))
+            {
+               key = methodName.substring(2);
+            }
          }
 
          if (key != null)
@@ -150,7 +167,7 @@ public class JsonGeneratorImpl implements JsonGenerator
             return new StringValue(Character.toString((Character)object));
          case STRING :
             return new StringValue((String)object);
-         case ENUM:
+         case ENUM :
             return new StringValue(((Enum)object).name());
          case ARRAY_BOOLEAN : {
             JsonValue jsonArray = new ArrayValue();

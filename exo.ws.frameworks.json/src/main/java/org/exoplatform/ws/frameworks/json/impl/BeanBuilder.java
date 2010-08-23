@@ -44,6 +44,16 @@ import java.util.Map;
 public class BeanBuilder
 {
 
+   static final Collection<String> SKIP_METHODS = new HashSet<String>();
+
+   static
+   {
+      // Since we need support for Groovy must skip this.
+      // All "Groovy Objects" implements interface groovy.lang.GroovyObject
+      // and has method setMetaClass. Not need to process it.
+      SKIP_METHODS.add("setMetaClass");
+   }
+
    /**
     * Create Java Bean from Json Source.
     *
@@ -67,21 +77,14 @@ public class BeanBuilder
 
       for (Method method : methods)
       {
-
          String methodName = method.getName();
+         Class<?>[] parameterTypes = method.getParameterTypes();
 
-         if (methodName.startsWith("set") && methodName.length() > "set".length())
+         if (!SKIP_METHODS.contains(methodName) && methodName.startsWith("set") && parameterTypes.length == 1
+                  && methodName.length() > 3)
          {
-            Class<?>[] parameterTypes = method.getParameterTypes();
-
-            if (parameterTypes.length != 1)
-            {
-               throw new JsonException("Each set method must have one parameters, but method " + clazz.getName() + "#"
-                  + method.getName() + " has " + parameterTypes.length);
-            }
-
             Class<?> methodParameterClazz = parameterTypes[0];
-            String key = methodName.substring("set".length());
+            String key = methodName.substring(3);
             // first letter to lower case
             key = (key.length() > 1) ? Character.toLowerCase(key.charAt(0)) + key.substring(1) : key.toLowerCase();
 
