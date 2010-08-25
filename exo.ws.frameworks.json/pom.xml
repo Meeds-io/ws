@@ -39,6 +39,11 @@
          <artifactId>junit</artifactId>
          <scope>test</scope>
       </dependency>
+      <dependency>
+         <groupId>org.codehaus.groovy</groupId>
+         <artifactId>groovy-all</artifactId>
+         <scope>test</scope>
+      </dependency>
    </dependencies>
 
    <build>
@@ -48,6 +53,7 @@
             <includes>
                <include>**/*.json</include>
                <include>**/*.txt</include>
+               <include>**/*.groovy</include>
             </includes>
          </testResource>
       </testResources>
