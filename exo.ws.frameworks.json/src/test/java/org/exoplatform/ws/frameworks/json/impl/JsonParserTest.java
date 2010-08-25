@@ -31,7 +31,6 @@ import org.exoplatform.ws.frameworks.json.JsonHandler;
 import org.exoplatform.ws.frameworks.json.JsonParser;
 import org.exoplatform.ws.frameworks.json.StringEnum;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
-import org.exoplatform.ws.frameworks.json.value.impl.ArrayValue;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;

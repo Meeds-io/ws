@@ -30,7 +30,6 @@ import org.exoplatform.ws.frameworks.json.BookWrapper;
 import org.exoplatform.ws.frameworks.json.JavaMapBean;
 import org.exoplatform.ws.frameworks.json.StringEnum;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
-import org.exoplatform.ws.frameworks.json.value.impl.ArrayValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
