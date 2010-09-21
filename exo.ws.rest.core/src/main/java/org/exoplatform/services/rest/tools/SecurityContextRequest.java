@@ -19,60 +19,66 @@
 
 package org.exoplatform.services.rest.tools;
 
-import java.security.Principal;
-import java.util.HashSet;
-import java.util.Set;
+import org.exoplatform.services.rest.impl.ContainerRequest;
 
+import java.io.InputStream;
+import java.net.URI;
+import java.security.Principal;
+
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 
 /**
+ * For test purposes only. Need this to emulate authenticated user.
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class DummySecurityContext implements SecurityContext
+class SecurityContextRequest extends ContainerRequest
 {
+   private final SecurityContext sctx;
 
-   private final Principal principal;
-
-   private final Set<String> userRoles;
-
-   public DummySecurityContext(Principal principal, Set<String> userRoles)
+   public SecurityContextRequest(String method, URI requestUri, URI baseUri, InputStream entityStream,
+      MultivaluedMap<String, String> httpHeaders, SecurityContext sctx)
    {
-      this.principal = principal;
-      this.userRoles= new HashSet<String>(userRoles);
+      super(method, requestUri, baseUri, entityStream, httpHeaders);
+      this.sctx = sctx;
    }
 
    /**
     * {@inheritDoc}
     */
+   @Override
    public String getAuthenticationScheme()
    {
-      // Consider as Basic Authentication
-      return BASIC_AUTH;
+      return sctx != null ? sctx.getAuthenticationScheme() : null;
    }
 
    /**
     * {@inheritDoc}
     */
+   @Override
    public Principal getUserPrincipal()
    {
-      return principal;
+      return sctx != null ? sctx.getUserPrincipal() : null;
    }
 
    /**
     * {@inheritDoc}
     */
+   @Override
    public boolean isSecure()
    {
-      return false;
+      return sctx != null ? sctx.isSecure() : false;
    }
 
    /**
     * {@inheritDoc}
     */
+   @Override
    public boolean isUserInRole(String role)
    {
-      return userRoles.contains(role);
+      return sctx != null ? sctx.isUserInRole(role) : false;
    }
 
 }

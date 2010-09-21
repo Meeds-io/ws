@@ -32,6 +32,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.SecurityContext;
+
 /**
  * Request launcher. It can be useful for testing services.
  *
@@ -77,10 +79,10 @@ public class ResourceLauncher
       if (writer == null)
          writer = new DummyContainerResponseWriter();
 
-      //      ContainerRequest request =
-      //         new ContainerRequest(method, new URI(requestURI), new URI(baseURI), in, new InputHeadersMap(headers));
+      SecurityContext sctx = (SecurityContext)env.get(SecurityContext.class);
       ContainerRequest request =
-         new DummySecurityContext(method, new URI(requestURI), new URI(baseURI), in, new InputHeadersMap(headers));
+         new SecurityContextRequest(method, new URI(requestURI), new URI(baseURI), in, new InputHeadersMap(headers),
+            sctx);
       ContainerResponse response = new ContainerResponse(writer);
       requestHandler.handleRequest(request, response);
       return response;
