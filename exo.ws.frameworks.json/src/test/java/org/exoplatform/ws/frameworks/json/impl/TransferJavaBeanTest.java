@@ -18,8 +18,6 @@
  */
 package org.exoplatform.ws.frameworks.json.impl;
 
-import junit.framework.TestCase;
-
 import org.exoplatform.ws.frameworks.json.Book;
 import org.exoplatform.ws.frameworks.json.JsonHandler;
 import org.exoplatform.ws.frameworks.json.JsonParser;
@@ -33,7 +31,7 @@ import java.io.ByteArrayOutputStream;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: TransferJavaBeanTest.java 34417 2009-07-23 14:42:56Z dkatayev $
  */
-public class TransferJavaBeanTest extends TestCase
+public class TransferJavaBeanTest extends JsonTest
 {
 
    @Override
@@ -71,7 +69,7 @@ public class TransferJavaBeanTest extends TestCase
 
       jsonParser.parse(in, jsonHandler);
       JsonValue jsonValue = jsonHandler.getJsonObject();
-      Book newBook = (Book)new BeanBuilder().createObject(Book.class, jsonValue);
+      Book newBook = ObjectBuilder.createObject(Book.class, jsonValue);
       assertEquals(author, newBook.getAuthor());
       assertEquals(title, newBook.getTitle());
       assertEquals(pages, newBook.getPages());

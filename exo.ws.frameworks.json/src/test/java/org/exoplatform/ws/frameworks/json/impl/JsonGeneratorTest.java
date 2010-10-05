@@ -18,8 +18,6 @@
  */
 package org.exoplatform.ws.frameworks.json.impl;
 
-import junit.framework.TestCase;
-
 import org.exoplatform.ws.frameworks.json.BeanWithBookEnum;
 import org.exoplatform.ws.frameworks.json.BeanWithSimpleEnum;
 import org.exoplatform.ws.frameworks.json.BeanWithTransientField;
@@ -42,7 +40,7 @@ import java.util.Map;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: JsonGeneratorTest.java 34417 2009-07-23 14:42:56Z dkatayev $
  */
-public class JsonGeneratorTest extends TestCase
+public class JsonGeneratorTest extends JsonTest
 {
 
    @Override
@@ -51,98 +49,103 @@ public class JsonGeneratorTest extends TestCase
       super.setUp();
    }
 
-   public void testSimpleObject() throws Exception
+   public void testBean() throws Exception
    {
-      int _pages = 386;
-      long _isdn = 93011099534534L;
-      double _price = 19.37;
-      String _title = "JUnit in Action";
-      String _author = "Vincent Masson";
-      boolean _delivery = true;
-      boolean _availability = true;
-      Book book = new Book();
-      book.setAuthor(_author);
-      book.setTitle(_title);
-      book.setPages(_pages);
-      book.setPrice(_price);
-      book.setIsdn(_isdn);
-      book.setAvailability(_availability);
-      book.setDelivery(_delivery);
-
-      JsonValue jsonValue = new JsonGeneratorImpl().createJsonObject(book);
+      JsonValue jsonValue = new JsonGeneratorImpl().createJsonObject(junitBook);
       assertTrue(jsonValue.isObject());
-      assertEquals(_author, jsonValue.getElement("author").getStringValue());
-      assertEquals(_title, jsonValue.getElement("title").getStringValue());
-      assertEquals(_pages, jsonValue.getElement("pages").getIntValue());
-      assertEquals(_price, jsonValue.getElement("price").getDoubleValue());
-      assertEquals(_isdn, jsonValue.getElement("isdn").getLongValue());
-      assertEquals(_delivery, jsonValue.getElement("delivery").getBooleanValue());
-      assertEquals(_availability, jsonValue.getElement("availability").getBooleanValue());
+      assertEquals(junitBook.getAuthor(), jsonValue.getElement("author").getStringValue());
+      assertEquals(junitBook.getTitle(), jsonValue.getElement("title").getStringValue());
+      assertEquals(junitBook.getPages(), jsonValue.getElement("pages").getIntValue());
+      assertEquals(junitBook.getPrice(), jsonValue.getElement("price").getDoubleValue());
+      assertEquals(junitBook.getIsdn(), jsonValue.getElement("isdn").getLongValue());
+      assertEquals(junitBook.getDelivery(), jsonValue.getElement("delivery").getBooleanValue());
+      assertEquals(junitBook.isAvailability(), jsonValue.getElement("availability").getBooleanValue());
    }
 
-   public void testSimpleObject2() throws Exception
+   public void testArray() throws Exception
    {
-      int _pages = 386;
-      int _isdn = 930110995;
-      double _price = 19.37;
-      String _title = "JUnit in Action";
-      String _author = "Vincent Masson";
-      boolean _delivery = false;
-      boolean _availability = true;
-      Book book = new Book();
-      book.setAuthor(_author);
-      book.setTitle(_title);
-      book.setPages(_pages);
-      book.setPrice(_price);
-      book.setIsdn(_isdn);
-      book.setAvailability(_availability);
-      book.setDelivery(_delivery);
+      Book[] a = new Book[]{junitBook, csharpBook, javaScriptBook};
+      JsonValue jsonValue = new JsonGeneratorImpl().createJsonArray(a);
+      assertTrue(jsonValue.isArray());
+      Iterator<JsonValue> iterator = jsonValue.getElements();
+      assertEquals(a[0].getTitle(), iterator.next().getElement("title").getStringValue());
+      assertEquals(a[1].getTitle(), iterator.next().getElement("title").getStringValue());
+      assertEquals(a[2].getTitle(), iterator.next().getElement("title").getStringValue());
+      //System.out.println(jsonValue);
+   }
 
+   public void testArrayNull() throws Exception
+   {
+      Book[] a = null;
+      JsonValue jsonValue = new JsonGeneratorImpl().createJsonArray(a);
+      assertTrue(jsonValue.isNull());
+   }
+
+   public void testCollection() throws Exception
+   {
+      List<Book> l = Arrays.asList(junitBook, csharpBook, javaScriptBook);
+      JsonValue jsonValue = new JsonGeneratorImpl().createJsonArray(l);
+      assertTrue(jsonValue.isArray());
+      Iterator<JsonValue> iterator = jsonValue.getElements();
+      assertEquals(l.get(0).getTitle(), iterator.next().getElement("title").getStringValue());
+      assertEquals(l.get(1).getTitle(), iterator.next().getElement("title").getStringValue());
+      assertEquals(l.get(2).getTitle(), iterator.next().getElement("title").getStringValue());
+      //System.out.println(jsonValue);
+   }
+
+   public void testCollectionNull() throws Exception
+   {
+      List<Book> l = null;
+      JsonValue jsonValue = new JsonGeneratorImpl().createJsonArray(l);
+      assertTrue(jsonValue.isNull());
+   }
+
+   public void testMap() throws Exception
+   {
+      Map<String, Book> m = new HashMap<String, Book>();
+      m.put("junit", junitBook);
+      m.put("csharp", csharpBook);
+      m.put("js", javaScriptBook);
+      JsonValue jsonValue = new JsonGeneratorImpl().createJsonObjectFromMap(m);
+      assertTrue(jsonValue.isObject());
+      assertEquals(junitBook.getTitle(), jsonValue.getElement("junit").getElement("title").getStringValue());
+      assertEquals(csharpBook.getTitle(), jsonValue.getElement("csharp").getElement("title").getStringValue());
+      assertEquals(javaScriptBook.getTitle(), jsonValue.getElement("js").getElement("title").getStringValue());
+      //System.out.println(jsonValue);
+   }
+
+   public void testMapNull() throws Exception
+   {
+      Map<String, Book> m = null;
+      JsonValue jsonValue = new JsonGeneratorImpl().createJsonObjectFromMap(m);
+      assertTrue(jsonValue.isNull());
+   }
+
+   public void testBeanWrapper() throws Exception
+   {
       BookWrapper bookWrapper = new BookWrapper();
-      bookWrapper.setBook(book);
+      bookWrapper.setBook(junitBook);
       JsonValue jsonValue = new JsonGeneratorImpl().createJsonObject(bookWrapper);
       assertTrue(jsonValue.isObject());
-      assertEquals(_author, jsonValue.getElement("book").getElement("author").getStringValue());
-      assertEquals(_title, jsonValue.getElement("book").getElement("title").getStringValue());
-      assertEquals(_pages, jsonValue.getElement("book").getElement("pages").getIntValue());
-      assertEquals(_price, jsonValue.getElement("book").getElement("price").getDoubleValue());
-      assertEquals(_isdn, jsonValue.getElement("book").getElement("isdn").getLongValue());
-      assertEquals(_delivery, jsonValue.getElement("book").getElement("delivery").getBooleanValue());
-      assertEquals(_availability, jsonValue.getElement("book").getElement("availability").getBooleanValue());
+      assertEquals(junitBook.getAuthor(), jsonValue.getElement("book").getElement("author").getStringValue());
+      assertEquals(junitBook.getTitle(), jsonValue.getElement("book").getElement("title").getStringValue());
+      assertEquals(junitBook.getPages(), jsonValue.getElement("book").getElement("pages").getIntValue());
+      assertEquals(junitBook.getPrice(), jsonValue.getElement("book").getElement("price").getDoubleValue());
+      assertEquals(junitBook.getIsdn(), jsonValue.getElement("book").getElement("isdn").getLongValue());
+      assertEquals(junitBook.getDelivery(), jsonValue.getElement("book").getElement("delivery").getBooleanValue());
+      assertEquals(junitBook.isAvailability(), jsonValue.getElement("book").getElement("availability")
+         .getBooleanValue());
    }
 
-   public void testSimpleObject3() throws Exception
+   public void testBeanCollection() throws Exception
    {
-      Book book = new Book();
-      book.setAuthor("Vincent Masson");
-      book.setTitle("JUnit in Action");
-      book.setPages(386);
-      book.setPrice(19.37);
-      book.setIsdn(93011099534534L);
-      book.setAvailability(true);
-      book.setDelivery(true);
       List<Book> l = new ArrayList<Book>();
-      l.add(book);
-      book = new Book();
-      book.setAuthor("Christian Gross");
-      book.setTitle("Beginning C# 2008 from novice to professional");
-      book.setPages(511);
-      book.setPrice(23.56);
-      book.setIsdn(9781590598696L);
-      book.setAvailability(true);
-      book.setDelivery(true);
-      l.add(book);
-      book = new Book();
-      book.setAuthor("Chuck Easttom");
-      book.setTitle("Advanced JavaScript, Third Edition");
-      book.setPages(617);
-      book.setPrice(25.99);
-      book.setIsdn(9781598220339L);
-      book.setAvailability(true);
-      book.setDelivery(true);
-      l.add(book);
+      l.add(junitBook);
+      l.add(csharpBook);
+      l.add(javaScriptBook);
       BookStorage bookStorage = new BookStorage();
       bookStorage.setBooks(l);
+
       JsonValue jsonValue = new JsonGeneratorImpl().createJsonObject(bookStorage);
       assertTrue(jsonValue.isObject());
       Iterator<JsonValue> iterator = jsonValue.getElement("books").getElements();
@@ -151,35 +154,19 @@ public class JsonGeneratorTest extends TestCase
       assertEquals(l.get(2).getTitle(), iterator.next().getElement("title").getStringValue());
    }
 
-   public void testBeanWithCollections() throws Exception
+   public void testBeanMap() throws Exception
    {
       JavaMapBean mb = new JavaMapBean();
+
       Map<String, Book> m = new HashMap<String, Book>();
-      Book book = new Book();
-      book.setAuthor("Vincent Masson");
-      book.setTitle("JUnit in Action");
-      book.setPages(386);
-      book.setPrice(19.37);
-      book.setIsdn(93011099534534L);
-      m.put("test", book);
+      m.put("test", junitBook);
       mb.setHashMap((HashMap<String, Book>)m);
 
       List<Book> l = new ArrayList<Book>();
-      l.add(book);
-      book = new Book();
-      book.setAuthor("Christian Gross");
-      book.setTitle("Beginning C# 2008 from novice to professional");
-      book.setPages(511);
-      book.setPrice(23.56);
-      book.setIsdn(9781590598696L);
-      l.add(book);
-      book = new Book();
-      book.setAuthor("Chuck Easttom");
-      book.setTitle("Advanced JavaScript, Third Edition");
-      book.setPages(617);
-      book.setPrice(25.99);
-      book.setIsdn(9781598220339L);
-      l.add(book);
+      l.add(junitBook);
+      l.add(csharpBook);
+      l.add(javaScriptBook);
+
       Map<String, List<Book>> hu = new HashMap<String, List<Book>>();
       hu.put("1", l);
       hu.put("2", l);
@@ -195,31 +182,22 @@ public class JsonGeneratorTest extends TestCase
       JsonValue jsonValue = new JsonGeneratorImpl().createJsonObject(mb);
 
       assertEquals(str.get("key2"), jsonValue.getElement("strings").getElement("key2").getStringValue());
-
       assertNotNull(jsonValue.getElement("hashMap"));
-
       assertNotNull(jsonValue.getElement("mapList"));
-      assertEquals("JUnit in Action", jsonValue.getElement("mapList").getElement("3").getElements().next().getElement(
-         "title").getStringValue());
-      System.out.println(jsonValue);
+      assertEquals("JUnit in Action",
+         jsonValue.getElement("mapList").getElement("3").getElements().next().getElement("title").getStringValue());
+      // System.out.println(jsonValue);
    }
 
-   public void testBeanWithTransientField() throws Exception
+   public void testBeanTransientField() throws Exception
    {
       BeanWithTransientField trBean = new BeanWithTransientField();
       JsonValue jsonValue = new JsonGeneratorImpl().createJsonObject(trBean);
       assertEquals("visible", jsonValue.getElement("field").getStringValue());
-      try
-      {
-         assertEquals("invisible", jsonValue.getElement("transientField").getStringValue());
-         fail("It must not be serialized");
-      }
-      catch (NullPointerException e)
-      {
-      }
+      assertNull(jsonValue.getElement("transientField"));
    }
 
-   public void testEnumSerialization() throws Exception
+   public void testBeanEnum() throws Exception
    {
       BeanWithSimpleEnum be = new BeanWithSimpleEnum();
       be.setName("name");
@@ -227,7 +205,7 @@ public class JsonGeneratorTest extends TestCase
       be.setCounts(new StringEnum[]{StringEnum.ONE, StringEnum.TWO});
       be.setCountList(Arrays.asList(StringEnum.ONE, StringEnum.TWO, StringEnum.TREE));
       JsonValue jsonValue = new JsonGeneratorImpl().createJsonObject(be);
-      System.out.println(jsonValue);
+      //System.out.println(jsonValue);
 
       assertEquals("name", jsonValue.getElement("name").getStringValue());
 
@@ -255,12 +233,12 @@ public class JsonGeneratorTest extends TestCase
       assertTrue(tmp.contains(StringEnum.TREE.name()));
    }
 
-   public void testEnumSerialization2() throws Exception
+   public void testBeanEnumObject() throws Exception
    {
       BeanWithBookEnum be = new BeanWithBookEnum();
       be.setBook(BookEnum.JUNIT_IN_ACTION);
       JsonValue jsonValue = new JsonGeneratorImpl().createJsonObject(be);
-      System.out.println(jsonValue);
+      //System.out.println(jsonValue);
       assertEquals(BookEnum.JUNIT_IN_ACTION.name(), jsonValue.getElement("book").getStringValue());
    }
 

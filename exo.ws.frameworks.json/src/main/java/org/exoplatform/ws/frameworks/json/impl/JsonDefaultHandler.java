@@ -28,8 +28,6 @@ import org.exoplatform.ws.frameworks.json.value.impl.NullValue;
 import org.exoplatform.ws.frameworks.json.value.impl.ObjectValue;
 import org.exoplatform.ws.frameworks.json.value.impl.StringValue;
 
-import java.util.Stack;
-
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: JsonDefaultHandler.java 34417 2009-07-23 14:42:56Z dkatayev $
@@ -37,27 +35,19 @@ import java.util.Stack;
 public class JsonDefaultHandler implements JsonHandler
 {
 
-   /**
-    * The key.
-    */
+   /** The key. */
    private String key;
 
-   /**
-    * JsonValue which is currently in process.
-    */
+   /** JsonValue which is currently in process. */
    private JsonValue current;
 
-   /**
-    * Stack of JsonValues.
-    */
-   private Stack<JsonValue> values;
+   /** Stack of JsonValues. */
+   private JsonStack<JsonValue> values;
 
-   /**
-    * Constructs new JsonHandler.
-    */
+   /** Constructs new JsonHandler. */
    public JsonDefaultHandler()
    {
-      this.values = new Stack<JsonValue>();
+      this.values = new JsonStack<JsonValue>();
    }
 
    /**
@@ -66,9 +56,13 @@ public class JsonDefaultHandler implements JsonHandler
    public void characters(char[] characters)
    {
       if (current.isObject())
+      {
          current.addElement(key, parseCharacters(characters));
+      }
       else if (current.isArray())
+      {
          current.addElement(parseCharacters(characters));
+      }
    }
 
    /**
@@ -101,10 +95,18 @@ public class JsonDefaultHandler implements JsonHandler
    public void startArray()
    {
       ArrayValue o = new ArrayValue();
-      if (current.isObject())
+      if (current == null)
+      {
+         current = o;
+      }
+      else if (current.isObject())
+      {
          current.addElement(key, o);
+      }
       else if (current.isArray())
+      {
          current.addElement(o);
+      }
       values.push(current);
       current = o;
    }
@@ -122,11 +124,25 @@ public class JsonDefaultHandler implements JsonHandler
       }
       ObjectValue o = new ObjectValue();
       if (current.isObject())
+      {
          current.addElement(key, o);
+      }
       else if (current.isArray())
+      {
          current.addElement(o);
+      }
       values.push(current);
       current = o;
+   }
+
+   /**
+    * Reset JSON events handler and prepare it for next usage.
+    */
+   public void reset()
+   {
+      current = null;
+      key = null;
+      values.clear();
    }
 
    /**
@@ -139,13 +155,13 @@ public class JsonDefaultHandler implements JsonHandler
 
    /**
     * Parse characters array dependent of context.
+    *
     * @param characters the characters array.
     * @return JsonValue.
     */
    private JsonValue parseCharacters(char[] characters)
    {
       String s = new String(characters);
-
       if (characters[0] == '"' && characters[characters.length - 1] == '"')
       {
          return new StringValue(s.substring(1, s.length() - 1));
@@ -232,9 +248,6 @@ public class JsonDefaultHandler implements JsonHandler
          }
       }
       // if can't parse return as string
-      /////////////////////////////////////////////
-      //TODO may be better generate exception here
-      /////////////////////////////////////////////
       return new StringValue(s);
    }
 

@@ -18,13 +18,11 @@
  */
 package org.exoplatform.ws.frameworks.json.impl;
 
-import junit.framework.TestCase;
-
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: JsonUtilsTest.java 34417 2009-07-23 14:42:56Z dkatayev $
  */
-public class JsonUtilsTest extends TestCase
+public class JsonUtilsTest extends JsonTest
 {
 
    @Override
@@ -42,34 +40,34 @@ public class JsonUtilsTest extends TestCase
       assertEquals(JsonUtils.getJsonString("str\\ing"), "\"str\\\\ing\"");
       assertEquals(JsonUtils.getJsonString("stri\"ng"), "\"stri\\\"ng\"");
       assertEquals(JsonUtils.getJsonString("stri/ng"), "\"stri/ng\"");
-      int i = 0;
-      for (char c = '\u0000'; c < '\u0020'; c++, i++)
-      {
-         System.out.print(JsonUtils.getJsonString(c + "") + " ");
-         if (i > 10)
-         {
-            System.out.println();
-            i = 0;
-         }
-      }
-      for (char c = '\u0080'; c < '\u00a0'; c++, i++)
-      {
-         System.out.print(JsonUtils.getJsonString(c + " "));
-         if (i > 10)
-         {
-            System.out.println();
-            i = 0;
-         }
-      }
-      for (char c = '\u2000'; c < '\u2100'; c++, i++)
-      {
-         System.out.print(JsonUtils.getJsonString(c + " "));
-         if (i > 10)
-         {
-            System.out.println();
-            i = 0;
-         }
-      }
+      //      int i = 0;
+      //      for (char c = '\u0000'; c < '\u0020'; c++, i++)
+      //      {
+      //         System.out.print(JsonUtils.getJsonString(c + "") + " ");
+      //         if (i > 10)
+      //         {
+      //            System.out.println();
+      //            i = 0;
+      //         }
+      //      }
+      //      for (char c = '\u0080'; c < '\u00a0'; c++, i++)
+      //      {
+      //         System.out.print(JsonUtils.getJsonString(c + " "));
+      //         if (i > 10)
+      //         {
+      //            System.out.println();
+      //            i = 0;
+      //         }
+      //      }
+      //      for (char c = '\u2000'; c < '\u2100'; c++, i++)
+      //      {
+      //         System.out.print(JsonUtils.getJsonString(c + " "));
+      //         if (i > 10)
+      //         {
+      //            System.out.println();
+      //            i = 0;
+      //         }
+      //      }
    }
 
 }

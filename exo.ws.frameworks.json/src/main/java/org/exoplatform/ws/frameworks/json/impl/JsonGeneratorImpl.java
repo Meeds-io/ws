@@ -71,23 +71,7 @@ public class JsonGeneratorImpl implements JsonGenerator
     */
    public JsonValue createJsonArray(Collection<?> collection) throws JsonException
    {
-      if (collection == null)
-         return new NullValue();
-
-      JsonValue jsonArray = new ArrayValue();
-      for (Object o : collection)
-      {
-         // If :
-         // 1. Known types (primitive, String, array of primitive or String)
-         // 2. Array of any object (expect for Java Bean)
-         // 3. Collection<?>
-         // 4. Map<String, ?>
-         if (JsonUtils.getType(o) != null)
-            jsonArray.addElement(createJsonValue(o));
-         else
-            jsonArray.addElement(createJsonObject(o));
-      }
-      return jsonArray;
+      return createJsonValue(collection);
    }
 
    /**
@@ -101,77 +85,20 @@ public class JsonGeneratorImpl implements JsonGenerator
    public JsonValue createJsonArray(Object array) throws JsonException
    {
       if (array == null)
+      {
          return new NullValue();
-
+      }
       Types t = JsonUtils.getType(array);
-      JsonValue jsonArray = new ArrayValue();
-      int length = Array.getLength(array);
-      if (t == Types.ARRAY_BOOLEAN)
+      if (t == Types.ARRAY_BOOLEAN || t == Types.ARRAY_BYTE || t == Types.ARRAY_SHORT || t == Types.ARRAY_INT
+         || t == Types.ARRAY_LONG || t == Types.ARRAY_FLOAT || t == Types.ARRAY_DOUBLE || t == Types.ARRAY_CHAR
+         || t == Types.ARRAY_STRING || t == Types.ARRAY_OBJECT)
       {
-         for (int i = 0; i < length; i++)
-            jsonArray.addElement(new BooleanValue(Array.getBoolean(array, i)));
-      }
-      else if (t == Types.ARRAY_BYTE)
-      {
-         for (int i = 0; i < length; i++)
-            jsonArray.addElement(new LongValue(Array.getByte(array, i)));
-      }
-      else if (t == Types.ARRAY_SHORT)
-      {
-         for (int i = 0; i < length; i++)
-            jsonArray.addElement(new LongValue(Array.getShort(array, i)));
-      }
-      else if (t == Types.ARRAY_INT)
-      {
-         for (int i = 0; i < length; i++)
-            jsonArray.addElement(new LongValue(Array.getInt(array, i)));
-      }
-      else if (t == Types.ARRAY_LONG)
-      {
-         for (int i = 0; i < length; i++)
-            jsonArray.addElement(new LongValue(Array.getLong(array, i)));
-      }
-      else if (t == Types.ARRAY_FLOAT)
-      {
-         for (int i = 0; i < length; i++)
-            jsonArray.addElement(new DoubleValue(Array.getFloat(array, i)));
-      }
-      else if (t == Types.ARRAY_DOUBLE)
-      {
-         for (int i = 0; i < length; i++)
-            jsonArray.addElement(new DoubleValue(Array.getDouble(array, i)));
-      }
-      else if (t == Types.ARRAY_CHAR)
-      {
-         for (int i = 0; i < length; i++)
-            jsonArray.addElement(new StringValue(Character.toString(Array.getChar(array, i))));
-      }
-      else if (t == Types.ARRAY_STRING)
-      {
-         for (int i = 0; i < length; i++)
-            jsonArray.addElement(new StringValue((String)Array.get(array, i)));
-      }
-      else if (t == Types.ARRAY_OBJECT)
-      {
-         for (int i = 0; i < length; i++)
-         {
-            Object el = Array.get(array, i);
-            // If :
-            // 1. Known types (primitive, String, array of primitive or String)
-            // 2. Array of any object (expect for Java Bean)
-            // 3. Collection<?>
-            // 4. Map<String, ?>
-            if (JsonUtils.getType(el) != null)
-               jsonArray.addElement(createJsonValue(el));
-            else
-               jsonArray.addElement(createJsonObject(el));
-         }
+         return createJsonValue(array);
       }
       else
       {
          throw new JsonException("Invalid argument, must be array.");
       }
-      return jsonArray;
    }
 
    /**
@@ -181,52 +108,35 @@ public class JsonGeneratorImpl implements JsonGenerator
     * @return JSON representation of map
     * @throws JsonException if map can't be transformed in JSON representation
     */
-   public JsonValue createJsonObject(Map<String, Object> map) throws JsonException
+   public JsonValue createJsonObjectFromMap(Map<String, ?> map) throws JsonException
    {
-      if (map == null)
-         return new NullValue();
-
-      JsonValue jsonObject = new ObjectValue();
-      Set<String> keys = map.keySet();
-      for (String k : keys)
-      {
-         Object o = map.get(k);
-         // If :
-         // 1. Known types (primitive, String, array of primitive or String)
-         // 2. Array of any object (expect for Java Bean)
-         // 3. Collection<?>
-         // 4. Map<String, ?>
-         if (JsonUtils.getType(o) != null)
-            jsonObject.addElement(k, createJsonValue(o));
-         else
-            jsonObject.addElement(k, createJsonObject(o));
-      }
-      return jsonObject;
+      return createJsonValue(map);
    }
 
    /**
-    * {@inheritDoc}
+    * Create JSON object from specified object. Object must be conform with java
+    * bean structure.
+    *
+    * @param object source object
+    * @return JSON representation of object
+    * @throws JsonException if map can't be transformed in JSON representation
     */
    public JsonValue createJsonObject(Object object) throws JsonException
    {
-      Method[] methods = object.getClass().getMethods();
-
-      List<String> transientFields = getTransientFields(object.getClass());
-
+      Class<?> clazz = object.getClass();
+      Method[] methods = clazz.getMethods();
+      Set<String> transientFields = getTransientFields(clazz);
       JsonValue jsonRootValue = new ObjectValue();
-
       for (Method method : methods)
       {
          String methodName = method.getName();
-
          /*
           * Method must be as follow:
-          * 1. Name starts from "get" plus at least one character or starts from
-          * "is" plus at least one more character and return boolean type
-          * 2. Must be without parameters
-          * 3. Must not be in list of skipped methods
+          * 1. Name starts from "get" plus at least one character or
+          * starts from "is" plus one more character and return boolean type;
+          * 2. Must be without parameters;
+          * 3. Not be in SKIP_METHODS set.
           */
-
          String key = null;
          if (!SKIP_METHODS.contains(methodName) && method.getParameterTypes().length == 0)
          {
@@ -240,7 +150,6 @@ public class JsonGeneratorImpl implements JsonGenerator
                key = methodName.substring(2);
             }
          }
-
          if (key != null)
          {
             // First letter of key to lower case.
@@ -252,12 +161,6 @@ public class JsonGeneratorImpl implements JsonGenerator
                {
                   // Get result of invoke method get...
                   Object invokeResult = method.invoke(object, new Object[0]);
-
-                  // If :
-                  // 1. Known types (primitive, String, array of primitive or String)
-                  // 2. Array of any object (expect for Java Bean)
-                  // 3. Collection<?>
-                  // 4. Map<String, ?>
                   if (JsonUtils.getType(invokeResult) != null)
                   {
                      jsonRootValue.addElement(key, createJsonValue(invokeResult));
@@ -266,15 +169,14 @@ public class JsonGeneratorImpl implements JsonGenerator
                   {
                      jsonRootValue.addElement(key, createJsonObject(invokeResult));
                   }
-
                }
                catch (InvocationTargetException e)
                {
-                  throw new JsonException(e);
+                  throw new JsonException(e.getMessage(), e);
                }
                catch (IllegalAccessException e)
                {
-                  throw new JsonException(e);
+                  throw new JsonException(e.getMessage(), e);
                }
             }
          }
@@ -292,8 +194,8 @@ public class JsonGeneratorImpl implements JsonGenerator
    @SuppressWarnings("unchecked")
    private JsonValue createJsonValue(Object object) throws JsonException
    {
-      Types t = JsonUtils.getType(object);
-      switch (t)
+      Types type = JsonUtils.getType(object);
+      switch (type)
       {
          case NULL :
             return new NullValue();
@@ -413,7 +315,6 @@ public class JsonGeneratorImpl implements JsonGenerator
                   jsonArray.addElement(createJsonObject(el));
                }
             }
-
             return jsonArray;
          }
          case COLLECTION : {
@@ -430,7 +331,6 @@ public class JsonGeneratorImpl implements JsonGenerator
                   jsonArray.addElement(createJsonObject(o));
                }
             }
-
             return jsonArray;
          }
          case MAP :
@@ -449,13 +349,11 @@ public class JsonGeneratorImpl implements JsonGenerator
                   jsonObject.addElement(k, createJsonObject(o));
                }
             }
-
             return jsonObject;
          default :
             // Must not be here!
             return null;
       }
-
    }
 
    /**
@@ -463,18 +361,20 @@ public class JsonGeneratorImpl implements JsonGenerator
     * be not serialized in JSON representation.
     *
     * @param clazz the class.
-    * @return list of fields which must be skiped.
+    * @return set of fields which must be skiped.
     */
-   private List<String> getTransientFields(Class<?> clazz)
+   private static Set<String> getTransientFields(Class<?> clazz)
    {
-      List<String> l = new ArrayList<String>();
+      Set<String> set = new HashSet<String>();
       Field[] fields = clazz.getDeclaredFields();
       for (Field f : fields)
       {
          if (Modifier.isTransient(f.getModifiers()))
-            l.add(f.getName());
+         {
+            set.add(f.getName());
+         }
       }
-      return l;
+      return set;
    }
 
 }

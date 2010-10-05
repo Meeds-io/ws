@@ -18,15 +18,13 @@
  */
 package org.exoplatform.ws.frameworks.json.impl;
 
-import junit.framework.TestCase;
-
 import java.io.ByteArrayOutputStream;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: JsonWriterTest.java 34417 2009-07-23 14:42:56Z dkatayev $
  */
-public class JsonWriterTest extends TestCase
+public class JsonWriterTest extends JsonTest
 {
 
    @Override

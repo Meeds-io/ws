@@ -23,10 +23,10 @@ import groovy.lang.GroovyObject;
 import junit.framework.TestCase;
 
 import org.exoplatform.ws.frameworks.json.JsonHandler;
-import org.exoplatform.ws.frameworks.json.impl.BeanBuilder;
 import org.exoplatform.ws.frameworks.json.impl.JsonDefaultHandler;
 import org.exoplatform.ws.frameworks.json.impl.JsonGeneratorImpl;
 import org.exoplatform.ws.frameworks.json.impl.JsonParserImpl;
+import org.exoplatform.ws.frameworks.json.impl.ObjectBuilder;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
 import org.exoplatform.ws.frameworks.json.value.impl.ObjectValue;
 import org.exoplatform.ws.frameworks.json.value.impl.StringValue;
@@ -46,7 +46,7 @@ public class GroovyBeanTest extends TestCase
       JsonValue ov = new ObjectValue();
       StringValue sv = new StringValue("test restore groovy bean");
       ov.addElement("value", sv);
-      assertEquals("test restore groovy bean", new BeanBuilder().createObject(c, ov).toString());
+      assertEquals("test restore groovy bean", ObjectBuilder.createObject(c, ov).toString());
    }
 
    @SuppressWarnings("unchecked")
@@ -89,7 +89,7 @@ public class GroovyBeanTest extends TestCase
       jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(
          "BookStorage.txt")), jsonHandler);
       JsonValue jv = jsonHandler.getJsonObject();
-      GroovyObject o = (GroovyObject)new BeanBuilder().createObject(c, jv);
+      GroovyObject o = (GroovyObject)ObjectBuilder.createObject(c, jv);
       //System.out.println(o);
       List<GroovyObject> books = (List<GroovyObject>)o.getProperty("books");
       assertEquals(3, books.size());

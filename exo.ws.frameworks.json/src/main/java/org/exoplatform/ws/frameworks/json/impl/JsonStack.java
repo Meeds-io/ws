@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2009 eXo Platform SAS.
+/**
+ * Copyright (C) 2010 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -16,29 +16,48 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.exoplatform.ws.frameworks.json.impl;
 
-import org.exoplatform.ws.frameworks.json.value.JsonValue;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id: BeanBuilder.java 34417 2009-07-23 14:42:56Z dkatayev $
- * @deprecated use {@link ObjectBuilder#createObject(Class, JsonValue)} instead
+ * @version $Id$
  */
-public class BeanBuilder
+class JsonStack<T>
 {
 
-   /**
-    * Create Java Bean from JSON Source.
-    *
-    * @param clazz the Class of target Object.
-    * @param jsonValue the JSON representation.
-    * @return Object.
-    * @throws Exception if any errors occurs.
-    */
-   public Object createObject(Class<?> clazz, JsonValue jsonValue) throws Exception
+   private final List<T> elements;
+
+   JsonStack()
    {
-      return ObjectBuilder.createObject(clazz, jsonValue);
+      elements = new ArrayList<T>(16);
    }
 
+   boolean isEmpty()
+   {
+      return elements.isEmpty();
+   }
+
+   T peek()
+   {
+      return isEmpty() ? null : elements.get(elements.size() - 1);
+   }
+
+   T pop()
+   {
+      return isEmpty() ? null : elements.remove(elements.size() - 1);
+   }
+
+   void push(T token)
+   {
+      elements.add(token);
+   }
+
+   void clear()
+   {
+      elements.clear();
+   }
 }

@@ -105,9 +105,7 @@ public final class JsonUtils
       /** Map. */
       MAP,
 
-      /**
-       * Enum.
-       */
+      /** Enum. */
       ENUM
    }
 
@@ -179,7 +177,7 @@ public final class JsonUtils
 
    /**
     * Transform Java String to JSON string.
-    * 
+    *
     * @param string source String.
     * @return result.
     */
@@ -240,7 +238,7 @@ public final class JsonUtils
     * <li>String</li>
     * <li>Array of T where T satisfies 2 or 3 or 4</>
     * </ol>
-    * 
+    *
     * @param o Object
     * @return <code>true</code> if Object has one of described above type,
     * <code>false</code> otherwise
@@ -258,7 +256,7 @@ public final class JsonUtils
     * <li>String</li>
     * <li>Array of T where T satisfies 1 or 2 or 3</>
     * </ol>
-    * 
+    *
     * @param clazz class.
     * @return <code>true</code> if class object represent one of described
     * above, <code>false</code> otherwise
@@ -277,11 +275,12 @@ public final class JsonUtils
     * <li>Map&lt;String, ?&gt;</li>
     * </ol>
     * then <code>null</null> will be returned
-    * 
+    *
     * @param o Object.
     * @return {@link Types} or <code>null</code> (see above)
     * @see {@link KNOWN_TYPES}.
     */
+   @SuppressWarnings("unchecked")
    public static Types getType(Object o)
    {
       if (o == null)
@@ -309,7 +308,7 @@ public final class JsonUtils
     * <li>Map</li>
     * </ol>
     * then <code>null</null> will be returned
-    * 
+    *
     * @param o Object.
     * @return {@link Types} or <code>null</code> (see above)
     * @see {@link KNOWN_TYPES}.

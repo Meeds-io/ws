@@ -19,15 +19,14 @@
 package org.exoplatform.services.rest.impl.provider;
 
 import org.exoplatform.services.rest.provider.EntityProvider;
-import org.exoplatform.ws.frameworks.json.JsonHandler;
-import org.exoplatform.ws.frameworks.json.JsonParser;
-import org.exoplatform.ws.frameworks.json.JsonWriter;
-import org.exoplatform.ws.frameworks.json.impl.BeanBuilder;
 import org.exoplatform.ws.frameworks.json.impl.JsonDefaultHandler;
 import org.exoplatform.ws.frameworks.json.impl.JsonException;
 import org.exoplatform.ws.frameworks.json.impl.JsonGeneratorImpl;
 import org.exoplatform.ws.frameworks.json.impl.JsonParserImpl;
+import org.exoplatform.ws.frameworks.json.impl.JsonUtils;
 import org.exoplatform.ws.frameworks.json.impl.JsonWriterImpl;
+import org.exoplatform.ws.frameworks.json.impl.ObjectBuilder;
+import org.exoplatform.ws.frameworks.json.impl.JsonUtils.Types;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
 
 import java.io.IOException;
@@ -35,6 +34,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -71,19 +72,38 @@ public class JsonEntityProvider implements EntityProvider<Object>
    /**
     * {@inheritDoc}
     */
+   @SuppressWarnings("unchecked")
    public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType,
       MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
       try
       {
-         JsonParser jsonParser = new JsonParserImpl();
-         JsonHandler jsonHandler = new JsonDefaultHandler();
-         jsonParser.parse(entityStream, jsonHandler);
-         JsonValue jsonValue = jsonHandler.getJsonObject();
-         // jsonValue can be null if stream empty
-         if (jsonValue == null)
-            return null;
-         return new BeanBuilder().createObject(type, jsonValue);
+         JsonParserImpl parser = new JsonParserImpl();
+         JsonDefaultHandler handler = new JsonDefaultHandler();
+
+         parser.parse(entityStream, handler);
+         JsonValue jsonValue = handler.getJsonObject();
+
+         Types jtype = JsonUtils.getType(type);
+         if (jtype == Types.ARRAY_BOOLEAN || jtype == Types.ARRAY_BYTE || jtype == Types.ARRAY_SHORT
+            || jtype == Types.ARRAY_INT || jtype == Types.ARRAY_LONG || jtype == Types.ARRAY_FLOAT
+            || jtype == Types.ARRAY_DOUBLE || jtype == Types.ARRAY_CHAR || jtype == Types.ARRAY_STRING
+            || jtype == Types.ARRAY_OBJECT)
+         {
+            return ObjectBuilder.createArray(type, jsonValue);
+         }
+         if (jtype == Types.COLLECTION)
+         {
+            Class c = type;
+            return ObjectBuilder.createCollection(c, genericType, jsonValue);
+         }
+         if (jtype == Types.MAP)
+         {
+            Class c = type;
+            return ObjectBuilder.createObject(c, genericType, jsonValue);
+         }
+         return ObjectBuilder.createObject(type, jsonValue);
+
       }
       catch (Exception e)
       {
@@ -111,14 +131,37 @@ public class JsonEntityProvider implements EntityProvider<Object>
    /**
     * {@inheritDoc}
     */
+   @SuppressWarnings("unchecked")
    public void writeTo(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
       MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
       try
       {
-         JsonValue jv = new JsonGeneratorImpl().createJsonObject(t);
-         JsonWriter jsonWriter = new JsonWriterImpl(entityStream);
-         jv.writeTo(jsonWriter);
+         JsonGeneratorImpl generator = new JsonGeneratorImpl();
+         JsonValue jsonValue = null;
+         Types jtype = JsonUtils.getType(type);
+         if (jtype == Types.ARRAY_BOOLEAN || jtype == Types.ARRAY_BYTE || jtype == Types.ARRAY_SHORT
+            || jtype == Types.ARRAY_INT || jtype == Types.ARRAY_LONG || jtype == Types.ARRAY_FLOAT
+            || jtype == Types.ARRAY_DOUBLE || jtype == Types.ARRAY_CHAR || jtype == Types.ARRAY_STRING
+            || jtype == Types.ARRAY_OBJECT)
+         {
+            jsonValue = generator.createJsonArray(t);
+         }
+         else if (jtype == Types.COLLECTION)
+         {
+            jsonValue = generator.createJsonArray((Collection<?>)t);
+         }
+         else if (jtype == Types.MAP)
+         {
+            jsonValue = generator.createJsonObjectFromMap((Map<String, ?>)t);
+         }
+         else
+         {
+            jsonValue = generator.createJsonObject(t);
+         }
+
+         JsonWriterImpl jsonWriter = new JsonWriterImpl(entityStream);
+         jsonValue.writeTo(jsonWriter);
          jsonWriter.flush();
       }
       catch (JsonException e)
