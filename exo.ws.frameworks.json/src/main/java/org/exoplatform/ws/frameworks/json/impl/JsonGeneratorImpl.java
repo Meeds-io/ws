@@ -29,6 +29,7 @@ import org.exoplatform.ws.frameworks.json.value.impl.NullValue;
 import org.exoplatform.ws.frameworks.json.value.impl.ObjectValue;
 import org.exoplatform.ws.frameworks.json.value.impl.StringValue;
 
+import java.io.StringReader;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -111,6 +112,22 @@ public class JsonGeneratorImpl implements JsonGenerator
    public JsonValue createJsonObjectFromMap(Map<String, ?> map) throws JsonException
    {
       return createJsonValue(map);
+   }
+
+   /**
+    * Create JSON object from specified string imply it is JSON object in String
+    * format.
+    *
+    * @param s source string
+    * @return JSON representation of map
+    * @throws JsonException if map can't be transformed in JSON representation
+    */
+   public JsonValue createJsonObjectFromString(String s) throws JsonException
+   {
+      JsonParserImpl parser = new JsonParserImpl();
+      JsonDefaultHandler handler = new JsonDefaultHandler();
+      parser.parse(new StringReader(s), handler);
+      return handler.getJsonObject();
    }
 
    /**
