@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -68,10 +69,11 @@ public class JsonEntityProvider implements EntityProvider<Object>
    // Or probably enough check only content type 'application/json'
    // and if this content type set trust it and try parse/write
 
-   /** Do not process via JSON "known" JAX-RS types. */
+   /** Do not process via JSON "known" JAX-RS types and some more. */
    private static final Class<?>[] IGNORED =
-      new Class<?>[]{byte[].class, DataSource.class, DOMSource.class, File.class, InputStream.class, JAXBElement.class,
-         MultivaluedMap.class, Reader.class, SAXSource.class, StreamingOutput.class, StreamSource.class, String.class};
+      new Class<?>[]{byte[].class, char[].class, DataSource.class, DOMSource.class, File.class, InputStream.class,
+         OutputStream.class, JAXBElement.class, MultivaluedMap.class, Reader.class, Writer.class, SAXSource.class,
+         StreamingOutput.class, StreamSource.class, String.class};
 
    private static boolean isIgnored(Class<?> type)
    {
