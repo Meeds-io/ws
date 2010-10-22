@@ -28,13 +28,15 @@ import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 /**
  * Contract of this class thats constrains access to the resource method that
- * use JSR-250 security common annotations. See also https://jsr250.dev.java.net .
- * 
+ * use JSR-250 security common annotations. See also https://jsr250.dev.java.net
+ * .
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
@@ -44,7 +46,7 @@ public class MethodAccessFilter implements MethodInvokerFilter
    /**
     * Check does <tt>method</tt> contains one on of security annotations
     * PermitAll, DenyAll, RolesAllowed.
-    * 
+    *
     * @see PermitAll
     * @see DenyAll
     * @see RolesAllowed {@inheritDoc}
@@ -66,7 +68,9 @@ public class MethodAccessFilter implements MethodInvokerFilter
          {
 
             // nobody allowed to call method
-            throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).build());
+            throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity(
+               "You do not have access rights to this resource, please contact your administrator. ").type(
+               MediaType.TEXT_PLAIN).build());
 
          }
          if (ac == RolesAllowed.class)
@@ -78,14 +82,16 @@ public class MethodAccessFilter implements MethodInvokerFilter
                   return;
 
             // user is not in allowed roles
-            throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).build());
+            throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity(
+               "You do not have access rights to this resource, please contact your administrator. ").type(
+               MediaType.TEXT_PLAIN).build());
          }
       }
    }
 
    /**
     * Extract roles from {@link RolesAllowed} annotation.
-    * 
+    *
     * @param roles See {@link RolesAllowed}
     * @return roles
     */
