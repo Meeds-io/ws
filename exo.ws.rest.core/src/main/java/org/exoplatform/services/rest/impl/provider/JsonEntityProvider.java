@@ -30,17 +30,26 @@ import org.exoplatform.ws.frameworks.json.impl.JsonParserImpl;
 import org.exoplatform.ws.frameworks.json.impl.JsonWriterImpl;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.activation.DataSource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.ext.Provider;
+import javax.xml.bind.JAXBElement;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamSource;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -59,13 +68,31 @@ public class JsonEntityProvider implements EntityProvider<Object>
    // Or probably enough check only content type 'application/json'
    // and if this content type set trust it and try parse/write
 
+   /** Do not process via JSON "known" JAX-RS types and some more. */
+   private static final Class<?>[] IGNORED =
+      new Class<?>[]{byte[].class, char[].class, DataSource.class, DOMSource.class, File.class, InputStream.class,
+         OutputStream.class, JAXBElement.class, MultivaluedMap.class, Reader.class, Writer.class, SAXSource.class,
+         StreamingOutput.class, StreamSource.class, String.class};
+
+   private static boolean isIgnored(Class<?> type)
+   {
+      for (Class<?> c : IGNORED)
+      {
+         if (c.isAssignableFrom(type))
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+
    /**
     * {@inheritDoc}
     */
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      // say as support all objects, see _TODO_ above
-      return Object.class.isAssignableFrom(type);
+      //return Object.class.isAssignableFrom(type);
+      return !isIgnored(type);
    }
 
    /**
@@ -104,8 +131,8 @@ public class JsonEntityProvider implements EntityProvider<Object>
     */
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      // say as support all objects, see _TODO_ above
-      return Object.class.isAssignableFrom(type);
+      //return Object.class.isAssignableFrom(type);
+      return !isIgnored(type);
    }
 
    /**
