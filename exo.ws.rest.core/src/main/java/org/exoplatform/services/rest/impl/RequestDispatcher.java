@@ -21,15 +21,21 @@ package org.exoplatform.services.rest.impl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.ApplicationContext;
+import org.exoplatform.services.rest.ComponentLifecycleScope;
+import org.exoplatform.services.rest.FilterDescriptor;
 import org.exoplatform.services.rest.GenericContainerRequest;
 import org.exoplatform.services.rest.GenericContainerResponse;
 import org.exoplatform.services.rest.ObjectFactory;
+import org.exoplatform.services.rest.RequestFilter;
+import org.exoplatform.services.rest.ResponseFilter;
 import org.exoplatform.services.rest.SingletonObjectFactory;
 import org.exoplatform.services.rest.impl.header.HeaderHelper;
 import org.exoplatform.services.rest.impl.header.MediaTypeHelper;
 import org.exoplatform.services.rest.impl.method.MethodInvokerFactory;
 import org.exoplatform.services.rest.impl.resource.AbstractResourceDescriptorImpl;
+import org.exoplatform.services.rest.impl.resource.ApplicationResource;
 import org.exoplatform.services.rest.method.MethodInvoker;
+import org.exoplatform.services.rest.method.MethodInvokerFilter;
 import org.exoplatform.services.rest.resource.AbstractResourceDescriptor;
 import org.exoplatform.services.rest.resource.ResourceMethodDescriptor;
 import org.exoplatform.services.rest.resource.ResourceMethodMap;
@@ -39,7 +45,10 @@ import org.exoplatform.services.rest.resource.SubResourceMethodDescriptor;
 import org.exoplatform.services.rest.resource.SubResourceMethodMap;
 import org.exoplatform.services.rest.uri.UriPattern;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -52,6 +61,10 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
  * Lookup resource which can serve request.
@@ -62,33 +75,382 @@ import javax.ws.rs.core.Response.Status;
 public class RequestDispatcher
 {
 
+   /**
+    * Set of providers which respects providers specified by JAX-RS
+    * Applications. Default (embedded) providers will be used only if
+    * application does not provide own providers with the same purposes.
+    */
+   private class ProvidersAdapter extends ProviderBinder
+   {
+      private ProviderBinder applicationProviders;
+
+      private ProviderBinder defaultProviders;
+
+      private ProvidersAdapter(ProviderBinder applicationProviders, ProviderBinder defaultProviders)
+      {
+         this.applicationProviders = applicationProviders;
+         this.defaultProviders = defaultProviders;
+      }
+
+      @Override
+      protected void init()
+      {
+         // Do not add default providers here.
+      }
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public void addContextResolver(Class<? extends ContextResolver> clazz, ContextResolver instance,
+         ComponentLifecycleScope scope)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addContextResolver(clazz, instance, scope);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addContextResolver");
+      }
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public void addContextResolver(Class<? extends ContextResolver> clazz)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addContextResolver(clazz);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addContextResolver");
+      }
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public void addContextResolver(ContextResolver instance)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addContextResolver(instance);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addContextResolver");
+      }
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public void addExceptionMapper(Class<? extends ExceptionMapper> clazz, ExceptionMapper instance,
+         ComponentLifecycleScope scope)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addExceptionMapper(clazz, instance, scope);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addExceptionMapper");
+      }
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public void addExceptionMapper(Class<? extends ExceptionMapper> clazz)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addExceptionMapper(clazz);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addExceptionMapper");
+      }
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public void addExceptionMapper(ExceptionMapper instance)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addExceptionMapper(instance);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addExceptionMapper");
+      }
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public void addMessageBodyReader(Class<? extends MessageBodyReader> clazz, MessageBodyReader instance,
+         ComponentLifecycleScope scope)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addMessageBodyReader(clazz, instance, scope);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addMessageBodyReader");
+      }
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public void addMessageBodyReader(Class<? extends MessageBodyReader> clazz)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addMessageBodyReader(clazz);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addMessageBodyReader");
+      }
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public void addMessageBodyReader(MessageBodyReader instance)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addMessageBodyReader(instance);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addMessageBodyReader");
+      }
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public void addMessageBodyWriter(Class<? extends MessageBodyWriter> clazz, MessageBodyWriter instance,
+         ComponentLifecycleScope scope)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addMessageBodyWriter(clazz, instance, scope);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addMessageBodyWriter");
+      }
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public void addMessageBodyWriter(Class<? extends MessageBodyWriter> clazz)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addMessageBodyWriter(clazz);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addMessageBodyWriter");
+      }
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public void addMessageBodyWriter(MessageBodyWriter instance)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addMessageBodyWriter(instance);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addMessageBodyWriter");
+      }
+
+      @Override
+      public void addMethodInvokerFilter(Class<? extends MethodInvokerFilter> clazz, MethodInvokerFilter instance,
+         ComponentLifecycleScope scope)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addMethodInvokerFilter(clazz, instance, scope);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addMethodInvokerFilter");
+      }
+
+      @Override
+      public void addMethodInvokerFilter(Class<? extends MethodInvokerFilter> clazz)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addMethodInvokerFilter(clazz);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addMethodInvokerFilter");
+      }
+
+      @Override
+      public void addMethodInvokerFilter(MethodInvokerFilter instance)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addMethodInvokerFilter(instance);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addMethodInvokerFilter");
+      }
+
+      @Override
+      public void addRequestFilter(Class<? extends RequestFilter> clazz, RequestFilter instance,
+         ComponentLifecycleScope scope)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addRequestFilter(clazz, instance, scope);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addRequestFilter");
+      }
+
+      @Override
+      public void addRequestFilter(Class<? extends RequestFilter> clazz)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addRequestFilter(clazz);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addRequestFilter");
+      }
+
+      @Override
+      public void addRequestFilter(RequestFilter instance)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addRequestFilter(instance);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addRequestFilter");
+      }
+
+      @Override
+      public void addResponseFilter(Class<? extends ResponseFilter> clazz, ResponseFilter instance,
+         ComponentLifecycleScope scope)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addResponseFilter(clazz, instance, scope);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addResponseFilter");
+      }
+
+      @Override
+      public void addResponseFilter(Class<? extends ResponseFilter> clazz)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addResponseFilter(clazz);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addResponseFilter");
+      }
+
+      @Override
+      public void addResponseFilter(ResponseFilter instance)
+      {
+         if (applicationProviders != null)
+            applicationProviders.addResponseFilter(instance);
+         else
+            // Keep default set of providers untouched.
+            throw new UnsupportedOperationException("addResponseFilter");
+      }
+
+      @Override
+      public List<MediaType> getAcceptableWriterMediaTypes(Class<?> type, Type genericType, Annotation[] annotations)
+      {
+         List<MediaType> mediaTypes = null;
+         if (applicationProviders != null)
+            mediaTypes = applicationProviders.getAcceptableWriterMediaTypes(type, genericType, annotations);
+         if (mediaTypes != null)
+         {
+            mediaTypes.addAll(defaultProviders.getAcceptableWriterMediaTypes(type, genericType, annotations));
+            return mediaTypes;
+         }
+         return defaultProviders.getAcceptableWriterMediaTypes(type, genericType, annotations);
+      }
+
+      @Override
+      public <T> ContextResolver<T> getContextResolver(Class<T> contextType, MediaType mediaType)
+      {
+         ContextResolver<T> resolver = null;
+         if (applicationProviders != null)
+            resolver = applicationProviders.getContextResolver(contextType, mediaType);
+         if (resolver == null)
+            resolver = defaultProviders.getContextResolver(contextType, mediaType);
+         return resolver;
+      }
+
+      @Override
+      public <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type)
+      {
+         ExceptionMapper<T> mapper = null;
+         if (applicationProviders != null)
+            mapper = applicationProviders.getExceptionMapper(type);
+         if (mapper == null)
+            mapper = defaultProviders.getExceptionMapper(type);
+         return mapper;
+      }
+
+      @Override
+      public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations,
+         MediaType mediaType)
+      {
+         MessageBodyReader<T> reader = null;
+         if (applicationProviders != null)
+            reader = applicationProviders.getMessageBodyReader(type, genericType, annotations, mediaType);
+         if (reader == null)
+            reader = defaultProviders.getMessageBodyReader(type, genericType, annotations, mediaType);
+         return reader;
+      }
+
+      @Override
+      public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations,
+         MediaType mediaType)
+      {
+         MessageBodyWriter<T> writer = null;
+         if (applicationProviders != null)
+            writer = applicationProviders.getMessageBodyWriter(type, genericType, annotations, mediaType);
+         if (writer == null)
+            writer = defaultProviders.getMessageBodyWriter(type, genericType, annotations, mediaType);
+         return writer;
+      }
+
+      @Override
+      public List<ObjectFactory<FilterDescriptor>> getMethodInvokerFilters(String path)
+      {
+         List<ObjectFactory<FilterDescriptor>> filters = defaultProviders.getMethodInvokerFilters(path);
+         if (applicationProviders != null)
+            filters.addAll(applicationProviders.getMethodInvokerFilters(path));
+         return filters;
+      }
+
+      @Override
+      public List<ObjectFactory<FilterDescriptor>> getRequestFilters(String path)
+      {
+         // NOTE!!! Return only application specific filters. Default filters
+         // should be already applied to request.
+         if (applicationProviders == null)
+            return Collections.emptyList();
+         return applicationProviders.getRequestFilters(path);
+      }
+
+      @Override
+      public List<ObjectFactory<FilterDescriptor>> getResponseFilters(String path)
+      {
+         // NOTE!!! Return only application specific filters. Default filters
+         // should be applied to response later.
+         if (applicationProviders == null)
+            return Collections.emptyList();
+         return applicationProviders.getResponseFilters(path);
+      }
+
+   }
+
    /** Logger. */
    private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.RequestDispatcher");
 
    /** See {@link ResourceBinder}. */
    protected final ResourceBinder resourceBinder;
 
-   private final MethodInvokerFactory invokerFactory;
+   protected final MethodInvokerFactory invokerFactory;
 
-   /**
-    * Constructs new instance of RequestDispatcher.
-    *
-    * @param resourceBinder See {@link ResourceBinder}
-    */
-   public RequestDispatcher(ResourceBinder resourceBinder, MethodInvokerFactory invokerFactory)
+   protected final ProvidersRegistry providersRegistry;
+
+   public RequestDispatcher(ResourceBinder resourceBinder, ProvidersRegistry providersRegistry,
+      MethodInvokerFactory invokerFactory)
    {
       this.resourceBinder = resourceBinder;
+      this.providersRegistry = providersRegistry;
       this.invokerFactory = invokerFactory;
    }
 
-   /**
-    * Constructs new instance of RequestDispatcher.
-    *
-    * @param resourceBinder See {@link ResourceBinder}
-    */
+   public RequestDispatcher(ResourceBinder resourceBinder, ProvidersRegistry providers)
+   {
+      this(resourceBinder, providers, null);
+   }
+
+   @Deprecated
+   public RequestDispatcher(ResourceBinder resourceBinder, MethodInvokerFactory invokerFactory)
+   {
+      this(resourceBinder, null, invokerFactory);
+   }
+
+   @Deprecated
    public RequestDispatcher(ResourceBinder resourceBinder)
    {
-      this(resourceBinder, null);
+      this(resourceBinder, null, null);
    }
 
    /**
@@ -105,20 +467,51 @@ public class RequestDispatcher
 
       // Get root resource
       ObjectFactory<AbstractResourceDescriptor> resourceFactory = getRootResourse(parameterValues, requestPath);
+      AbstractResourceDescriptor resourceDescriptor = resourceFactory.getObjectModel();
+
+      if (providersRegistry != null)
+      {
+         // Be sure instance of ProvidersRegistry injected if this class is extended.
+         String applicationId = null;
+         if (resourceDescriptor instanceof ApplicationResource)
+         {
+            // If resource delivered with subclass of javax.ws.rs.core.Application
+            // it must be instance of ApplicationResource which provide application's identifier.
+            applicationId = ((ApplicationResource)resourceDescriptor).getApplication();
+         }
+         ProviderBinder applicationProviders = providersRegistry.getProviders(applicationId);
+         ((ApplicationContextImpl)context).setProviders(new ProvidersAdapter(applicationProviders, ProviderBinder
+            .getInstance()));
+      }
+      else
+      {
+         LOG.warn("ProvidersRegistry must set. ");
+      }
+
+      // Apply application specific request filters if any
+      for (ObjectFactory<FilterDescriptor> factory : context.getProviders().getRequestFilters(context.getPath()))
+      {
+         RequestFilter f = (RequestFilter)factory.getInstance(context);
+         f.doFilter(request);
+      }
 
       // Take the tail of the request path, the tail will be requested path
       // for lower resources, e. g. ResourceClass -> Sub-resource method/locator
       String newRequestPath = getPathTail(parameterValues);
-
       // save the resource class URI in hierarchy
       context.addMatchedURI(requestPath.substring(0, requestPath.lastIndexOf(newRequestPath)));
-
       context.setParameterNames(resourceFactory.getObjectModel().getUriPattern().getParameterNames());
 
       // may thrown WebApplicationException
       Object resource = resourceFactory.getInstance(context);
-
       dispatch(request, response, context, resourceFactory, resource, newRequestPath);
+
+      // Apply application specific response filters if any
+      for (ObjectFactory<FilterDescriptor> factory : context.getProviders().getResponseFilters(context.getPath()))
+      {
+         ResponseFilter f = (ResponseFilter)factory.getInstance(context);
+         f.doFilter(response);
+      }
    }
 
    /**
@@ -154,34 +547,24 @@ public class RequestDispatcher
       ApplicationContext context, ObjectFactory<AbstractResourceDescriptor> resourceFactory, Object resource,
       String requestPath)
    {
-
       List<String> parameterValues = context.getParameterValues();
       int len = parameterValues.size();
-
       // resource method or sub-resource method or sub-resource locator
-
       ResourceMethodMap<ResourceMethodDescriptor> rmm = resourceFactory.getObjectModel().getResourceMethods();
       SubResourceMethodMap srmm = resourceFactory.getObjectModel().getSubResourceMethods();
       SubResourceLocatorMap srlm = resourceFactory.getObjectModel().getSubResourceLocators();
       if ((parameterValues.get(len - 1) == null || "/".equals(parameterValues.get(len - 1))) && rmm.size() > 0)
       {
-         // resource method, then process HTTP method and consume/produce media
-         // types
-
+         // resource method, then process HTTP method and consume/produce media types
          List<ResourceMethodDescriptor> methods = new ArrayList<ResourceMethodDescriptor>();
          boolean match = processResourceMethod(rmm, request, response, methods);
          if (!match)
          {
             if (LOG.isDebugEnabled())
-            {
                LOG.debug("Not found resource method for method " + request.getMethod());
-            }
-
             return; // Error Response is preset
          }
-
          invokeResourceMethod(methods.get(0), resource, context, request, response);
-
       }
       else
       { // sub-resource method/locator
@@ -202,11 +585,8 @@ public class RequestDispatcher
          if (!match && !hasAcceptableLocator)
          {
             if (LOG.isDebugEnabled())
-            {
                LOG.debug("Not found sub-resource methods nor sub-resource locators for path " + requestPath
                   + " and method " + request.getMethod());
-            }
-
             return; // Error Response is preset
          }
 
@@ -228,7 +608,6 @@ public class RequestDispatcher
             invokeSuResourceLocator(requestPath, locators.get(0), resource, context, request, response);
          }
       }
-
    }
 
    /**
@@ -246,7 +625,6 @@ public class RequestDispatcher
    {
       // save resource in hierarchy
       context.addMatchedResource(resource);
-
       Class<?> returnType = rmd.getResponseType();
       MethodInvoker invoker = rmd.getMethodInvoker();
       Object o = invoker.invokeMethod(resource, rmd, context);
@@ -271,8 +649,7 @@ public class RequestDispatcher
       context.addMatchedResource(resource);
       // save the sub-resource method URI in hierarchy
       context.addMatchedURI(requestPath);
-      // save parameters values, actually parameters was save before, now just
-      // map parameter's names to values
+      // save parameters values, actually parameters was save before, now just map parameter's names to values
       context.setParameterNames(srmd.getUriPattern().getParameterNames());
 
       Class<?> returnType = srmd.getResponseType();
@@ -296,13 +673,11 @@ public class RequestDispatcher
       ApplicationContext context, GenericContainerRequest request, GenericContainerResponse response)
    {
       context.addMatchedResource(resource);
-      // take the tail of the request path, the tail will be new request path
-      // for lower resources
+      // take the tail of the request path, the tail will be new request path for lower resources
       String newRequestPath = getPathTail(context.getParameterValues());
       // save the resource class URI in hierarchy
       context.addMatchedURI(requestPath.substring(0, requestPath.lastIndexOf(newRequestPath)));
-      // save parameters values, actually parameters was save before, now just
-      // map parameter's names to values
+      // save parameters values, actually parameters was save before, now just map parameter's names to values
       context.setParameterNames(srld.getUriPattern().getParameterNames());
 
       // NOTE Locators can't accept entity
@@ -385,7 +760,6 @@ public class RequestDispatcher
       {
          response.setResponse(Response.ok(o, contentType).build());
       }
-
    }
 
    /**
@@ -465,12 +839,12 @@ public class RequestDispatcher
                }
             }
          }
-
          return true;
       }
 
       response.setResponse(Response.status(Response.Status.NOT_ACCEPTABLE).entity("Not Acceptable").type(
          MediaType.TEXT_PLAIN).build());
+
       return false;
    }
 
@@ -550,7 +924,6 @@ public class RequestDispatcher
             locators.add(e.getValue());
          }
       }
-
       return !locators.isEmpty();
    }
 
@@ -570,9 +943,7 @@ public class RequestDispatcher
       if (resourceFactory == null)
       {
          if (LOG.isDebugEnabled())
-         {
             LOG.debug("Root resource not found for " + requestPath);
-         }
          // Stop here, there is no matched root resource
          throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity(
             "There is no any resources matched to request path " + requestPath).type(MediaType.TEXT_PLAIN).build());

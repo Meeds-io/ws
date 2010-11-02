@@ -84,7 +84,7 @@ public class VariantsHandlerTest extends BaseTest
       h.putSingle("Accept-Language", "uk");
       r = new ContainerRequest("GET", null, null, null, h);
       v = VariantsHandler.handleVariants(r, vs);
-      // no language 'uk' in variants and '*/*;q=0.5' removed 
+      // no language 'uk' in variants and '*/*;q=0.5' removed
       assertNull(v); // 'Not Acceptable' (406) will be generated here
       // ---
       h.putSingle("Accept", glue("text/xml", "application/xml", "image/*", "text/html;q=0.9", "text/plain;q=0.8"));

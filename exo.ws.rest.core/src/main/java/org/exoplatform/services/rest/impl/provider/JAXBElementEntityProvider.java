@@ -63,7 +63,7 @@ public class JAXBElementEntityProvider implements EntityProvider<JAXBElement<?>>
     * @see Providers
     */
    @Context
-   private Providers providers;
+   Providers providers;
 
    /**
     * {@inheritDoc}

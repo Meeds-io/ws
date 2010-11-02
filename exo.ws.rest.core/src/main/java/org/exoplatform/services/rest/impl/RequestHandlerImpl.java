@@ -23,7 +23,6 @@ import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.rest.ApplicationContext;
 import org.exoplatform.services.rest.ExtHttpHeaders;
 import org.exoplatform.services.rest.FilterDescriptor;
 import org.exoplatform.services.rest.GenericContainerRequest;
@@ -66,8 +65,9 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
    private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.RequestHandlerImpl");
 
    /**
-    * Application properties. Properties from this map will be copied to ApplicationContext
-    * and may be accessible via method {@link ApplicationContextImpl#getProperties()}.
+    * Application properties. Properties from this map will be copied to
+    * ApplicationContext and may be accessible via method
+    * {@link ApplicationContextImpl#getProperties()}.
     */
    private static final Map<String, String> properties = new HashMap<String, String>();
 
@@ -84,8 +84,13 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
    public static final void setProperty(String name, String value)
    {
       if (value == null)
+      {
          properties.remove(name);
-      properties.put(name, value);
+      }
+      else
+      {
+         properties.put(name, value);
+      }
    }
 
    /**
@@ -104,9 +109,7 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
             properties.put(vp.getName(), vp.getValue());
          }
       }
-
       this.dispatcher = dispatcher;
-
    }
 
    // RequestHandler
@@ -119,12 +122,13 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
    {
       try
       {
-         ApplicationContext context = new ApplicationContextImpl(request, response, ProviderBinder.getInstance());
+         ProviderBinder defaultProviders = ProviderBinder.getInstance();
+         ApplicationContextImpl context = new ApplicationContextImpl(request, response, defaultProviders);
          context.getProperties().putAll(properties);
          ApplicationContextImpl.setCurrent(context);
 
-         for (ObjectFactory<FilterDescriptor> factory : ProviderBinder.getInstance().getRequestFilters(
-            context.getPath()))
+         // Apply default filters only.
+         for (ObjectFactory<FilterDescriptor> factory : defaultProviders.getRequestFilters(context.getPath()))
          {
             RequestFilter f = (RequestFilter)factory.getInstance(context);
             f.doFilter(request);
@@ -132,7 +136,6 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
 
          try
          {
-
             dispatcher.dispatch(request, response);
             if (response.getHttpHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED) == null)
             {
@@ -142,16 +145,13 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
                   response.getHttpHeaders().putSingle(ExtHttpHeaders.JAXRS_BODY_PROVIDED, jaxrsHeader);
                }
             }
-
          }
          catch (Exception e)
          {
             if (e instanceof WebApplicationException)
             {
-
                Response errorResponse = ((WebApplicationException)e).getResponse();
-               ExceptionMapper excmap = ProviderBinder.getInstance().getExceptionMapper(WebApplicationException.class);
-
+               ExceptionMapper excmap = context.getProviders().getExceptionMapper(WebApplicationException.class);
                int errorStatus = errorResponse.getStatus();
                // should be some of 4xx status
                if (errorStatus < 500)
@@ -169,7 +169,6 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
                      LOG.warn("WebApplication exception occurs.", e.getCause());
                   }
                }
-               // -----
                if (errorResponse.getEntity() == null)
                {
                   if (excmap != null)
@@ -201,12 +200,14 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
             {
                Throwable cause = e.getCause();
                Class causeClazz = cause.getClass();
-               ExceptionMapper excmap = ProviderBinder.getInstance().getExceptionMapper(causeClazz);
+               ExceptionMapper excmap = context.getProviders().getExceptionMapper(causeClazz);
                while (causeClazz != null && excmap == null)
                {
-                  excmap = ProviderBinder.getInstance().getExceptionMapper(causeClazz);
+                  excmap = context.getProviders().getExceptionMapper(causeClazz);
                   if (excmap == null)
+                  {
                      causeClazz = causeClazz.getSuperclass();
+                  }
                }
                if (excmap != null)
                {
@@ -229,15 +230,14 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
             }
          }
 
-         for (ObjectFactory<FilterDescriptor> factory : ProviderBinder.getInstance().getResponseFilters(
-            context.getPath()))
+         // Apply default filters only.
+         for (ObjectFactory<FilterDescriptor> factory : defaultProviders.getResponseFilters(context.getPath()))
          {
             ResponseFilter f = (ResponseFilter)factory.getInstance(context);
             f.doFilter(response);
          }
 
          response.writeResponse();
-
       }
       finally
       {

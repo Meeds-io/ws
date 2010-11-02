@@ -36,7 +36,7 @@ import javax.xml.bind.JAXBException;
 
 /**
  * Provide cache for {@link JAXBContext}.
- * 
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
@@ -68,7 +68,7 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
    /**
     * Return JAXBContext according to supplied type. If no one context found then
     * try create new context and save it in cache.
-    * 
+    *
     * @param classes classes to be bound
     * @return JAXBContext
     * @throws JAXBException if JAXBContext creation failed
@@ -86,7 +86,7 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
 
    /**
     * Create and add in cache JAXBContext for supplied set of classes.
-    * 
+    *
     * @param classes set of java classes to be bound
     * @return JAXBContext
     * @throws JAXBException if JAXBContext for supplied classes can't be created
@@ -102,7 +102,7 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
    /**
     * Add prepared JAXBContext that will be mapped to set of class. In this case
     * this class works as cache for JAXBContexts.
-    * 
+    *
     * @param jaxbctx JAXBContext
     * @param classes set of java classes to be bound
     */
@@ -124,6 +124,7 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
             try
             {
                createJAXBContext(c);
+               //System.out.printf("\nContext for class: {%s}\n\n ", c);
             }
             catch (JAXBException e)
             {

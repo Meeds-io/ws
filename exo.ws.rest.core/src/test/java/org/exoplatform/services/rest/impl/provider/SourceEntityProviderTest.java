@@ -128,8 +128,9 @@ public class SourceEntityProviderTest extends BaseTest
             new ByteArrayInputStream(data));
       Node root = src.getNode().getFirstChild();
       assertEquals("root", root.getNodeName());
-      assertEquals("message", root.getFirstChild().getNodeName());
-      assertEquals("to be or not to be", root.getFirstChild().getTextContent());
+      Node message = root.getFirstChild();
+      assertEquals("message", message.getNodeName());
+      assertEquals("to be or not to be", message.getFirstChild().getNodeValue());
    }
 
    @SuppressWarnings("unchecked")

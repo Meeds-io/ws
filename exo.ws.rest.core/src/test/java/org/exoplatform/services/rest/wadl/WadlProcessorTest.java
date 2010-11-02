@@ -164,7 +164,8 @@ public class WadlProcessorTest extends BaseTest
       // boolean head = false;
       for (int i = 0; i < nl.getLength(); i++)
       {
-         String t = nl.item(i).getTextContent();
+//System.out.println("\n\n\n\n"+nl.item(i).getClass()+"\n\n\n\n");
+         String t = nl.item(i).getNodeValue();
          // if (t.equals("HEAD"))
          // head = true;
          if (t.equals("GET"))
@@ -173,7 +174,7 @@ public class WadlProcessorTest extends BaseTest
       // assertTrue(head && get);
       assertTrue(get);
       for (int i = 0; i < nl.getLength(); i++)
-         System.out.println(">>>>> resource method : " + nl.item(i).getTextContent());
+         System.out.println(">>>>> resource method : " + nl.item(i).getNodeValue());
       str =
          (String)xp.evaluate("//wadl:resource[@path='a/{b}']/wadl:method[@id='m2']/@name", doc, XPathConstants.STRING);
       assertEquals("POST", str);
@@ -199,7 +200,7 @@ public class WadlProcessorTest extends BaseTest
       // boolean subhead = false;
       for (int i = 0; i < nl.getLength(); i++)
       {
-         String t = nl.item(i).getTextContent();
+         String t = nl.item(i).getNodeValue();
          // if (t.equals("HEAD"))
          // subhead = true;
          if (t.equals("GET"))
@@ -208,7 +209,7 @@ public class WadlProcessorTest extends BaseTest
       // assertTrue(subhead && subget);
       assertTrue(subget);
       for (int i = 0; i < nl.getLength(); i++)
-         System.out.println(">>>>> sub-resource method : " + nl.item(i).getTextContent());
+         System.out.println(">>>>> sub-resource method : " + nl.item(i).getNodeValue());
       str =
          (String)xp.evaluate("count(//wadl:resource[@path='a/{b}']/wadl:resource[@path='{c}/{d}/{e}']/wadl:method)",
             doc, XPathConstants.STRING);
@@ -251,7 +252,7 @@ public class WadlProcessorTest extends BaseTest
       boolean childopt = false;
       for (int i = 0; i < nl.getLength(); i++)
       {
-         String t = nl.item(i).getTextContent();
+         String t = nl.item(i).getNodeValue();
          // if (t.equals("HEAD"))
          // childhead = true;
          if (t.equals("GET"))
@@ -262,7 +263,7 @@ public class WadlProcessorTest extends BaseTest
       // assertTrue(childhead && childget && childopt);
       assertTrue(childget && childopt);
       for (int i = 0; i < nl.getLength(); i++)
-         System.out.println(">>>>> child resource method : " + nl.item(i).getTextContent());
+         System.out.println(">>>>> child resource method : " + nl.item(i).getNodeValue());
 
       str =
          (String)xp.evaluate("count(//wadl:resource[@path='a/{b}']/wadl:resource[@path='sub/{x}']/wadl:method)", doc,

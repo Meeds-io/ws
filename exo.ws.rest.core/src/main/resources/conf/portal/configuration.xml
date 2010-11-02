@@ -22,6 +22,15 @@
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd http://www.exoplaform.org/xml/ns/kernel_1_0.xsd"
    xmlns="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd">
    <component>
+      <type>org.exoplatform.services.rest.impl.ApplicationRegistry</type>
+   </component>
+   <component>
+      <type>org.exoplatform.services.rest.impl.StartableApplication</type>
+   </component>
+   <component>
+      <type>org.exoplatform.services.rest.impl.ProvidersRegistry</type>
+   </component>
+   <component>
       <type>org.exoplatform.services.rest.impl.RequestHandlerImpl</type>
    </component>
    <component>

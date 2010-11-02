@@ -23,6 +23,7 @@ import org.exoplatform.services.rest.impl.ContainerResponse;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 import org.exoplatform.services.rest.tools.ByteArrayContainerResponseWriter;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 import java.io.ByteArrayInputStream;
@@ -95,8 +96,11 @@ public class OtherEntityTest extends BaseTest
       @Consumes("application/xml")
       public void m5(DOMSource dom) throws Exception
       {
-         assertEquals("root", dom.getNode().getFirstChild().getNodeName());
-         assertEquals("hello world", dom.getNode().getFirstChild().getFirstChild().getTextContent());
+         Node root = dom.getNode().getFirstChild();
+         assertEquals("root", root.getNodeName());
+         Node data = root.getFirstChild();
+         assertEquals("data", data.getNodeName());
+         assertEquals("hello world", data.getFirstChild().getNodeValue());
       }
 
       @POST
@@ -105,9 +109,11 @@ public class OtherEntityTest extends BaseTest
       public void m6(SAXSource sax) throws Exception
       {
          Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(sax.getInputSource());
-         assertEquals("root", doc.getDocumentElement().getNodeName());
-         assertEquals("data", doc.getDocumentElement().getFirstChild().getNodeName());
-         assertEquals("hello world", doc.getDocumentElement().getFirstChild().getTextContent());
+         Node root = doc.getDocumentElement();
+         assertEquals("root", root.getNodeName());
+         Node data = root.getFirstChild();
+         assertEquals("data", data.getNodeName());
+         assertEquals("hello world", data.getFirstChild().getNodeValue());
       }
 
       @POST
@@ -116,9 +122,11 @@ public class OtherEntityTest extends BaseTest
       public void m7(StreamSource ss) throws Exception
       {
          Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(ss.getInputStream());
-         assertEquals("root", doc.getDocumentElement().getNodeName());
-         assertEquals("data", doc.getDocumentElement().getFirstChild().getNodeName());
-         assertEquals("hello world", doc.getDocumentElement().getFirstChild().getTextContent());
+         Node root = doc.getDocumentElement();
+         assertEquals("root", root.getNodeName());
+         Node data = root.getFirstChild();
+         assertEquals("data", data.getNodeName());
+         assertEquals("hello world", data.getFirstChild().getNodeValue());
       }
    }
 

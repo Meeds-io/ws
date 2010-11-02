@@ -62,7 +62,7 @@ public class JAXBObjectEntityProvider implements EntityProvider<Object>
     * @see Providers
     */
    @Context
-   private Providers providers;
+   Providers providers;
 
    /**
     * {@inheritDoc}

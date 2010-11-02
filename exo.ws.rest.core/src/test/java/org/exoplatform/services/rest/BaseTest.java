@@ -22,7 +22,9 @@ import junit.framework.TestCase;
 
 import org.exoplatform.container.StandaloneContainer;
 import org.exoplatform.services.rest.impl.ApplicationContextImpl;
+import org.exoplatform.services.rest.impl.ApplicationRegistry;
 import org.exoplatform.services.rest.impl.ProviderBinder;
+import org.exoplatform.services.rest.impl.ProvidersRegistry;
 import org.exoplatform.services.rest.impl.RequestHandlerImpl;
 import org.exoplatform.services.rest.impl.ResourceBinder;
 import org.exoplatform.services.rest.tools.ResourceLauncher;
@@ -44,18 +46,29 @@ public abstract class BaseTest extends TestCase
 
    protected ResourceLauncher launcher;
 
+   protected ApplicationRegistry applicationRegistry;
+
+   protected ProvidersRegistry providersRegistry;
+
    public void setUp() throws Exception
    {
-      StandaloneContainer.setConfigurationPath("src/test/resources/conf/standalone/test-configuration.xml");
+      String conf = getClass().getResource("/conf/standalone/test-configuration.xml").toString();
+      //StandaloneContainer.setConfigurationPath("src/test/resources/conf/standalone/test-configuration.xml");
+      StandaloneContainer.setConfigurationURL(conf);
       container = StandaloneContainer.getInstance();
+
+      applicationRegistry = (ApplicationRegistry)container.getComponentInstanceOfType(ApplicationRegistry.class);
       binder = (ResourceBinder)container.getComponentInstanceOfType(ResourceBinder.class);
       requestHandler = (RequestHandlerImpl)container.getComponentInstanceOfType(RequestHandlerImpl.class);
-      // reset providers to be sure it is clean
+      providersRegistry = (ProvidersRegistry)container.getComponentInstanceOfType(ProvidersRegistry.class);
+
+      // reset default providers to be sure it is clean.
       ProviderBinder.setInstance(new ProviderBinder());
       providers = ProviderBinder.getInstance();
-      //    System.out.println("##########################"+providers);
-      ApplicationContextImpl.setCurrent(new ApplicationContextImpl(null, null, providers));
+
       binder.clear();
+
+      ApplicationContextImpl.setCurrent(new ApplicationContextImpl(null, null, providers));
       launcher = new ResourceLauncher(requestHandler);
    }
 

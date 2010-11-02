@@ -23,20 +23,15 @@ import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.ApplicationContext;
-import org.exoplatform.services.rest.Filter;
 import org.exoplatform.services.rest.ObjectFactory;
 import org.exoplatform.services.rest.ObjectModel;
 import org.exoplatform.services.rest.PerRequestObjectFactory;
-import org.exoplatform.services.rest.RequestFilter;
-import org.exoplatform.services.rest.ResponseFilter;
 import org.exoplatform.services.rest.SingletonObjectFactory;
 import org.exoplatform.services.rest.impl.method.DefaultMethodInvoker;
 import org.exoplatform.services.rest.impl.method.MethodInvokerFactory;
 import org.exoplatform.services.rest.impl.resource.AbstractResourceDescriptorImpl;
 import org.exoplatform.services.rest.impl.resource.ResourceDescriptorValidator;
-import org.exoplatform.services.rest.method.MethodInvokerFilter;
 import org.exoplatform.services.rest.resource.AbstractResourceDescriptor;
-import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.rest.resource.ResourceDescriptorVisitor;
 import org.exoplatform.services.rest.uri.UriPattern;
 import org.picocontainer.Startable;
@@ -50,11 +45,6 @@ import java.util.List;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
@@ -176,6 +166,7 @@ public class ResourceBinder implements Startable
    protected final ResourceDescriptorVisitor rdv = ResourceDescriptorValidator.getInstance();
 
    /** @see RuntimeDelegate */
+   @Deprecated
    protected final RuntimeDelegate rd;
 
    /**
@@ -191,11 +182,14 @@ public class ResourceBinder implements Startable
    /** Resource listeners. */
    protected final List<ResourceListener> resourceListeners = new ArrayList<ResourceListener>();
 
+   /**
+    * @deprecated Do not need container here any more.
+    */
    protected final ExoContainer container;
 
    public ResourceBinder(ExoContainerContext containerContext) throws Exception
    {
-      this(containerContext, null);
+      this(containerContext, (MethodInvokerFactory)null);
    }
 
    /**
@@ -218,97 +212,16 @@ public class ResourceBinder implements Startable
    /**
     * @param application Application
     * @see Application
+    * @deprecated Use
+    *             {@link org.exoplatform.services.rest.impl.ApplicationRegistry#addApplication(Application)}
+    *             instead of using this method .
     */
-   @SuppressWarnings("unchecked")
    public void addApplication(Application application)
    {
-      ProviderBinder providers = ProviderBinder.getInstance();
-      for (Object obj : application.getSingletons())
-      {
-         if (obj.getClass().getAnnotation(Provider.class) != null)
-         {
-            // singleton provider
-            if (obj instanceof ContextResolver)
-            {
-               providers.addContextResolver((ContextResolver)obj);
-            }
-            if (obj instanceof ExceptionMapper)
-            {
-               providers.addExceptionMapper((ExceptionMapper)obj);
-            }
-            if (obj instanceof MessageBodyReader)
-            {
-               providers.addMessageBodyReader((MessageBodyReader)obj);
-            }
-            if (obj instanceof MessageBodyWriter)
-            {
-               providers.addMessageBodyWriter((MessageBodyWriter)obj);
-            }
-         }
-         else if (obj.getClass().getAnnotation(Filter.class) != null)
-         {
-            // singleton filter
-            if (obj instanceof MethodInvokerFilter)
-            {
-               providers.addMethodInvokerFilter((MethodInvokerFilter)obj);
-            }
-            if (obj instanceof RequestFilter)
-            {
-               providers.addRequestFilter((RequestFilter)obj);
-            }
-            if (obj instanceof ResponseFilter)
-            {
-               providers.addResponseFilter((ResponseFilter)obj);
-            }
-         }
-         else
-         {
-            addResource(obj, null); // singleton resource
-         }
-      }
-      for (Class clazz : application.getClasses())
-      {
-         if (clazz.getAnnotation(Provider.class) != null)
-         {
-            // per-request provider
-            if (ContextResolver.class.isAssignableFrom(clazz))
-            {
-               providers.addContextResolver(clazz);
-            }
-            if (ExceptionMapper.class.isAssignableFrom(clazz))
-            {
-               providers.addExceptionMapper(clazz);
-            }
-            if (MessageBodyReader.class.isAssignableFrom(clazz))
-            {
-               providers.addMessageBodyReader(clazz);
-            }
-            if (MessageBodyWriter.class.isAssignableFrom(clazz))
-            {
-               providers.addMessageBodyWriter(clazz);
-            }
-         }
-         else if (clazz.getAnnotation(Filter.class) != null)
-         {
-            // per-request filter
-            if (MethodInvokerFilter.class.isAssignableFrom(clazz))
-            {
-               providers.addMethodInvokerFilter(clazz);
-            }
-            if (RequestFilter.class.isAssignableFrom(clazz))
-            {
-               providers.addRequestFilter(clazz);
-            }
-            if (ResponseFilter.class.isAssignableFrom(clazz))
-            {
-               providers.addResponseFilter(clazz);
-            }
-         }
-         else
-         {
-            addResource(clazz, null); // per-request resource
-         }
-      }
+      org.exoplatform.services.rest.impl.ApplicationRegistry appRegistry =
+         (org.exoplatform.services.rest.impl.ApplicationRegistry)container
+            .getComponentInstanceOfType(org.exoplatform.services.rest.impl.ApplicationRegistry.class);
+      appRegistry.addApplication(application);
    }
 
    /**
@@ -347,7 +260,9 @@ public class ResourceBinder implements Startable
          // validate AbstractResourceDescriptor
          descriptor.accept(rdv);
          if (properties != null)
+         {
             descriptor.getProperties().putAll(properties);
+         }
          addResource(new PerRequestObjectFactory<AbstractResourceDescriptor>(descriptor));
       }
       catch (Exception e)
@@ -392,7 +307,9 @@ public class ResourceBinder implements Startable
          // validate AbstractResourceDescriptor
          descriptor.accept(rdv);
          if (properties != null)
+         {
             descriptor.getProperties().putAll(properties);
+         }
          addResource(new SingletonObjectFactory<AbstractResourceDescriptor>(descriptor, resource));
       }
       catch (Exception e)
@@ -534,7 +451,9 @@ public class ResourceBinder implements Startable
                      resource.getObjectModel().getSubResourceMethods().size()
                         + resource.getObjectModel().getSubResourceLocators().size();
                   if (subresnum == 0)
+                  {
                      continue;
+                  }
                }
                resourceFactory = resource;
                break;
@@ -681,37 +600,8 @@ public class ResourceBinder implements Startable
    /**
     * {@inheritDoc}
     */
-   @SuppressWarnings("unchecked")
    public void start()
    {
-      // Lookup Applications
-      List<Application> al = container.getComponentInstancesOfType(Application.class);
-      for (Application a : al)
-      {
-         try
-         {
-            addApplication(a);
-         }
-         catch (Exception e)
-         {
-            LOG.error("Failed add JAX-RS application " + a.getClass().getName(), e);
-         }
-      }
-
-      // Lookup all object which implements ResourceContainer interface and
-      // process them to be add as root resources.
-      for (Object resource : container.getComponentInstancesOfType(ResourceContainer.class))
-      {
-         try
-         {
-            addResource(resource, null);
-         }
-         catch (Exception e)
-         {
-            LOG.error("Failed add JAX-RS resource " + resource.getClass().getName(), e);
-         }
-      }
-
       startResourceCleaner();
    }
 
@@ -745,4 +635,5 @@ public class ResourceBinder implements Startable
       thread.setDaemon(true);
       thread.start();
    }
+
 }

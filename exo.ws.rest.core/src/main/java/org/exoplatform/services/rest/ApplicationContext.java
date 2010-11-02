@@ -31,9 +31,9 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Providers;
 
 /**
- * Provides access to ContainerRequest, ContainerResponse and request URI
- * information.
- * 
+ * Provides access to ContainerRequest, ContainerResponse and other context
+ * information information.
+ *
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
@@ -41,19 +41,20 @@ public interface ApplicationContext extends UriInfo, InitialProperties
 {
 
    /**
-    * Should be used to pass template values in context by using returned list in
-    * matching to @see
-    * {@link org.exoplatform.services.rest.uri.UriPattern#match(String, List)}
-    * . List will be cleared during matching.
-    * 
+    * Should be used to pass template values in context by using returned list
+    * in matching at
+    * {@link org.exoplatform.services.rest.uri.UriPattern#match(String, List)} .
+    * List will be cleared during matching.
+    *
     * @return the list for template values
     */
    List<String> getParameterValues();
 
    /**
-    * Pass in context list of path template parameters @see {@link UriPattern}.
-    * 
+    * Pass in context list of path template parameters .
+    *
     * @param parameterNames list of templates parameters
+    * @see UriPattern
     */
    void setParameterNames(List<String> parameterNames);
 
@@ -64,9 +65,9 @@ public interface ApplicationContext extends UriInfo, InitialProperties
     * the root resource last.
     * </p>
     * So add each new resource at the begin of list.
-    * 
+    *
     * @param resource the resource e. g. resource class, sub-resource method or
-    *          sub-resource locator.
+    *        sub-resource locator
     */
    void addMatchedResource(Object resource);
 
@@ -77,9 +78,9 @@ public interface ApplicationContext extends UriInfo, InitialProperties
     * resource URI last.
     * </p>
     * So add each new URI at the begin of list.
-    * 
-    * @param uri the partial part of that matched to resource class, sub-resource
-    *          method or sub-resource locator.
+    *
+    * @param uri the partial part of that matched to resource class,
+    *        sub-resource method or sub-resource locator
     */
    void addMatchedURI(String uri);
 
@@ -89,43 +90,49 @@ public interface ApplicationContext extends UriInfo, InitialProperties
    Map<String, Object> getAttributes();
 
    /**
-    * @return See {@link Request}
+    * @return request
+    * @see Request
     */
    Request getRequest();
 
    /**
-    * @return See {@link HttpHeaders}
+    * @return request HTTP headers
+    * @see HttpHeaders
     */
    HttpHeaders getHttpHeaders();
-   
-   
+
    /**
-    * @return {@link InitialProperties}
+    * @return properties
+    * @see InitialProperties
     */
    InitialProperties getInitialProperties();
 
    /**
-    * @return See {@link SecurityContext}
+    * @return security context
+    * @see SecurityContext
     */
    SecurityContext getSecurityContext();
 
    /**
-    * @return See {@link GenericContainerRequest}
+    * @return JAX-RS request
+    * @see GenericContainerRequest
     */
    GenericContainerRequest getContainerRequest();
 
    /**
-    * @return See {@link UriInfo}
+    * @return URI info
+    * @see UriInfo
     */
    UriInfo getUriInfo();
 
    /**
-    * @return See {@link GenericContainerResponse}
+    * @return JAX-RS request
+    * @see GenericContainerResponse
     */
    GenericContainerResponse getContainerResponse();
 
    /**
-    * @return {@link ProviderBinder}
+    * @return set of providers
     * @see Providers
     */
    ProviderBinder getProviders();
