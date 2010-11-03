@@ -94,13 +94,7 @@ public class ApplicationRegistry implements Startable
       for (Object obj : app.getSingletons())
       {
          Class clazz = obj.getClass();
-         if (clazz.getAnnotation(Path.class) != null)
-         {
-            AbstractResourceDescriptor descriptor = new ApplicationResource(applicationId, obj);
-            descriptor.accept(rdv);
-            resources.addResource(new SingletonObjectFactory<AbstractResourceDescriptor>(descriptor, obj));
-         }
-         else if (clazz.getAnnotation(Provider.class) != null)
+         if (clazz.getAnnotation(Provider.class) != null)
          {
             if (obj instanceof ContextResolver)
                appProviders.addContextResolver((ContextResolver)obj);
@@ -120,6 +114,12 @@ public class ApplicationRegistry implements Startable
             if (obj instanceof ResponseFilter)
                appProviders.addResponseFilter((ResponseFilter)obj);
          }
+         else if (clazz.getAnnotation(Path.class) != null)
+         {
+            AbstractResourceDescriptor descriptor = new ApplicationResource(applicationId, obj);
+            descriptor.accept(rdv);
+            resources.addResource(new SingletonObjectFactory<AbstractResourceDescriptor>(descriptor, obj));
+         }
          else
          {
             LOG.warn("Unknown class type: " + clazz.getName() + " found in " + applicationId);
@@ -127,13 +127,7 @@ public class ApplicationRegistry implements Startable
       }
       for (Class clazz : app.getClasses())
       {
-         if (clazz.getAnnotation(Path.class) != null)
-         {
-            AbstractResourceDescriptor descriptor = new ApplicationResource(applicationId, clazz);
-            descriptor.accept(rdv);
-            resources.addResource(new PerRequestObjectFactory<AbstractResourceDescriptor>(descriptor));
-         }
-         else if (clazz.getAnnotation(Provider.class) != null)
+         if (clazz.getAnnotation(Provider.class) != null)
          {
             if (ContextResolver.class.isAssignableFrom(clazz))
                appProviders.addContextResolver(clazz);
@@ -152,6 +146,12 @@ public class ApplicationRegistry implements Startable
                appProviders.addRequestFilter(clazz);
             if (ResponseFilter.class.isAssignableFrom(clazz))
                appProviders.addResponseFilter(clazz);
+         }
+         else if (clazz.getAnnotation(Path.class) != null)
+         {
+            AbstractResourceDescriptor descriptor = new ApplicationResource(applicationId, clazz);
+            descriptor.accept(rdv);
+            resources.addResource(new PerRequestObjectFactory<AbstractResourceDescriptor>(descriptor));
          }
          else
          {
