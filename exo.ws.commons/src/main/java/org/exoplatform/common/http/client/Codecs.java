@@ -32,6 +32,8 @@
 
 package org.exoplatform.common.http.client;
 
+import org.exoplatform.commons.utils.PrivilegedSystemHelper;
+
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
@@ -284,7 +286,7 @@ public class Codecs
       int line_len = 45; // line length, in octets
 
       int sidx, didx;
-      char nl[] = System.getProperty("line.separator", "\n").toCharArray(), dest[] =
+      char nl[] = PrivilegedSystemHelper.getProperty("line.separator", "\n").toCharArray(), dest[] =
          new char[(data.length + 2) / 3 * 4 + ((data.length + line_len - 1) / line_len) * (nl.length + 1)];
 
       // split into lines, adding line-length and line terminator
@@ -476,7 +478,8 @@ public class Codecs
          return null;
 
       char map[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'}, nl[] =
-         System.getProperty("line.separator", "\n").toCharArray(), res[] = new char[(int)(str.length() * 1.5)], src[] =
+         PrivilegedSystemHelper.getProperty("line.separator", "\n").toCharArray(), res[] =
+         new char[(int)(str.length() * 1.5)], src[] =
          str.toCharArray();
       char ch;
       int cnt = 0, didx = 1, last = 0, slen = str.length();
@@ -505,7 +508,7 @@ public class Codecs
             sidx += nl.length - 1;
             cnt = didx;
          }
-         else if (ch > 126 || (ch < 32 && ch != '\t') || ch == '=' || EBCDICUnsafeChar.get((int)ch))
+         else if (ch > 126 || (ch < 32 && ch != '\t') || ch == '=' || EBCDICUnsafeChar.get(ch))
          { // Rule
             // #1,
             // #2
@@ -560,7 +563,7 @@ public class Codecs
          return null;
 
       char res[] = new char[(int)(str.length() * 1.1)], src[] = str.toCharArray(), nl[] =
-         System.getProperty("line.separator", "\n").toCharArray();
+         PrivilegedSystemHelper.getProperty("line.separator", "\n").toCharArray();
       int last = 0, didx = 0, slen = str.length();
 
       for (int sidx = 0; sidx < slen;)
@@ -1188,6 +1191,7 @@ public class Codecs
          super(null);
       }
 
+      @Override
       public void connect()
       {
       }

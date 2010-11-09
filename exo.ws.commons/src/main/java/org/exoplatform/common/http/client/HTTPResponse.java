@@ -32,6 +32,7 @@
 
 package org.exoplatform.common.http.client;
 
+import org.exoplatform.commons.utils.PrivilegedSystemHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
@@ -623,6 +624,7 @@ public class HTTPResponse implements HTTPClientModuleConstants
     * produces a full list of headers and their values, one per line.
     * @return a string containing the headers
     */
+   @Override
    public String toString()
    {
       if (!initialized)
@@ -642,7 +644,7 @@ public class HTTPResponse implements HTTPClientModuleConstants
          }
       }
 
-      String nl = System.getProperty("line.separator", "\n");
+      String nl = PrivilegedSystemHelper.getProperty("line.separator", "\n");
 
       StringBuffer str = new StringBuffer(Version);
       str.append(' ');

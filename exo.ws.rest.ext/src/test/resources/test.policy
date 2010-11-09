@@ -7,13 +7,20 @@ grant codeBase "@MAIN_CLASSES@-" {
 };
 
 grant codeBase "@TEST_CLASSES@-" {
+};
+
+grant codeBase "@MAIN_CLASSES@../../../exo.ws.commons/-"{
    permission java.security.AllPermission;
 };
-grant codeBase "@PARENT@-" {
+
+grant codeBase "@MAIN_CLASSES@../../../exo.ws.rest.core/-"{
+   permission java.security.AllPermission;
+};
+
+grant codeBase "@MAIN_CLASSES@../../../exo.ws.testframework/-"{
    permission java.security.AllPermission;
 };
 
 grant codeBase "file:/groovy/script" {
-// be sure only  /groovy/script/jaxrs is restricted
    permission java.security.AllPermission;
 };

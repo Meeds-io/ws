@@ -32,6 +32,7 @@
 
 package org.exoplatform.common.http.client;
 
+import org.exoplatform.commons.utils.PrivilegedSystemHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
@@ -1450,6 +1451,7 @@ class SimpleAuthPopup implements AuthorizationPrompter
 
       private class Close extends WindowAdapter
       {
+         @Override
          public void windowClosing(WindowEvent we)
          {
             new Cancel().actionPerformed(null);
@@ -1482,7 +1484,7 @@ class SimpleAuthPopup implements AuthorizationPrompter
             // prefill the user field with the username
             try
             {
-               user.setText(System.getProperty("user.name", ""));
+               user.setText(PrivilegedSystemHelper.getProperty("user.name", ""));
                user_focus = false;
             }
             catch (SecurityException se)
@@ -1591,7 +1593,7 @@ class SimpleAuthPrompt implements AuthorizationPrompter
     */
    private static void echo(boolean on)
    {
-      String os = System.getProperty("os.name");
+      String os = PrivilegedSystemHelper.getProperty("os.name");
       String[] cmd = null;
 
       if (os.equalsIgnoreCase("Windows 95") || os.equalsIgnoreCase("Windows NT"))
@@ -1624,7 +1626,7 @@ class SimpleAuthPrompt implements AuthorizationPrompter
     */
    static boolean canUseCLPrompt()
    {
-      String os = System.getProperty("os.name");
+      String os = PrivilegedSystemHelper.getProperty("os.name");
 
       return (os.indexOf("Linux") >= 0 || os.indexOf("SunOS") >= 0 || os.indexOf("Solaris") >= 0
          || os.indexOf("BSD") >= 0 || os.indexOf("AIX") >= 0 || os.indexOf("HP-UX") >= 0 || os.indexOf("IRIX") >= 0

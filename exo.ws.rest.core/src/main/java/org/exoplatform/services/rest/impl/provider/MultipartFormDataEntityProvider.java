@@ -22,6 +22,7 @@ import org.apache.commons.fileupload.DefaultFileItemFactory;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
+import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.services.rest.ApplicationContext;
 import org.exoplatform.services.rest.RequestHandler;
 import org.exoplatform.services.rest.impl.ApplicationContextImpl;
@@ -34,6 +35,8 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -98,17 +101,36 @@ public class MultipartFormDataEntityProvider implements EntityProvider<Iterator<
          ApplicationContext context = ApplicationContextImpl.getCurrent();
          int bufferSize =
             context.getProperties().get(RequestHandler.WS_RS_BUFFER_SIZE) == null
-               ? RequestHandler.WS_RS_BUFFER_SIZE_VALUE : Integer.parseInt((String)context.getProperties().get(
+               ? RequestHandler.WS_RS_BUFFER_SIZE_VALUE : Integer.parseInt(context.getProperties().get(
                   RequestHandler.WS_RS_BUFFER_SIZE));
-         File repo = new File((String)context.getProperties().get(RequestHandler.WS_RS_TMP_DIR));
+         File repo = new File(context.getProperties().get(RequestHandler.WS_RS_TMP_DIR));
 
          DefaultFileItemFactory factory = new DefaultFileItemFactory(bufferSize, repo);
-         FileUpload upload = new FileUpload(factory);
-         return upload.parseRequest(httpRequest).iterator();
+         final FileUpload upload = new FileUpload(factory);
+
+         return SecurityHelper.doPriviledgedExceptionAction(new PrivilegedExceptionAction<Iterator<FileItem>>()
+         {
+            public Iterator<FileItem> run() throws Exception
+            {
+               return upload.parseRequest(httpRequest).iterator();
+            }
+         });
       }
-      catch (FileUploadException e)
+      catch (PrivilegedActionException pae)
       {
-         throw new IOException("Can't process multipart data item " + e);
+         Throwable cause = pae.getCause();
+         if (cause instanceof FileUploadException)
+         {
+            throw new IOException("Can't process multipart data item " + cause);
+         }
+         else if (cause instanceof RuntimeException)
+         {
+            throw (RuntimeException)cause;
+         }
+         else
+         {
+            throw new RuntimeException(cause);
+         }
       }
    }
 

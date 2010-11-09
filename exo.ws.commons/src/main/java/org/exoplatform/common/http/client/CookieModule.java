@@ -32,6 +32,7 @@
 
 package org.exoplatform.common.http.client;
 
+import org.exoplatform.commons.utils.PrivilegedSystemHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
@@ -137,6 +138,7 @@ public class CookieModule implements HTTPClientModule
 
          cookieSaver = new Object()
          {
+            @Override
             public void finalize()
             {
                saveCookies();
@@ -162,7 +164,7 @@ public class CookieModule implements HTTPClientModule
          if (cookie_jar.isFile() && cookie_jar.canRead())
          {
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(cookie_jar));
-            cookie_cntxt_list.put(HTTPConnection.getDefaultContext(), (Hashtable)ois.readObject());
+            cookie_cntxt_list.put(HTTPConnection.getDefaultContext(), ois.readObject());
             ois.close();
          }
       }
@@ -210,7 +212,7 @@ public class CookieModule implements HTTPClientModule
 
       try
       {
-         file = System.getProperty("HTTPClient.cookies.jar");
+         file = PrivilegedSystemHelper.getProperty("HTTPClient.cookies.jar");
       }
       catch (Exception e)
       {
@@ -220,19 +222,19 @@ public class CookieModule implements HTTPClientModule
       {
          // default to something reasonable
 
-         String os = System.getProperty("os.name");
+         String os = PrivilegedSystemHelper.getProperty("os.name");
          if (os.equalsIgnoreCase("Windows 95") || os.equalsIgnoreCase("16-bit Windows")
             || os.equalsIgnoreCase("Windows"))
          {
-            file = System.getProperty("java.home") + File.separator + ".httpclient_cookies";
+            file = PrivilegedSystemHelper.getProperty("java.home") + File.separator + ".httpclient_cookies";
          }
          else if (os.equalsIgnoreCase("Windows NT"))
          {
-            file = System.getProperty("user.home") + File.separator + ".httpclient_cookies";
+            file = PrivilegedSystemHelper.getProperty("user.home") + File.separator + ".httpclient_cookies";
          }
          else if (os.equalsIgnoreCase("OS/2"))
          {
-            file = System.getProperty("user.home") + File.separator + ".httpclient_cookies";
+            file = PrivilegedSystemHelper.getProperty("user.home") + File.separator + ".httpclient_cookies";
          }
          else if (os.equalsIgnoreCase("Mac OS") || os.equalsIgnoreCase("MacOS"))
          {
@@ -241,7 +243,7 @@ public class CookieModule implements HTTPClientModule
          else
          // it's probably U*IX or VMS
          {
-            file = System.getProperty("user.home") + File.separator + ".httpclient_cookies";
+            file = PrivilegedSystemHelper.getProperty("user.home") + File.separator + ".httpclient_cookies";
          }
       }
 
@@ -664,7 +666,7 @@ class DefaultCookiePolicyHandler implements CookiePolicyHandler
 
       try
       {
-         list = System.getProperty("HTTPClient.cookies.hosts.accept");
+         list = PrivilegedSystemHelper.getProperty("HTTPClient.cookies.hosts.accept");
       }
       catch (Exception e)
       {
@@ -676,7 +678,7 @@ class DefaultCookiePolicyHandler implements CookiePolicyHandler
 
       try
       {
-         list = System.getProperty("HTTPClient.cookies.hosts.reject");
+         list = PrivilegedSystemHelper.getProperty("HTTPClient.cookies.hosts.reject");
       }
       catch (Exception e)
       {
@@ -921,6 +923,7 @@ class BasicCookieBox extends Frame
       constr.gridwidth = GridBagConstraints.REMAINDER;
    }
 
+   @Override
    public Dimension getMaximumSize()
    {
       return new Dimension(screen.width * 3 / 4, screen.height * 3 / 4);
@@ -983,6 +986,7 @@ class BasicCookieBox extends Frame
 
    private class Close extends WindowAdapter
    {
+      @Override
       public void windowClosing(WindowEvent we)
       {
          new Reject().actionPerformed(null);
@@ -1122,6 +1126,7 @@ class BasicCookieBox extends Frame
  */
 class Separator extends Panel
 {
+   @Override
    public void paint(Graphics g)
    {
       int w = getSize().width, h = getSize().height / 2;
@@ -1132,6 +1137,7 @@ class Separator extends Panel
       g.drawLine(2, h, w - 2, h);
    }
 
+   @Override
    public Dimension getMinimumSize()
    {
       return new Dimension(4, 2);

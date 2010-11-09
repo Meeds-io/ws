@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.resource;
 
+import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.ComponentLifecycleScope;
@@ -49,6 +50,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -185,7 +187,7 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
     * @param scope resource scope
     * @see ComponentLifecycleScope
     */
-   private AbstractResourceDescriptorImpl(Path path, Class<?> resourceClass, ComponentLifecycleScope scope,
+   private AbstractResourceDescriptorImpl(Path path, final Class<?> resourceClass, ComponentLifecycleScope scope,
       MethodInvokerFactory invokerFactory)
    {
       if (path != null)
@@ -219,8 +221,18 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
          {
             Collections.sort(constructors, ConstructorDescriptorImpl.CONSTRUCTOR_COMPARATOR);
          }
+
          // process field
-         for (java.lang.reflect.Field jfield : resourceClass.getDeclaredFields())
+         java.lang.reflect.Field[] jfields =
+            SecurityHelper.doPriviledgedAction(new PrivilegedAction<java.lang.reflect.Field[]>()
+            {
+               public java.lang.reflect.Field[] run()
+               {
+                  return resourceClass.getDeclaredFields();
+               }
+            });
+
+         for (java.lang.reflect.Field jfield : jfields)
          {
             fields.add(new FieldInjectorImpl(resourceClass, jfield));
          }
@@ -363,9 +375,18 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
     */
    protected void processMethods()
    {
-      Class<?> resourceClass = getObjectClass();
+      final Class<?> resourceClass = getObjectClass();
 
-      for (Method method : resourceClass.getDeclaredMethods())
+      Method[] methods = SecurityHelper.doPriviledgedAction(new PrivilegedAction<Method[]>()
+      {
+         public Method[] run()
+         {
+            return resourceClass.getDeclaredMethods();
+         }
+      });
+
+      
+      for (Method method : methods)
       {
          for (Annotation a : method.getAnnotations())
          {

@@ -18,11 +18,14 @@
  */
 package org.exoplatform.services.rest.impl.provider;
 
+import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.container.component.ComponentPlugin;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.impl.header.MediaTypeHelper;
 
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -73,12 +76,38 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
     * @return JAXBContext
     * @throws JAXBException if JAXBContext creation failed
     */
-   public JAXBContext getJAXBContext(Class<?> clazz) throws JAXBException
+   public JAXBContext getJAXBContext(final Class<?> clazz) throws JAXBException
    {
       JAXBContext jaxbctx = jaxbContexts.get(clazz);
       if (jaxbctx == null)
       {
-         jaxbctx = JAXBContext.newInstance(clazz);
+         try
+         {
+            jaxbctx = SecurityHelper.doPriviledgedExceptionAction(new PrivilegedExceptionAction<JAXBContext>()
+            {
+               public JAXBContext run() throws Exception
+               {
+                  return JAXBContext.newInstance(clazz);
+               }
+            });
+         }
+         catch (PrivilegedActionException pae)
+         {
+            Throwable cause = pae.getCause();
+            if (cause instanceof JAXBException)
+            {
+               throw (JAXBException)cause;
+            }
+            else if (cause instanceof RuntimeException)
+            {
+               throw (RuntimeException)cause;
+            }
+            else
+            {
+               throw new RuntimeException(cause);
+            }
+         }
+
          jaxbContexts.put(clazz, jaxbctx);
       }
       return jaxbctx;
@@ -92,9 +121,37 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
     * @throws JAXBException if JAXBContext for supplied classes can't be created
     *           in any reasons
     */
-   public JAXBContext createJAXBContext(Class<?> clazz) throws JAXBException
+   public JAXBContext createJAXBContext(final Class<?> clazz) throws JAXBException
    {
-      JAXBContext jaxbctx = JAXBContext.newInstance(clazz);
+      JAXBContext jaxbctx;
+
+      try
+      {
+         jaxbctx = SecurityHelper.doPriviledgedExceptionAction(new PrivilegedExceptionAction<JAXBContext>()
+         {
+            public JAXBContext run() throws Exception
+            {
+               return JAXBContext.newInstance(clazz);
+            }
+         });
+      }
+      catch (PrivilegedActionException pae)
+      {
+         Throwable cause = pae.getCause();
+         if (cause instanceof JAXBException)
+         {
+            throw (JAXBException)cause;
+         }
+         else if (cause instanceof RuntimeException)
+         {
+            throw (RuntimeException)cause;
+         }
+         else
+         {
+            throw new RuntimeException(cause);
+         }
+      }
+
       addJAXBContext(jaxbctx, clazz);
       return jaxbctx;
    }

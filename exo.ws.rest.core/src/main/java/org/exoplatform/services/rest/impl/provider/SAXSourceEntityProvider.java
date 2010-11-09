@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.provider;
 
+import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.services.rest.provider.EntityProvider;
 import org.xml.sax.InputSource;
 
@@ -26,6 +27,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -85,25 +88,45 @@ public class SAXSourceEntityProvider implements EntityProvider<SAXSource>
    /**
     * {@inheritDoc}
     */
-   public void writeTo(SAXSource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+   public void writeTo(final SAXSource t, Class<?> type, Type genericType, Annotation[] annotations,
+      MediaType mediaType,
       MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
-      StreamResult out = new StreamResult(entityStream);
+      final StreamResult out = new StreamResult(entityStream);
       try
       {
-         TransformerFactory.newInstance().newTransformer().transform(t, out);
+         SecurityHelper.doPriviledgedExceptionAction(new PrivilegedExceptionAction<Void>()
+         {
+            public Void run() throws Exception
+            {
+               TransformerFactory.newInstance().newTransformer().transform(t, out);
+               return null;
+            }
+         });
       }
-      catch (TransformerConfigurationException e)
+      catch (PrivilegedActionException pae)
       {
-         throw new IOException("Can't write to output stream " + e);
-      }
-      catch (TransformerException e)
-      {
-         throw new IOException("Can't write to output stream " + e);
-      }
-      catch (TransformerFactoryConfigurationError e)
-      {
-         throw new IOException("Can't write to output stream " + e);
+         Throwable cause = pae.getCause();
+         if (cause instanceof TransformerConfigurationException)
+         {
+            throw new IOException("Can't write to output stream " + cause);
+         }
+         else if (cause instanceof TransformerException)
+         {
+            throw new IOException("Can't write to output stream " + cause);
+         }
+         else if (cause instanceof TransformerFactoryConfigurationError)
+         {
+            throw new IOException("Can't write to output stream " + cause);
+         }
+         else if (cause instanceof RuntimeException)
+         {
+            throw (RuntimeException)cause;
+         }
+         else
+         {
+            throw new RuntimeException(cause);
+         }
       }
    }
 }

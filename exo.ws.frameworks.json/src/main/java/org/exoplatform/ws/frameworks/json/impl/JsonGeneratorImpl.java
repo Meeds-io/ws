@@ -35,6 +35,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -380,10 +382,18 @@ public class JsonGeneratorImpl implements JsonGenerator
     * @param clazz the class.
     * @return set of fields which must be skiped.
     */
-   private static Set<String> getTransientFields(Class<?> clazz)
+   private static Set<String> getTransientFields(final Class<?> clazz)
    {
       Set<String> set = new HashSet<String>();
-      Field[] fields = clazz.getDeclaredFields();
+
+      Field[] fields = AccessController.doPrivileged(new PrivilegedAction<Field[]>()
+      {
+         public Field[] run()
+         {
+            return clazz.getDeclaredFields();
+         }
+      });
+
       for (Field f : fields)
       {
          if (Modifier.isTransient(f.getModifiers()))

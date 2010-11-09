@@ -22,6 +22,7 @@ package org.exoplatform.services.rest.ext.groovy;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyCodeSource;
 
+import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.services.rest.ObjectFactory;
 import org.exoplatform.services.rest.PerRequestObjectFactory;
 import org.exoplatform.services.rest.impl.ResourceBinder;
@@ -34,6 +35,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
+import java.security.PrivilegedAction;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -78,8 +80,14 @@ public class GroovyJaxrsPublisher
    {
       this.binder = binder;
       this.instantiator = instantiator;
-      ClassLoader cl = getClass().getClassLoader();
-      this.gcl = new GroovyClassLoader(cl);
+      final ClassLoader cl = getClass().getClassLoader();
+      this.gcl = SecurityHelper.doPriviledgedAction(new PrivilegedAction<GroovyClassLoader>()
+      {
+         public GroovyClassLoader run()
+         {
+            return new GroovyClassLoader(cl);
+         }
+      });
    }
 
    /**
@@ -140,9 +148,17 @@ public class GroovyJaxrsPublisher
     * @throws ResourcePublicationException see
     *         {@link ResourceBinder#addResource(Class, MultivaluedMap)}
     */
-   public void publishPerRequest(InputStream in, ResourceId resourceId, MultivaluedMap<String, String> properties)
+   public void publishPerRequest(final InputStream in, final ResourceId resourceId,
+      MultivaluedMap<String, String> properties)
    {
-      Class<?> rc = gcl.parseClass(createCodeSource(in, resourceId.getId()));
+      Class<?> rc = SecurityHelper.doPriviledgedAction(new PrivilegedAction<Class<?>>()
+      {
+         public Class<?> run()
+         {
+            return gcl.parseClass(createCodeSource(in, resourceId.getId()));
+         }
+      });
+
       binder.addResource(rc, properties);
       resources.put(resourceId, rc.getAnnotation(Path.class).value());
    }
@@ -299,9 +315,16 @@ public class GroovyJaxrsPublisher
     * @param name code source name
     * @return GroovyCodeSource
     */
-   protected GroovyCodeSource createCodeSource(InputStream in, String name)
+   protected GroovyCodeSource createCodeSource(final InputStream in, final String name)
    {
-      GroovyCodeSource gcs = new GroovyCodeSource(in, name, "/groovy/script/jaxrs");
+      GroovyCodeSource gcs = SecurityHelper.doPriviledgedAction(new PrivilegedAction<GroovyCodeSource>()
+      {
+         public GroovyCodeSource run()
+         {
+            return new GroovyCodeSource(in, name, "/groovy/script/jaxrs");
+         }
+      });
+
       gcs.setCachable(false);
       return gcs;
    }

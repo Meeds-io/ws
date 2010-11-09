@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.method;
 
+import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.services.rest.Property;
 import org.exoplatform.services.rest.method.TypeProducer;
 
@@ -27,6 +28,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -258,11 +260,18 @@ public class ParameterHelper
     *          'valueOf' and single string argument
     * @return valueOf method or null if class has not it
     */
-   static Method getStringValueOfMethod(Class<?> clazz)
+   static Method getStringValueOfMethod(final Class<?> clazz)
    {
       try
       {
-         Method method = clazz.getDeclaredMethod("valueOf", String.class);
+         Method method = SecurityHelper.doPriviledgedExceptionAction(new PrivilegedExceptionAction<Method>()
+         {
+            public Method run() throws Exception
+            {
+               return clazz.getDeclaredMethod("valueOf", String.class);
+            }
+         });
+
          return Modifier.isStatic(method.getModifiers()) ? method : null;
       }
       catch (Exception e)

@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.provider;
 
+import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.impl.header.MediaTypeHelper;
@@ -28,6 +29,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -76,19 +79,48 @@ public class JAXBObjectEntityProvider implements EntityProvider<Object>
     * {@inheritDoc}
     */
    public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+      MultivaluedMap<String, String> httpHeaders, final InputStream entityStream) throws IOException
    {
       try
       {
-         JAXBContext jaxbctx = getJAXBContext(type, mediaType);
-         return jaxbctx.createUnmarshaller().unmarshal(entityStream);
+         final JAXBContext jaxbctx = getJAXBContext(type, mediaType);
+
+         return SecurityHelper.doPriviledgedExceptionAction(new PrivilegedExceptionAction<Object>()
+         {
+            public Object run() throws Exception
+            {
+               return jaxbctx.createUnmarshaller().unmarshal(entityStream);
+            }
+         });
       }
-      catch (UnmarshalException e)
+      catch (PrivilegedActionException pae)
       {
-         // if can't read from stream (e.g. steam is empty)
-         if (LOG.isDebugEnabled())
-            e.printStackTrace();
-         return null;
+         Throwable cause = pae.getCause();
+         if (cause instanceof UnmarshalException)
+         {
+            // if can't read from stream (e.g. steam is empty)
+            if (LOG.isDebugEnabled())
+            {
+               cause.printStackTrace();
+            }
+            return null;
+         }
+         else if (cause instanceof JAXBException)
+         {
+            throw new IOException("Can't read from input stream " + cause);
+         }
+         else if (cause instanceof IllegalArgumentException)
+         {
+            throw (IllegalArgumentException)cause;
+         }
+         else if (cause instanceof RuntimeException)
+         {
+            throw (RuntimeException)cause;
+         }
+         else
+         {
+            throw new RuntimeException(cause);
+         }
       }
       catch (JAXBException e)
       {

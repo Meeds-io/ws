@@ -32,6 +32,7 @@
 
 package org.exoplatform.common.http.client;
 
+import org.exoplatform.commons.utils.PrivilegedSystemHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
@@ -285,7 +286,7 @@ class SocksClient
          String user_str;
          try
          {
-            user_str = System.getProperty("user.name", "");
+            user_str = PrivilegedSystemHelper.getProperty("user.name", "");
          }
          catch (SecurityException se)
          {
@@ -565,6 +566,7 @@ class SocksClient
     * produces a string.
     * @return a string containing the host and port of the socks server
     */
+   @Override
    public String toString()
    {
       return getClass().getName() + "[" + socks_host + ":" + socks_port + "]";

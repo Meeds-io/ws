@@ -32,6 +32,7 @@
 
 package org.exoplatform.common.http.client;
 
+import org.exoplatform.commons.utils.PrivilegedSystemHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
@@ -315,7 +316,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       try
       // JDK 1.1 naming
       {
-         String host = System.getProperty("http.proxyHost");
+         String host = PrivilegedSystemHelper.getProperty("http.proxyHost");
          if (host == null)
             throw new Exception(); // try JDK 1.0.x naming
          int port = Integer.getInteger("http.proxyPort", -1).intValue();
@@ -332,7 +333,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          {
             if (Boolean.getBoolean("proxySet"))
             {
-               String host = System.getProperty("proxyHost");
+               String host = PrivilegedSystemHelper.getProperty("proxyHost");
                int port = Integer.getInteger("proxyPort", -1).intValue();
 
                if (log.isDebugEnabled())
@@ -352,9 +353,9 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
        */
       try
       {
-         String hosts = System.getProperty("HTTPClient.nonProxyHosts");
+         String hosts = PrivilegedSystemHelper.getProperty("HTTPClient.nonProxyHosts");
          if (hosts == null)
-            hosts = System.getProperty("http.nonProxyHosts");
+            hosts = PrivilegedSystemHelper.getProperty("http.nonProxyHosts");
 
          String[] list = Util.splitProperty(hosts);
          dontProxyFor(list);
@@ -371,7 +372,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
        */
       try
       {
-         String host = System.getProperty("HTTPClient.socksHost");
+         String host = PrivilegedSystemHelper.getProperty("HTTPClient.socksHost");
          if (host != null && host.length() > 0)
          {
             int port = Integer.getInteger("HTTPClient.socksPort", -1).intValue();
@@ -414,7 +415,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       boolean in_applet = false;
       try
       {
-         modules = System.getProperty("HTTPClient.Modules", modules);
+         modules = PrivilegedSystemHelper.getProperty("HTTPClient.Modules", modules);
       }
       catch (SecurityException se)
       {
@@ -523,8 +524,8 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
        */
       try
       {
-         if (System.getProperty("os.name").indexOf("Windows") >= 0
-            && System.getProperty("java.version").startsWith("1.1"))
+         if (PrivilegedSystemHelper.getProperty("os.name").indexOf("Windows") >= 0
+            && PrivilegedSystemHelper.getProperty("java.version").startsWith("1.1"))
             haveMSLargeWritesBug = true;
          if (haveMSLargeWritesBug)
          {
@@ -1800,7 +1801,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    {
       synchronized (DefaultHeaders)
       {
-         return (NVPair[])DefaultHeaders.clone();
+         return DefaultHeaders.clone();
       }
    }
 
@@ -3370,7 +3371,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          con.start();
          try
          {
-            con.join((long)con_timeout);
+            con.join(con_timeout);
          }
          catch (InterruptedException ie)
          {
@@ -3855,6 +3856,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     * Generates a string of the form protocol://host.domain:port .
     * @return the string
     */
+   @Override
    public String toString()
    {
       return getProtocol() + "://" + getHost() + (getPort() != URI.defaultPort(getProtocol()) ? ":" + getPort() : "");
@@ -3894,6 +3896,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          close = false;
       }
 
+      @Override
       public void run()
       {
          try
@@ -3970,6 +3973,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          super(os);
       }
 
+      @Override
       public void write(byte[] b, int off, int len) throws IOException
       {
          while (len > CHUNK_SIZE)

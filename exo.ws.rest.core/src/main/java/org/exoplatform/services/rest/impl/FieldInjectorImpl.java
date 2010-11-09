@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest.impl;
 
+import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.ApplicationContext;
@@ -30,6 +31,7 @@ import org.exoplatform.services.rest.resource.ResourceDescriptorVisitor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.security.PrivilegedAction;
 import java.util.List;
 
 import javax.ws.rs.DefaultValue;
@@ -211,7 +213,17 @@ public class FieldInjectorImpl implements FieldInjector
          try
          {
             if (!Modifier.isPublic(jfield.getModifiers()))
-               jfield.setAccessible(true);
+            {
+               SecurityHelper.doPriviledgedAction(new PrivilegedAction<Void>()
+               {
+                  public Void run()
+                  {
+                     jfield.setAccessible(true);
+                     return null;
+                  }
+               });
+
+            }
 
             jfield.set(resource, pr.resolve(this, context));
          }

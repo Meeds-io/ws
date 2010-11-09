@@ -32,6 +32,8 @@
 
 package org.exoplatform.common.http.client;
 
+import org.exoplatform.commons.utils.PrivilegedSystemHelper;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.BitSet;
@@ -1047,6 +1049,7 @@ public class URI
     * @return the URI as a string
     * @see #toExternalForm()
     */
+   @Override
    public String toString()
    {
       return stringify(true);
@@ -1056,6 +1059,7 @@ public class URI
     * @return true if <var>other</var> is either a URI or URL and it matches the
     *         current URI
     */
+   @Override
    public boolean equals(Object other)
    {
       if (other instanceof URI)
@@ -1149,6 +1153,7 @@ public class URI
     * The hash code is calculated over scheme, host, path, and query.
     * @return the hash code
     */
+   @Override
    public int hashCode()
    {
       if (hashCode == -1)
@@ -1779,7 +1784,7 @@ public class URI
       System.err.println("*** Tests finished successfuly");
    }
 
-   private static final String nl = System.getProperty("line.separator");
+   private static final String nl = PrivilegedSystemHelper.getProperty("line.separator");
 
    private static void testParser(URI base, String relURI, String result) throws Exception
    {

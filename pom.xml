@@ -77,6 +77,11 @@
             <version>${org.exoplatform.kernel.version}</version>
          </dependency>
          <dependency>
+            <groupId>org.exoplatform.kernel</groupId>
+            <artifactId>exo.kernel.commons.test</artifactId>
+            <version>${org.exoplatform.kernel.version}</version>
+         </dependency>
+         <dependency>
             <groupId>org.exoplatform.core</groupId>
             <artifactId>exo.core.component.xml-processing</artifactId>
             <version>${org.exoplatform.core.version}</version>
