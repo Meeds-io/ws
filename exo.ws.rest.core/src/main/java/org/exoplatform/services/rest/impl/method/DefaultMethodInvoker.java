@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.method;
 
+import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.ApplicationContext;
@@ -31,6 +32,8 @@ import org.exoplatform.services.rest.resource.GenericMethodResource;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.List;
 
 import javax.ws.rs.MatrixParam;
@@ -174,37 +177,55 @@ public class DefaultMethodInvoker implements MethodInvoker
       return invokeMethod(resource, methodResource, p);
    }
 
-   protected Object invokeMethod(Object resource, GenericMethodResource methodResource, Object[] p)
+   protected Object invokeMethod(final Object resource, final GenericMethodResource methodResource, final Object[] p)
    {
       try
       {
-         return methodResource.getMethod().invoke(resource, p);
-      }
-      catch (IllegalArgumentException argExc)
-      {
-         // should not be thrown
-         throw new InternalException(argExc);
-      }
-      catch (IllegalAccessException accessExc)
-      {
-         // should not be thrown
-         throw new InternalException(accessExc);
-      }
-      catch (InvocationTargetException invExc)
-      {
-         if (LOG.isDebugEnabled())
+         return SecurityHelper.doPriviledgedExceptionAction(new PrivilegedExceptionAction<Object>()
          {
-            invExc.printStackTrace();
-         }
-         // get cause of exception that method produces
-         Throwable cause = invExc.getCause();
-         // if WebApplicationException than it may contain response
-         if (WebApplicationException.class == cause.getClass())
+            public Object run() throws Exception
+            {
+               return methodResource.getMethod().invoke(resource, p);
+            }
+         });
+      }
+      catch (PrivilegedActionException pae)
+      {
+         Throwable cause = pae.getCause();
+         if (cause instanceof IllegalArgumentException)
          {
-            throw (WebApplicationException)cause;
+            // should not be thrown
+            throw new InternalException(cause);
          }
+         else if (cause instanceof IllegalAccessException)
+         {
+            // should not be thrown
+            throw new InternalException(cause);
+         }
+         else if (cause instanceof InvocationTargetException)
+         {
+            if (LOG.isDebugEnabled())
+            {
+               cause.printStackTrace();
+            }
+            // get cause of exception that method produces
+            Throwable throwable = cause.getCause();
+            // if WebApplicationException than it may contain response
+            if (WebApplicationException.class == throwable.getClass())
+            {
+               throw (WebApplicationException)throwable;
+            }
 
-         throw new InternalException(cause);
+            throw new InternalException(throwable);
+         }
+         else if (cause instanceof RuntimeException)
+         {
+            throw (RuntimeException)cause;
+         }
+         else
+         {
+            throw new RuntimeException(cause);
+         }
       }
    }
 
