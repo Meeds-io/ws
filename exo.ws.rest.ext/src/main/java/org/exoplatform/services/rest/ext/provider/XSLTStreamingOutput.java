@@ -28,6 +28,7 @@ import org.exoplatform.services.xml.transform.trax.TRAXTransformer;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
@@ -51,6 +52,8 @@ public class XSLTStreamingOutput implements StreamingOutput
 
    private Source source;
 
+   private Map<String, String> xsltParams;
+
    /**
     * XSLTStreamingOutput constructor.
     * 
@@ -61,10 +64,23 @@ public class XSLTStreamingOutput implements StreamingOutput
     */
    public XSLTStreamingOutput(String schemeName, Source source)
    {
-
       this.schemeName = schemeName;
       this.source = source;
+   }
 
+   /**
+    * XSLTStreamingOutput constructor.
+    * 
+    * @param schemeName XLST scheme name. Must be registered in
+    *          {@link org.exoplatform.services.xml.transform.impl.trax.TRAXTemplatesLoaderPlugin
+    *          TRAXTemplatesLoaderPlugin }
+    * @param source entity to write into output stream.
+    * @param xsltParams XSLT parameters
+    */
+   public XSLTStreamingOutput(String schemeName, Source source, Map<String, String> xsltParams)
+   {
+      this(schemeName, source);
+      this.xsltParams = xsltParams;
    }
 
    /**
@@ -97,6 +113,13 @@ public class XSLTStreamingOutput implements StreamingOutput
             throw new NullPointerException(msg);
          }
          transformer.initResult(new StreamResult(outStream));
+         if (xsltParams != null)
+         {
+            for (Map.Entry<String, String> e : xsltParams.entrySet())
+            {
+               transformer.setParameter(e.getKey(), e.getValue());
+            }
+         }
          transformer.transform(source);
       }
       catch (TransformerConfigurationException tce)
