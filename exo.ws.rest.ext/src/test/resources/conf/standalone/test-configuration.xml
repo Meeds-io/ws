@@ -72,12 +72,6 @@
 			<set-method>addPlugin</set-method>
 			<type>org.exoplatform.services.rest.impl.provider.JAXBContextComponentPlugin</type>
 			<init-params>
-				<!-- ======== example ======= -->
-				<value-param>
-					<name>book</name>
-					<value>org.exoplatform.services.rest.generated.Book</value>
-				</value-param>
-				<!-- ======================== -->
 				<value-param>
 					<name>wadl.application</name>
 					<value>org.exoplatform.services.rest.wadl.research.Application</value>

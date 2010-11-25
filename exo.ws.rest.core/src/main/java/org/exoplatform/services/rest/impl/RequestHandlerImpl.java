@@ -52,8 +52,8 @@ import java.util.Set;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.ext.ExceptionMapper;
 
 /**
@@ -423,6 +423,14 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
          Set<Class<? extends ResponseFilter>> filters = ((ResponseFilterComponentPlugin)plugin).getFilters();
          for (Class<? extends ResponseFilter> filter : filters)
             providers.addResponseFilter(filter);
+      }
+      else if (ExceptionMapperComponentPlugin.class.isAssignableFrom(plugin.getClass()))
+      {
+         Set<Class<? extends ExceptionMapper<?>>> emaps = ((ExceptionMapperComponentPlugin)plugin).getExceptionMappers();
+         for (Class<? extends ExceptionMapper<?>> mapper : emaps){
+            providers.addExceptionMapper(mapper);
+System.out.println("\n>>>>>>>>>>>>>>>>> ADD <<<<<<<<<<<<<<<<<\n\n");
+         }
       }
    }
 

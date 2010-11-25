@@ -149,5 +149,18 @@
          </init-params>
          -->
       </component-plugin>
+      <component-plugin>
+         <name>ws.rs.exception.mapper</name>
+         <set-method>addPlugin</set-method>
+         <type>org.exoplatform.services.rest.impl.ExceptionMapperComponentPlugin</type>
+         <!--
+         <init-params>
+            <value-param>
+               <name>name</name>
+               <value>mapper name</value>
+            </value-param>
+         </init-params>
+         -->
+      </component-plugin>
    </external-component-plugins>
 </configuration>
