@@ -29,16 +29,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Stack;
+import java.util.LinkedList;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.namespace.QName;
+import javax.xml.stream.EventFilter;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.TransformerException;
@@ -77,33 +79,40 @@ public class HierarchicalPropertyEntityProvider implements EntityProvider<Hierar
       WebApplicationException
    {
       HierarchicalProperty rootProperty = null;
-      Stack<HierarchicalProperty> curProperty = new Stack<HierarchicalProperty>();
+      LinkedList<HierarchicalProperty> curProperty = new LinkedList<HierarchicalProperty>();
 
       try
       {
          XMLInputFactory factory = XMLInputFactory.newInstance();
          XMLEventReader reader = factory.createXMLEventReader(entityStream);
-         while (reader.hasNext())
+         XMLEventReader fReader = factory.createFilteredReader(reader, new EventFilter()
          {
-            XMLEvent event = reader.nextEvent();
+            public boolean accept(XMLEvent event)
+            {
+               return !(event.isCharacters() && ((Characters)event).isWhiteSpace());
+            }
+         });
+         while (fReader.hasNext())
+         {
+            XMLEvent event = fReader.nextEvent();
             switch (event.getEventType())
             {
                case XMLEvent.START_ELEMENT :
                   StartElement element = event.asStartElement();
                   QName name = element.getName();
                   HierarchicalProperty prop = new HierarchicalProperty(name);
-                  if (!curProperty.empty())
-                     curProperty.peek().addChild(prop);
+                  if (!curProperty.isEmpty())
+                     curProperty.getLast().addChild(prop);
                   else
                      rootProperty = prop;
-                  curProperty.push(prop);
+                  curProperty.addLast(prop);
                   break;
                case XMLEvent.END_ELEMENT :
-                  curProperty.pop();
+                  curProperty.removeLast();
                   break;
                case XMLEvent.CHARACTERS :
                   String chars = event.asCharacters().getData();
-                  curProperty.peek().setValue(chars);
+                  curProperty.getLast().setValue(chars);
                   break;
                default :
                   break;
@@ -119,8 +128,22 @@ public class HierarchicalPropertyEntityProvider implements EntityProvider<Hierar
       catch (XMLStreamException e)
       {
          if (LOG.isDebugEnabled())
-            e.printStackTrace();
+            LOG.debug("An XMLStreamException occurs", e);
          return null;
+      }
+      catch (RuntimeException re)
+      {
+         String reName = re.getClass().getName();
+         if (reName.equals("com.ctc.wstx.exc.WstxLazyException"))
+         {
+            if (LOG.isDebugEnabled())
+               LOG.error(re.getMessage(), re);
+            return null;
+         }
+         else
+         {
+            throw re;
+         }
       }
    }
 
