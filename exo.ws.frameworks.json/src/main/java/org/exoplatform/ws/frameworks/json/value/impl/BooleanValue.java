@@ -47,6 +47,15 @@ public class BooleanValue extends JsonValue
     * {@inheritDoc}
     */
    @Override
+   public String getStringValue()
+   {
+      return value ? "true" : "false";
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
    public boolean isBoolean()
    {
       return true;
@@ -58,7 +67,7 @@ public class BooleanValue extends JsonValue
    @Override
    public String toString()
    {
-      return value ? "true" : "false";
+      return getStringValue();
    }
 
    /**
