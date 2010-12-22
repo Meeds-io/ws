@@ -1,4 +1,4 @@
-package org.exoplatform.services.rest.ext.filter;
+package org.exoplatform.services.rest.ext.provider;
 
 import junit.framework.TestCase;
 
@@ -12,7 +12,7 @@ public class HierarchicalPropertyEntityProviderTest extends TestCase
    public void testRequestBodyXMLParsing() throws Exception
    {
       String s = "\n<root>\n   <l1>\n\t<l2>hel\nlo</l2>\n  </l1>  \n</root>\n";
-      System.out.println(s);
+      //System.out.println(s);
       HierarchicalProperty hp =
          new HierarchicalPropertyEntityProvider().readFrom(HierarchicalProperty.class, null, null, null, null,
             new ByteArrayInputStream(s.getBytes()));

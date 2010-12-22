@@ -33,6 +33,7 @@ import org.exoplatform.services.script.groovy.GroovyScriptInstantiator;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.security.PrivilegedAction;
@@ -46,7 +47,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * Manage via {@link ResourceBinder} Groovy based RESTful services.
- *
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
@@ -63,44 +64,58 @@ public class GroovyJaxrsPublisher
 
    protected final GroovyScriptInstantiator instantiator;
 
-   protected GroovyClassLoader gcl;
+   protected final GroovyClassLoaderProvider classLoaderProvider;
 
    protected final Map<ResourceId, String> resources = Collections.synchronizedMap(new HashMap<ResourceId, String>());
+
+   protected GroovyJaxrsPublisher(ResourceBinder binder, GroovyScriptInstantiator instantiator,
+      GroovyClassLoaderProvider classLoaderProvider)
+   {
+      this.binder = binder;
+      this.instantiator = instantiator;
+      this.classLoaderProvider = classLoaderProvider;
+   }
 
    /**
     * Create GroovyJaxrsPublisher which is able publish per-request and
     * singleton resources. Any required dependencies for per-request resource
     * injected by {@link PerRequestObjectFactory}, instance of singleton
     * resources will be created by {@link GroovyScriptInstantiator}.
-    *
+    * 
     * @param binder resource binder
     * @param instantiator instantiate java object from given groovy source
     */
    public GroovyJaxrsPublisher(ResourceBinder binder, GroovyScriptInstantiator instantiator)
    {
-      this.binder = binder;
-      this.instantiator = instantiator;
-      final ClassLoader cl = getClass().getClassLoader();
-      this.gcl = SecurityHelper.doPriviledgedAction(new PrivilegedAction<GroovyClassLoader>()
-      {
-         public GroovyClassLoader run()
-         {
-            return new GroovyClassLoader(cl);
-         }
-      });
+      this(binder, instantiator, new GroovyClassLoaderProvider());
    }
 
    /**
     * @return get underling groovy class loader
     */
+   @Deprecated
    public GroovyClassLoader getGroovyClassLoader()
    {
-      return gcl;
+      return classLoaderProvider.getGroovyClassLoader();
+   }
+
+   /**
+    * Set groovy class loader.
+    * 
+    * @param gcl groovy class loader
+    * @throws NullPointerException if <code>gcl == null</code>
+    */
+   @Deprecated
+   public void setGroovyClassLoader(GroovyClassLoader gcl)
+   {
+      if (gcl == null)
+         throw new NullPointerException("GroovyClassLoader may not be null. ");
+      classLoaderProvider.setGroovyClassLoader(gcl);
    }
 
    /**
     * Get resource corresponded to specified id <code>resourceId</code> .
-    *
+    * 
     * @param resourceId resource id
     * @return resource or <code>null</code>
     */
@@ -127,7 +142,7 @@ public class GroovyJaxrsPublisher
 
    /**
     * Check is groovy resource with specified id is published or not
-    *
+    * 
     * @param resourceId id of resource to be checked
     * @return <code>true</code> if resource is published and <code>false</code>
     *         otherwise
@@ -139,23 +154,50 @@ public class GroovyJaxrsPublisher
 
    /**
     * Parse given stream and publish result as per-request RESTful service.
-    *
+    * 
     * @param in stream which contains groovy source code of RESTful service
     * @param resourceId id to be assigned to resource
     * @param properties optional resource properties. This parameter may be
-    *        <code>null</code>
+    *           <code>null</code>
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
-    *         {@link ResourceBinder#addResource(Class, MultivaluedMap)}
+    *            {@link ResourceBinder#addResource(Class, MultivaluedMap)}
     */
    public void publishPerRequest(final InputStream in, final ResourceId resourceId,
       MultivaluedMap<String, String> properties)
    {
-      Class<?> rc = SecurityHelper.doPriviledgedAction(new PrivilegedAction<Class<?>>()
-      {
+      publishPerRequest(in, resourceId, properties, null);
+   }
+
+   /**
+    * Parse given stream and publish result as per-request RESTful service.
+    * 
+    * @param in stream which contains groovy source code of RESTful service
+    * @param resourceId id to be assigned to resource
+    * @param properties optional resource properties. This parameter may be
+    *           <code>null</code>
+    * @param classPath additional path to Groovy sources
+    * @throws NullPointerException if <code>resourceId == null</code>
+    * @throws ResourcePublicationException see
+    *            {@link ResourceBinder#addResource(Class, MultivaluedMap)}
+    */
+   public void publishPerRequest(final InputStream in, final ResourceId resourceId,
+      final MultivaluedMap<String, String> properties, final ClassPathEntry[] classPath)
+   {
+      Class<?> rc = SecurityHelper.doPriviledgedAction(new PrivilegedAction<Class<?>>() {
          public Class<?> run()
          {
-            return gcl.parseClass(createCodeSource(in, resourceId.getId()));
+            try
+            {
+               GroovyClassLoader cl = (classPath == null || classPath.length == 0) //
+                  ? classLoaderProvider.getGroovyClassLoader() //
+                  : classLoaderProvider.getGroovyClassLoader(classPath);
+               return cl.parseClass(createCodeSource(in, resourceId.getId()));
+            }
+            catch (MalformedURLException e)
+            {
+               throw new ResourcePublicationException(e.getMessage());
+            }
          }
       });
 
@@ -166,113 +208,216 @@ public class GroovyJaxrsPublisher
    /**
     * Parse given <code>source</code> and publish result as per-request RESTful
     * service.
-    *
+    * 
     * @param source groovy source code of RESTful service
     * @param resourceId id to be assigned to resource
     * @param properties optional resource properties. This parameter may be
-    *        <code>null</code>
+    *           <code>null</code>
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
-    *         {@link ResourceBinder#addResource(Class, MultivaluedMap)}
+    *            {@link ResourceBinder#addResource(Class, MultivaluedMap)}
     */
    public final void publishPerRequest(String source, ResourceId resourceId, MultivaluedMap<String, String> properties)
    {
-      publishPerRequest(source, DEFAULT_CHARSET, resourceId, properties);
+      publishPerRequest(source, DEFAULT_CHARSET, resourceId, properties, null);
    }
 
    /**
     * Parse given <code>source</code> and publish result as per-request RESTful
     * service.
-    *
+    * 
     * @param source groovy source code of RESTful service
-    * @param charset source string charset. May be <code>null</code> than
-    *        default charset will be in use
     * @param resourceId id to be assigned to resource
     * @param properties optional resource properties. This parameter may be
-    *        <code>null</code>.
+    *           <code>null</code>
+    * @param classPath additional path to Groovy sources
+    * @throws NullPointerException if <code>resourceId == null</code>
+    * @throws ResourcePublicationException see
+    *            {@link ResourceBinder#addResource(Class, MultivaluedMap)}
+    */
+   public final void publishPerRequest(String source, ResourceId resourceId, MultivaluedMap<String, String> properties,
+      ClassPathEntry[] classPath)
+   {
+      publishPerRequest(source, DEFAULT_CHARSET, resourceId, properties, classPath);
+   }
+
+   /**
+    * Parse given <code>source</code> and publish result as per-request RESTful
+    * service.
+    * 
+    * @param source groovy source code of RESTful service
+    * @param charset source string charset. May be <code>null</code> than
+    *           default charset will be in use
+    * @param resourceId id to be assigned to resource
+    * @param properties optional resource properties. This parameter may be
+    *           <code>null</code>.
     * @throws UnsupportedCharsetException if <code>charset</code> is unsupported
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
-    *         {@link ResourceBinder#addResource(Class, MultivaluedMap)}
+    *            {@link ResourceBinder#addResource(Class, MultivaluedMap)}
     */
    public final void publishPerRequest(String source, String charset, ResourceId resourceId,
       MultivaluedMap<String, String> properties)
    {
-      publishPerRequest(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId, properties);
+      publishPerRequest(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId, properties,
+         null);
+   }
+
+   /**
+    * Parse given <code>source</code> and publish result as per-request RESTful
+    * service.
+    * 
+    * @param source groovy source code of RESTful service
+    * @param charset source string charset. May be <code>null</code> than
+    *           default charset will be in use
+    * @param resourceId id to be assigned to resource
+    * @param properties optional resource properties. This parameter may be
+    *           <code>null</code>.
+    * @param classPath additional path to Groovy sources
+    * @throws UnsupportedCharsetException if <code>charset</code> is unsupported
+    * @throws NullPointerException if <code>resourceId == null</code>
+    * @throws ResourcePublicationException see
+    *            {@link ResourceBinder#addResource(Class, MultivaluedMap)}
+    */
+   public final void publishPerRequest(String source, String charset, ResourceId resourceId,
+      MultivaluedMap<String, String> properties, ClassPathEntry[] classPath)
+   {
+      publishPerRequest(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId, properties,
+         classPath);
    }
 
    /**
     * Parse given stream and publish result as singleton RESTful service.
-    *
+    * 
     * @param in stream which contains groovy source code of RESTful service
     * @param resourceId id to be assigned to resource
     * @param properties optional resource properties. This parameter may be
-    *        <code>null</code>
+    *           <code>null</code>
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
-    *         {@link ResourceBinder#addResource(Object, MultivaluedMap)}
+    *            {@link ResourceBinder#addResource(Object, MultivaluedMap)}
     */
    public void publishSingleton(InputStream in, ResourceId resourceId, MultivaluedMap<String, String> properties)
    {
-      Object r = instantiator.instantiateScript(createCodeSource(in, resourceId.getId()), gcl);
-      binder.addResource(r, properties);
-      resources.put(resourceId, r.getClass().getAnnotation(Path.class).value());
+      publishSingleton(in, resourceId, properties, null);
+   }
+
+   /**
+    * Parse given stream and publish result as singleton RESTful service.
+    * 
+    * @param in stream which contains groovy source code of RESTful service
+    * @param resourceId id to be assigned to resource
+    * @param properties optional resource properties. This parameter may be
+    *           <code>null</code>
+    * @param classPath additional path to Groovy sources
+    * @throws NullPointerException if <code>resourceId == null</code>
+    * @throws ResourcePublicationException see
+    *            {@link ResourceBinder#addResource(Object, MultivaluedMap)}
+    */
+   public void publishSingleton(InputStream in, ResourceId resourceId, MultivaluedMap<String, String> properties,
+      ClassPathEntry[] classPath)
+   {
+      Object resource;
+      try
+      {
+         resource =
+            instantiator.instantiateScript(createCodeSource(in, resourceId.getId()),
+               (classPath == null || classPath.length == 0) //
+                  ? classLoaderProvider.getGroovyClassLoader() //
+                  : classLoaderProvider.getGroovyClassLoader(classPath));
+      }
+      catch (MalformedURLException e)
+      {
+         throw new ResourcePublicationException(e.getMessage());
+      }
+      binder.addResource(resource, properties);
+      resources.put(resourceId, resource.getClass().getAnnotation(Path.class).value());
    }
 
    /**
     * Parse given <code>source</code> and publish result as singleton RESTful
     * service.
-    *
+    * 
     * @param source groovy source code of RESTful service
     * @param resourceId name of resource
     * @param properties optional resource properties. This parameter may be
-    *        <code>null</code>.
+    *           <code>null</code>.
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
-    *         {@link ResourceBinder#addResource(Object, MultivaluedMap)}
+    *            {@link ResourceBinder#addResource(Object, MultivaluedMap)}
     */
    public final void publishSingleton(String source, ResourceId resourceId, MultivaluedMap<String, String> properties)
    {
-      publishSingleton(source, DEFAULT_CHARSET, resourceId, properties);
+      publishSingleton(source, DEFAULT_CHARSET, resourceId, properties, null);
    }
 
    /**
     * Parse given <code>source</code> and publish result as singleton RESTful
     * service.
-    *
+    * 
     * @param source groovy source code of RESTful service
-    * @param charset source string charset. May be <code>null</code> than
-    *        default charset will be in use
     * @param resourceId name of resource
     * @param properties optional resource properties. This parameter may be
-    *        <code>null</code>.
+    *           <code>null</code>.
+    * @param classPath additional path to Groovy sources
+    * @throws NullPointerException if <code>resourceId == null</code>
+    * @throws ResourcePublicationException see
+    *            {@link ResourceBinder#addResource(Object, MultivaluedMap)}
+    */
+   public final void publishSingleton(String source, ResourceId resourceId, MultivaluedMap<String, String> properties,
+      ClassPathEntry[] classPath)
+   {
+      publishSingleton(source, DEFAULT_CHARSET, resourceId, properties, classPath);
+   }
+
+   /**
+    * Parse given <code>source</code> and publish result as singleton RESTful
+    * service.
+    * 
+    * @param source groovy source code of RESTful service
+    * @param charset source string charset. May be <code>null</code> than
+    *           default charset will be in use
+    * @param resourceId name of resource
+    * @param properties optional resource properties. This parameter may be
+    *           <code>null</code>.
     * @throws UnsupportedCharsetException if <code>charset</code> is unsupported
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
-    *         {@link ResourceBinder#addResource(Object, MultivaluedMap)}
+    *            {@link ResourceBinder#addResource(Object, MultivaluedMap)}
     */
    public final void publishSingleton(String source, String charset, ResourceId resourceId,
       MultivaluedMap<String, String> properties)
    {
-      publishSingleton(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId, properties);
+      publishSingleton(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId, properties,
+         null);
    }
 
    /**
-    * Set groovy class loader.
-    *
-    * @param gcl groovy class loader
-    * @throws NullPointerException if <code>gcl == null</code>
+    * Parse given <code>source</code> and publish result as singleton RESTful
+    * service.
+    * 
+    * @param source groovy source code of RESTful service
+    * @param charset source string charset. May be <code>null</code> than
+    *           default charset will be in use
+    * @param resourceId name of resource
+    * @param properties optional resource properties. This parameter may be
+    *           <code>null</code>.
+    * @param classPath additional path to Groovy sources
+    * @throws UnsupportedCharsetException if <code>charset</code> is unsupported
+    * @throws NullPointerException if <code>resourceId == null</code>
+    * @throws ResourcePublicationException see
+    *            {@link ResourceBinder#addResource(Object, MultivaluedMap)}
     */
-   public void setGroovyClassLoader(GroovyClassLoader gcl)
+   public final void publishSingleton(String source, String charset, ResourceId resourceId,
+      MultivaluedMap<String, String> properties, ClassPathEntry[] classPath)
    {
-      if (gcl == null)
-         throw new NullPointerException("GroovyClassLoader may not be null.");
-      this.gcl = gcl;
+      publishSingleton(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId, properties,
+         classPath);
    }
 
    /**
     * Unpublish resource with specified id.
-    *
+    * 
     * @param resourceId id of resource to be unpublished
     * @return <code>true</code> if resource was published and <code>false</code>
     *         otherwise, e.g. because there is not resource corresponded to
@@ -294,31 +439,30 @@ public class GroovyJaxrsPublisher
    }
 
    private void publishPerRequest(String source, Charset charset, ResourceId resourceId,
-      MultivaluedMap<String, String> properties)
+      MultivaluedMap<String, String> properties, ClassPathEntry[] classPath)
    {
       byte[] bytes = source.getBytes(charset);
       publishPerRequest(new ByteArrayInputStream(bytes), resourceId, properties);
    }
 
    private void publishSingleton(String source, Charset charset, ResourceId resourceId,
-      MultivaluedMap<String, String> properties)
+      MultivaluedMap<String, String> properties, ClassPathEntry[] classPath)
    {
       byte[] bytes = source.getBytes(charset);
-      publishSingleton(new ByteArrayInputStream(bytes), resourceId, properties);
+      publishSingleton(new ByteArrayInputStream(bytes), resourceId, properties, classPath);
    }
 
    /**
     * Create {@link GroovyCodeSource} from given stream and name. Code base
     * 'file:/groovy/script/jaxrs' will be used.
-    *
+    * 
     * @param in groovy source code stream
     * @param name code source name
     * @return GroovyCodeSource
     */
    protected GroovyCodeSource createCodeSource(final InputStream in, final String name)
    {
-      GroovyCodeSource gcs = SecurityHelper.doPriviledgedAction(new PrivilegedAction<GroovyCodeSource>()
-      {
+      GroovyCodeSource gcs = SecurityHelper.doPriviledgedAction(new PrivilegedAction<GroovyCodeSource>() {
          public GroovyCodeSource run()
          {
             return new GroovyCodeSource(in, name, "/groovy/script/jaxrs");

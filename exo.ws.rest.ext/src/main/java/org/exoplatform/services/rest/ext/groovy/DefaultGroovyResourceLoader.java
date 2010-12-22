@@ -22,7 +22,6 @@ package org.exoplatform.services.rest.ext.groovy;
 import groovy.lang.GroovyResourceLoader;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessController;
@@ -40,28 +39,29 @@ import java.util.Map.Entry;
  */
 public class DefaultGroovyResourceLoader implements GroovyResourceLoader
 {
+   private static final String[] DEFAULT_SCRIPT_EXTENSIONS = new String[]{".groovy"};
 
    protected URL[] roots;
+
+   protected URL[] files;
 
    // TODO need configurable ?
    private int maxEntries = 512;
 
    protected final Map<String, URL> resources;
 
-   public DefaultGroovyResourceLoader(URL[] roots) throws MalformedURLException
+   @SuppressWarnings("serial")
+   public DefaultGroovyResourceLoader(URL[] roots, URL[] files) throws MalformedURLException
    {
+      this.files = files;
       this.roots = new URL[roots.length];
       for (int i = 0; i < roots.length; i++)
       {
          String str = roots[i].toString();
          if (str.charAt(str.length() - 1) != '/')
-         {
             this.roots[i] = new URL(str + '/');
-         }
          else
-         {
             this.roots[i] = roots[i];
-         }
       }
       resources = Collections.synchronizedMap(new LinkedHashMap<String, URL>()
       {
@@ -70,6 +70,11 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
             return size() > maxEntries;
          }
       });
+   }
+
+   public DefaultGroovyResourceLoader(URL[] roots) throws MalformedURLException
+   {
+      this(roots, new URL[0]);
    }
 
    public DefaultGroovyResourceLoader(URL root) throws MalformedURLException
@@ -82,65 +87,81 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
     */
    public final URL loadGroovySource(String classname) throws MalformedURLException
    {
-      final String filename = classname.replace('.', '/') + ".groovy";
-      try
+      URL resource = null;
+      final String baseName = classname.replace('.', '/');
+      String[] extensions = getScriptExtensions();
+      for (int i = 0; i < extensions.length && resource == null; i++)
       {
-         return AccessController.doPrivileged(new PrivilegedExceptionAction<URL>()
+         final String ext = extensions[i];
+         try
          {
-            public URL run() throws Exception
+            resource = AccessController.doPrivileged(new PrivilegedExceptionAction<URL>()
             {
-               return getResource(filename);
-            }
-         });
+               public URL run() throws Exception
+               {
+                  return getResource(baseName + ext);
+               }
+            });
+         }
+         catch (PrivilegedActionException e)
+         {
+            Throwable cause = e.getCause();
+            if (cause instanceof Error)
+               throw (Error)cause;
+            if (cause instanceof RuntimeException)
+               throw (RuntimeException)cause;
+            throw (MalformedURLException)cause;
+         }
       }
-      catch (PrivilegedActionException e)
-      {
-         Throwable cause = e.getCause();
-         if (cause instanceof Error)
-            throw (Error)cause;
-         if (cause instanceof RuntimeException)
-            throw (RuntimeException)cause;
-         throw (MalformedURLException)cause;
-      }
+      return resource;
    }
 
    protected URL getResource(String filename) throws MalformedURLException
    {
-      filename = filename.intern();
       URL resource = null;
+      filename = filename.intern();
       synchronized (filename)
       {
          resource = resources.get(filename);
          boolean inCache = resource != null;
-         for (URL root : roots)
+         if (inCache && !checkResource(resource))
+            resource = null; // Resource in cache is unreachable.
+         for (int i = 0; i < files.length && resource == null; i++)
          {
-            if (resource == null)
-            {
-               resource = new URL(root, filename);
-            }
-            try
-            {
-               InputStream script = resource.openStream();
-               script.close();
-               break;
-            }
-            catch (IOException e)
-            {
-               resource = null;
-            }
+            URL tmp = files[i];
+            if (tmp.toString().endsWith(filename) && checkResource(tmp))
+               resource = tmp;
+         }
+         for (int i = 0; i < roots.length && resource == null; i++)
+         {
+            URL tmp = new URL(roots[i], filename);
+            if (checkResource(tmp))
+               resource = tmp;
          }
          if (resource != null)
-         {
             resources.put(filename, resource);
-         }
          else if (inCache)
-         {
-            // Remove from map if resource is unreachable
             resources.remove(filename);
-         }
       }
 
       return resource;
    }
 
+   protected boolean checkResource(URL resource)
+   {
+      try
+      {
+         resource.openStream().close();
+         return true;
+      }
+      catch (IOException e)
+      {
+         return false;
+      }
+   }
+
+   protected String[] getScriptExtensions()
+   {
+      return DEFAULT_SCRIPT_EXTENSIONS;
+   }
 }
