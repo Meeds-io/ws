@@ -206,7 +206,7 @@ public class ResourceBinder implements Startable
       // Initialize RuntimeDelegate instance
       // This is first component in life cycle what needs.
       // TODO better solution to initialize RuntimeDelegate
-      SecurityHelper.doPriviledgedAction(new PrivilegedAction<Void>()
+      SecurityHelper.doPrivilegedAction(new PrivilegedAction<Void>()
       {
          public Void run()
          {

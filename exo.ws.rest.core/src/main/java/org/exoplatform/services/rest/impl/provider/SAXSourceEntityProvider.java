@@ -95,7 +95,7 @@ public class SAXSourceEntityProvider implements EntityProvider<SAXSource>
       final StreamResult out = new StreamResult(entityStream);
       try
       {
-         SecurityHelper.doPriviledgedExceptionAction(new PrivilegedExceptionAction<Void>()
+         SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Void>()
          {
             public Void run() throws Exception
             {

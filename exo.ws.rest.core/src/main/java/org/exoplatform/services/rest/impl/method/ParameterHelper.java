@@ -264,7 +264,7 @@ public class ParameterHelper
    {
       try
       {
-         Method method = SecurityHelper.doPriviledgedExceptionAction(new PrivilegedExceptionAction<Method>()
+         Method method = SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Method>()
          {
             public Method run() throws Exception
             {

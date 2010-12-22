@@ -83,7 +83,7 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
       {
          try
          {
-            jaxbctx = SecurityHelper.doPriviledgedExceptionAction(new PrivilegedExceptionAction<JAXBContext>()
+            jaxbctx = SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<JAXBContext>()
             {
                public JAXBContext run() throws Exception
                {
@@ -127,7 +127,7 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
 
       try
       {
-         jaxbctx = SecurityHelper.doPriviledgedExceptionAction(new PrivilegedExceptionAction<JAXBContext>()
+         jaxbctx = SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<JAXBContext>()
          {
             public JAXBContext run() throws Exception
             {

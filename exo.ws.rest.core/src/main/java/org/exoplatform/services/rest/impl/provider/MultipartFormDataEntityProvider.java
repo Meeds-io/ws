@@ -108,7 +108,7 @@ public class MultipartFormDataEntityProvider implements EntityProvider<Iterator<
          DefaultFileItemFactory factory = new DefaultFileItemFactory(bufferSize, repo);
          final FileUpload upload = new FileUpload(factory);
 
-         return SecurityHelper.doPriviledgedExceptionAction(new PrivilegedExceptionAction<Iterator<FileItem>>()
+         return SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Iterator<FileItem>>()
          {
             public Iterator<FileItem> run() throws Exception
             {

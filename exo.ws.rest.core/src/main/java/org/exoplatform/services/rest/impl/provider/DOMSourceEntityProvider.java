@@ -82,7 +82,7 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
          final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
          factory.setNamespaceAware(true);
 
-         Document d = SecurityHelper.doPriviledgedExceptionAction(new PrivilegedExceptionAction<Document>()
+         Document d = SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Document>()
          {
             public Document run() throws Exception
             {

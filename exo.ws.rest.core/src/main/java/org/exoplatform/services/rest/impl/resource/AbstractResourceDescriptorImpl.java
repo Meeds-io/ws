@@ -224,7 +224,7 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
 
          // process field
          java.lang.reflect.Field[] jfields =
-            SecurityHelper.doPriviledgedAction(new PrivilegedAction<java.lang.reflect.Field[]>()
+            SecurityHelper.doPrivilegedAction(new PrivilegedAction<java.lang.reflect.Field[]>()
             {
                public java.lang.reflect.Field[] run()
                {
@@ -377,7 +377,7 @@ public class AbstractResourceDescriptorImpl implements AbstractResourceDescripto
    {
       final Class<?> resourceClass = getObjectClass();
 
-      Method[] methods = SecurityHelper.doPriviledgedAction(new PrivilegedAction<Method[]>()
+      Method[] methods = SecurityHelper.doPrivilegedAction(new PrivilegedAction<Method[]>()
       {
          public Method[] run()
          {

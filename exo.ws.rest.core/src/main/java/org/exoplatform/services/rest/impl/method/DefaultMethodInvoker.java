@@ -181,7 +181,7 @@ public class DefaultMethodInvoker implements MethodInvoker
    {
       try
       {
-         return SecurityHelper.doPriviledgedExceptionAction(new PrivilegedExceptionAction<Object>()
+         return SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Object>()
          {
             public Object run() throws Exception
             {

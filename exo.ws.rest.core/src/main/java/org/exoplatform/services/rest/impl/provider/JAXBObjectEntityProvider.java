@@ -85,7 +85,7 @@ public class JAXBObjectEntityProvider implements EntityProvider<Object>
       {
          final JAXBContext jaxbctx = getJAXBContext(type, mediaType);
 
-         return SecurityHelper.doPriviledgedExceptionAction(new PrivilegedExceptionAction<Object>()
+         return SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Object>()
          {
             public Object run() throws Exception
             {

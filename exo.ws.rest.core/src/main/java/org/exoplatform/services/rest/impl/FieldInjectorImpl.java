@@ -214,7 +214,7 @@ public class FieldInjectorImpl implements FieldInjector
          {
             if (!Modifier.isPublic(jfield.getModifiers()))
             {
-               SecurityHelper.doPriviledgedAction(new PrivilegedAction<Void>()
+               SecurityHelper.doPrivilegedAction(new PrivilegedAction<Void>()
                {
                   public Void run()
                   {

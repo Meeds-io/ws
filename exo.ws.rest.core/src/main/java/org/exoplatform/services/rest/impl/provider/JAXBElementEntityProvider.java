@@ -89,7 +89,7 @@ public class JAXBElementEntityProvider implements EntityProvider<JAXBElement<?>>
       {
          final JAXBContext jaxbctx = getJAXBContext(c, mediaType);
 
-         return SecurityHelper.doPriviledgedExceptionAction(new PrivilegedExceptionAction<JAXBElement<?>>()
+         return SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<JAXBElement<?>>()
          {
             public JAXBElement<?> run() throws Exception
             {

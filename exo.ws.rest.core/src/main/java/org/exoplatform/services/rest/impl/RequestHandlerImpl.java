@@ -361,7 +361,7 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
       }
 
       // Register Shutdown Hook for cleaning temporary files.
-      SecurityHelper.doPriviledgedAction(new PrivilegedAction<Void>()
+      SecurityHelper.doPrivilegedAction(new PrivilegedAction<Void>()
       {
          public Void run()
          {

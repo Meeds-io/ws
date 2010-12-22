@@ -184,7 +184,7 @@ public class GroovyJaxrsPublisher
    public void publishPerRequest(final InputStream in, final ResourceId resourceId,
       final MultivaluedMap<String, String> properties, final ClassPathEntry[] classPath)
    {
-      Class<?> rc = SecurityHelper.doPriviledgedAction(new PrivilegedAction<Class<?>>() {
+      Class<?> rc = SecurityHelper.doPrivilegedAction(new PrivilegedAction<Class<?>>() {
          public Class<?> run()
          {
             try
@@ -462,7 +462,7 @@ public class GroovyJaxrsPublisher
     */
    protected GroovyCodeSource createCodeSource(final InputStream in, final String name)
    {
-      GroovyCodeSource gcs = SecurityHelper.doPriviledgedAction(new PrivilegedAction<GroovyCodeSource>() {
+      GroovyCodeSource gcs = SecurityHelper.doPrivilegedAction(new PrivilegedAction<GroovyCodeSource>() {
          public GroovyCodeSource run()
          {
             return new GroovyCodeSource(in, name, "/groovy/script/jaxrs");
