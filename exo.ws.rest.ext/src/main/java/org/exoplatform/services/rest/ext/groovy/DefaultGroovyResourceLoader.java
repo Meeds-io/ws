@@ -41,9 +41,11 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
 {
    private static final String[] DEFAULT_SCRIPT_EXTENSIONS = new String[]{".groovy"};
 
-   protected URL[] roots;
+   protected final String[] extensions;
 
-   protected URL[] files;
+   protected final URL[] roots;
+
+   protected final URL[] files;
 
    // TODO need configurable ?
    private int maxEntries = 512;
@@ -51,10 +53,13 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
    protected final Map<String, URL> resources;
 
    @SuppressWarnings("serial")
-   public DefaultGroovyResourceLoader(URL[] roots, URL[] files) throws MalformedURLException
+   public DefaultGroovyResourceLoader(URL[] roots, URL[] files, String[] extensions) throws MalformedURLException
    {
       this.files = files;
       this.roots = new URL[roots.length];
+      if (extensions == null || extensions.length == 0)
+         extensions = DEFAULT_SCRIPT_EXTENSIONS;
+      this.extensions = extensions;
       for (int i = 0; i < roots.length; i++)
       {
          String str = roots[i].toString();
@@ -63,13 +68,17 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
          else
             this.roots[i] = roots[i];
       }
-      resources = Collections.synchronizedMap(new LinkedHashMap<String, URL>()
-      {
+      resources = Collections.synchronizedMap(new LinkedHashMap<String, URL>() {
          protected boolean removeEldestEntry(Entry<String, URL> eldest)
          {
             return size() > maxEntries;
          }
       });
+   }
+
+   public DefaultGroovyResourceLoader(URL[] roots, URL[] files) throws MalformedURLException
+   {
+      this(roots, files, null);
    }
 
    public DefaultGroovyResourceLoader(URL[] roots) throws MalformedURLException
@@ -95,9 +104,8 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
          final String ext = extensions[i];
          try
          {
-            resource = AccessController.doPrivileged(new PrivilegedExceptionAction<URL>()
-            {
-               public URL run() throws Exception
+            resource = AccessController.doPrivileged(new PrivilegedExceptionAction<URL>() {
+               public URL run() throws MalformedURLException
                {
                   return getResource(baseName + ext);
                }
@@ -106,10 +114,7 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
          catch (PrivilegedActionException e)
          {
             Throwable cause = e.getCause();
-            if (cause instanceof Error)
-               throw (Error)cause;
-            if (cause instanceof RuntimeException)
-               throw (RuntimeException)cause;
+            // MalformedURLException
             throw (MalformedURLException)cause;
          }
       }
@@ -162,6 +167,6 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
 
    protected String[] getScriptExtensions()
    {
-      return DEFAULT_SCRIPT_EXTENSIONS;
+      return extensions;
    }
 }

@@ -35,7 +35,8 @@ import java.util.List;
  * Groovy source files.
  * 
  * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
- * @version $Id$
+ * @version $Id: GroovyClassLoaderProvider.java 3701 2010-12-22 10:15:37Z
+ *          aparfonov $
  */
 public class GroovyClassLoaderProvider
 {
@@ -55,8 +56,7 @@ public class GroovyClassLoaderProvider
 
    public GroovyClassLoaderProvider()
    {
-      defaultClassLoader = AccessController.doPrivileged(new PrivilegedAction<GroovyClassLoader>()
-      {
+      defaultClassLoader = AccessController.doPrivileged(new PrivilegedAction<GroovyClassLoader>() {
          public GroovyClassLoader run()
          {
             return new GroovyClassLoader(getClass().getClassLoader());
@@ -83,32 +83,35 @@ public class GroovyClassLoaderProvider
     * @throws MalformedURLException if any of entries in <code>classPath</code>
     *            has invalid URL.
     */
-   public GroovyClassLoader getGroovyClassLoader(ClassPathEntry[] classPath) throws MalformedURLException
+   public GroovyClassLoader getGroovyClassLoader(ClassPath classPath) throws MalformedURLException
    {
       List<URL> files = new ArrayList<URL>();
       List<URL> roots = new ArrayList<URL>();
-      for (int i = 0; i < classPath.length; i++)
+      ClassPathEntry[] classPathEntries = classPath.getEntries();
+      if (classPathEntries != null && classPathEntries.length > 0)
       {
-         ClassPathEntry classPathEntry = classPath[i];
-         if (EntryType.SRC_DIR == classPathEntry.getType())
+         for (int i = 0; i < classPathEntries.length; i++)
          {
-            roots.add(classPathEntry.getPath());
-         }
-         else
-         {
-            files.add(classPathEntry.getPath());
+            ClassPathEntry classPathEntry = classPathEntries[i];
+            if (EntryType.SRC_DIR == classPathEntry.getType())
+            {
+               roots.add(classPathEntry.getPath());
+            }
+            else
+            {
+               files.add(classPathEntry.getPath());
+            }
          }
       }
       final GroovyClassLoader parent = getGroovyClassLoader();
-      GroovyClassLoader classLoader = AccessController.doPrivileged(new PrivilegedAction<GroovyClassLoader>()
-      {
+      GroovyClassLoader classLoader = AccessController.doPrivileged(new PrivilegedAction<GroovyClassLoader>() {
          public GroovyClassLoader run()
          {
             return new GroovyClassLoader(parent);
          }
       });
       classLoader.setResourceLoader(new DefaultGroovyResourceLoader(roots.toArray(new URL[roots.size()]), files
-         .toArray(new URL[files.size()])));
+         .toArray(new URL[files.size()]), classPath.getExtensions()));
       return classLoader;
    }
 
