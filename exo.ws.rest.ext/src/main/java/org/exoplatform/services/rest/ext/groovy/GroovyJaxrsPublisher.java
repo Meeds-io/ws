@@ -627,7 +627,7 @@ public class GroovyJaxrsPublisher
    }
 
    @SuppressWarnings("rawtypes")
-   private Object createInstance(Class clazz) throws IllegalArgumentException, InstantiationException,
+   protected Object createInstance(Class clazz) throws IllegalArgumentException, InstantiationException,
       IllegalAccessException, InvocationTargetException
    {
       ExoContainer container = ExoContainerContext.getCurrentContainer();
