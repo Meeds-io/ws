@@ -67,8 +67,7 @@ public class GroovyJaxrsPublisher
    private static final Log log = ExoLogger.getExoLogger(GroovyJaxrsPublisher.class);
 
    @SuppressWarnings("rawtypes")
-   private static final Comparator<Constructor> constructorComparator = new Comparator<Constructor>()
-   {
+   private static final Comparator<Constructor> constructorComparator = new Comparator<Constructor>() {
       public int compare(Constructor o1, Constructor o2)
       {
          int c1 = o1.getParameterTypes().length;
@@ -189,8 +188,7 @@ public class GroovyJaxrsPublisher
     *            {@link ResourceBinder#addResource(Class, MultivaluedMap)}
     * @throws CompilationFailedException if compilation fails from source errors
     */
-   public void publishPerRequest(final InputStream in, final ResourceId resourceId,
-      MultivaluedMap<String, String> properties)
+   public void publishPerRequest(InputStream in, ResourceId resourceId, MultivaluedMap<String, String> properties)
    {
       publishPerRequest(in, resourceId, properties, null, null);
    }
@@ -212,8 +210,7 @@ public class GroovyJaxrsPublisher
    public void publishPerRequest(final InputStream in, final ResourceId resourceId,
       final MultivaluedMap<String, String> properties, final SourceFolder[] src, final SourceFile[] files)
    {
-      Class<?> rc = AccessController.doPrivileged(new PrivilegedAction<Class<?>>()
-      {
+      Class<?> rc = AccessController.doPrivileged(new PrivilegedAction<Class<?>>() {
          public Class<?> run()
          {
             try
@@ -268,7 +265,7 @@ public class GroovyJaxrsPublisher
     * @throws CompilationFailedException if compilation fails from source errors
     */
    public final void publishPerRequest(String source, ResourceId resourceId, MultivaluedMap<String, String> properties,
-      final SourceFolder[] src, final SourceFile[] files)
+      SourceFolder[] src, SourceFile[] files)
    {
       publishPerRequest(source, DEFAULT_CHARSET, resourceId, properties, src, files);
    }
@@ -353,7 +350,7 @@ public class GroovyJaxrsPublisher
     * @throws CompilationFailedException if compilation fails from source errors
     */
    public void publishSingleton(final InputStream in, final ResourceId resourceId,
-      MultivaluedMap<String, String> properties, final SourceFolder[] src, final SourceFile[] files/*TODO*/)
+      MultivaluedMap<String, String> properties, final SourceFolder[] src, final SourceFile[] files)
    {
       Object resource;
       try
@@ -516,8 +513,7 @@ public class GroovyJaxrsPublisher
       try
       {
          //rc = 
-         AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>()
-         {
+         AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
             public Class<?> run() throws MalformedURLException
             {
                ExtendedGroovyClassLoader cl =
@@ -688,8 +684,7 @@ public class GroovyJaxrsPublisher
     */
    protected GroovyCodeSource createCodeSource(final InputStream in, final String name)
    {
-      GroovyCodeSource gcs = AccessController.doPrivileged(new PrivilegedAction<GroovyCodeSource>()
-      {
+      GroovyCodeSource gcs = AccessController.doPrivileged(new PrivilegedAction<GroovyCodeSource>() {
          public GroovyCodeSource run()
          {
             return new GroovyCodeSource(in, name, ExtendedGroovyClassLoader.CODE_BASE);
