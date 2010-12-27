@@ -20,14 +20,10 @@ package org.exoplatform.services.rest.ext.groovy;
 
 import groovy.lang.GroovyClassLoader;
 
-import org.exoplatform.services.rest.ext.groovy.ClassPathEntry.EntryType;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Factory of Groovy class loader. It can provide preset GroovyClassLoader
@@ -41,27 +37,23 @@ import java.util.List;
 public class GroovyClassLoaderProvider
 {
    /** Preset default GroovyClassLoader. */
-   private GroovyClassLoader defaultClassLoader;
+   private ExtendedGroovyClassLoader defaultClassLoader;
 
-   /**
-    * Create GroovyClassLoaderProvider that will use specified GroovyClassLoader
-    * as default.
-    * 
-    * @param defaultClassLoader GroovyClassLoader
-    */
-   public GroovyClassLoaderProvider(GroovyClassLoader defaultClassLoader)
-   {
-      this.defaultClassLoader = defaultClassLoader;
-   }
-
+   // TODO
    public GroovyClassLoaderProvider()
    {
-      defaultClassLoader = AccessController.doPrivileged(new PrivilegedAction<GroovyClassLoader>() {
-         public GroovyClassLoader run()
+      this(AccessController.doPrivileged(new PrivilegedAction<ExtendedGroovyClassLoader>()
+      {
+         public ExtendedGroovyClassLoader run()
          {
-            return new GroovyClassLoader(getClass().getClassLoader());
+            return new ExtendedGroovyClassLoader(getClass().getClassLoader());
          }
-      });
+      }));
+   }
+
+   protected GroovyClassLoaderProvider(ExtendedGroovyClassLoader defaultClassLoader)
+   {
+      this.defaultClassLoader = defaultClassLoader;
    }
 
    /**
@@ -69,7 +61,7 @@ public class GroovyClassLoaderProvider
     * 
     * @return default GroovyClassLoader
     */
-   public GroovyClassLoader getGroovyClassLoader()
+   public ExtendedGroovyClassLoader getGroovyClassLoader()
    {
       return defaultClassLoader;
    }
@@ -78,53 +70,30 @@ public class GroovyClassLoaderProvider
     * Get customized instance of GroovyClassLoader that able to resolve
     * additional Groovy source files.
     * 
-    * @param classPath additional Groovy sources
+    * @param sources additional Groovy sources
     * @return GroovyClassLoader
-    * @throws MalformedURLException if any of entries in <code>classPath</code>
+    * @throws MalformedURLException if any of entries in <code>sources</code>
     *            has invalid URL.
     */
-   public GroovyClassLoader getGroovyClassLoader(ClassPath classPath) throws MalformedURLException
+   public ExtendedGroovyClassLoader getGroovyClassLoader(SourceFolder[] sources) throws MalformedURLException
    {
-      List<URL> files = new ArrayList<URL>();
-      List<URL> roots = new ArrayList<URL>();
-      ClassPathEntry[] classPathEntries = classPath.getEntries();
-      if (classPathEntries != null && classPathEntries.length > 0)
-      {
-         for (int i = 0; i < classPathEntries.length; i++)
-         {
-            ClassPathEntry classPathEntry = classPathEntries[i];
-            if (EntryType.SRC_DIR == classPathEntry.getType())
-            {
-               roots.add(classPathEntry.getPath());
-            }
-            else
-            {
-               files.add(classPathEntry.getPath());
-            }
-         }
-      }
-      final GroovyClassLoader parent = getGroovyClassLoader();
-      GroovyClassLoader classLoader = AccessController.doPrivileged(new PrivilegedAction<GroovyClassLoader>() {
-         public GroovyClassLoader run()
-         {
-            return new GroovyClassLoader(parent);
-         }
-      });
-      classLoader.setResourceLoader(new DefaultGroovyResourceLoader(roots.toArray(new URL[roots.size()]), files
-         .toArray(new URL[files.size()]), classPath.getExtensions()));
-      return classLoader;
-   }
+      if (sources == null || sources.length == 0)
+         return getGroovyClassLoader();
 
-   /**
-    * Set default Groovy class loader.
-    * 
-    * @param defaultClassLoader default Groovy class loader
-    * @throws NullPointerException if <code>defaultClassLoader == null</code>
-    */
-   public void setGroovyClassLoader(GroovyClassLoader defaultClassLoader)
-   {
-      if (defaultClassLoader == null)
-         throw new NullPointerException("GroovyClassLoader may not be null. ");
-      this.defaultClassLoader = defaultClassLoader;
+      URL[] roots = new URL[sources.length];
+      for (int i = 0; i < sources.length; i++)
+         roots[i] = sources[i].getPath();
+
+      final GroovyClassLoader parent = getGroovyClassLoader();
+      ExtendedGroovyClassLoader classLoader =
+         AccessController.doPrivileged(new PrivilegedAction<ExtendedGroovyClassLoader>()
+         {
+            public ExtendedGroovyClassLoader run()
+            {
+               return new ExtendedGroovyClassLoader(parent);
+            }
+         });
+      classLoader.setResourceLoader(new DefaultGroovyResourceLoader(roots));
+      return classLoader;
    }
 }

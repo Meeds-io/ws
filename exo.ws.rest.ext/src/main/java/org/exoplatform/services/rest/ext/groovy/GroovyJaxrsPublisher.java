@@ -23,6 +23,10 @@ import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyCodeSource;
 
 import org.codehaus.groovy.control.CompilationFailedException;
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.ObjectFactory;
 import org.exoplatform.services.rest.PerRequestObjectFactory;
 import org.exoplatform.services.rest.impl.ResourceBinder;
@@ -33,6 +37,8 @@ import org.exoplatform.services.script.groovy.GroovyScriptInstantiator;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
@@ -40,7 +46,9 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +64,22 @@ import javax.ws.rs.core.MultivaluedMap;
  */
 public class GroovyJaxrsPublisher
 {
+   private static final Log log = ExoLogger.getExoLogger(GroovyJaxrsPublisher.class);
+
+   @SuppressWarnings("rawtypes")
+   private static final Comparator<Constructor> constructorComparator = new Comparator<Constructor>()
+   {
+      public int compare(Constructor o1, Constructor o2)
+      {
+         int c1 = o1.getParameterTypes().length;
+         int c2 = o2.getParameterTypes().length;
+         if (c1 < c2)
+            return 1;
+         if (c1 > c2)
+            return -1;
+         return 0;
+      }
+   };
 
    /** Default character set name. */
    protected static final String DEFAULT_CHARSET_NAME = "UTF-8";
@@ -111,9 +135,7 @@ public class GroovyJaxrsPublisher
    @Deprecated
    public void setGroovyClassLoader(GroovyClassLoader gcl)
    {
-      if (gcl == null)
-         throw new NullPointerException("GroovyClassLoader may not be null. ");
-      classLoaderProvider.setGroovyClassLoader(gcl);
+      log.warn("Method setGroovyClassLoader is deprecated.");
    }
 
    /**
@@ -170,34 +192,36 @@ public class GroovyJaxrsPublisher
    public void publishPerRequest(final InputStream in, final ResourceId resourceId,
       MultivaluedMap<String, String> properties)
    {
-      publishPerRequest(in, resourceId, properties, null);
+      publishPerRequest(in, resourceId, properties, null, null);
    }
 
    /**
     * Parse given stream and publish result as per-request RESTful service.
     * 
-    * @param in stream which contains groovy source code of RESTful service
+    * @param in stream which contains Groovy source code of RESTful service
     * @param resourceId id to be assigned to resource
     * @param properties optional resource properties. This parameter may be
     *           <code>null</code>
-    * @param classPath additional path to Groovy sources
+    * @param src additional path to Groovy sources
+    * @param files Groovy source files to be added in build path directly
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
     *            {@link ResourceBinder#addResource(Class, MultivaluedMap)}
     * @throws CompilationFailedException if compilation fails from source errors
     */
    public void publishPerRequest(final InputStream in, final ResourceId resourceId,
-      final MultivaluedMap<String, String> properties, final ClassPath classPath)
+      final MultivaluedMap<String, String> properties, final SourceFolder[] src, final SourceFile[] files)
    {
-      Class<?> rc = AccessController.doPrivileged(new PrivilegedAction<Class<?>>() {
+      Class<?> rc = AccessController.doPrivileged(new PrivilegedAction<Class<?>>()
+      {
          public Class<?> run()
          {
             try
             {
-               GroovyClassLoader cl =
-                  (classPath == null) ? classLoaderProvider.getGroovyClassLoader() : classLoaderProvider
-                     .getGroovyClassLoader(classPath);
-               return cl.parseClass(createCodeSource(in, resourceId.getId()));
+               ExtendedGroovyClassLoader cl =
+                  (src == null) ? classLoaderProvider.getGroovyClassLoader() : classLoaderProvider
+                     .getGroovyClassLoader(src);
+               return cl.parseClass(in, resourceId.getId(), files);
             }
             catch (MalformedURLException e)
             {
@@ -225,7 +249,7 @@ public class GroovyJaxrsPublisher
     */
    public final void publishPerRequest(String source, ResourceId resourceId, MultivaluedMap<String, String> properties)
    {
-      publishPerRequest(source, DEFAULT_CHARSET, resourceId, properties, null);
+      publishPerRequest(source, DEFAULT_CHARSET, resourceId, properties, null, null);
    }
 
    /**
@@ -236,16 +260,17 @@ public class GroovyJaxrsPublisher
     * @param resourceId id to be assigned to resource
     * @param properties optional resource properties. This parameter may be
     *           <code>null</code>
-    * @param classPath additional path to Groovy sources
+    * @param src additional path to Groovy sources
+    * @param files Groovy source files to be added in build path directly
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
     *            {@link ResourceBinder#addResource(Class, MultivaluedMap)}
     * @throws CompilationFailedException if compilation fails from source errors
     */
    public final void publishPerRequest(String source, ResourceId resourceId, MultivaluedMap<String, String> properties,
-      ClassPath classPath)
+      final SourceFolder[] src, final SourceFile[] files)
    {
-      publishPerRequest(source, DEFAULT_CHARSET, resourceId, properties, classPath);
+      publishPerRequest(source, DEFAULT_CHARSET, resourceId, properties, src, files);
    }
 
    /**
@@ -268,7 +293,7 @@ public class GroovyJaxrsPublisher
       MultivaluedMap<String, String> properties)
    {
       publishPerRequest(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId, properties,
-         null);
+         null, null);
    }
 
    /**
@@ -281,7 +306,8 @@ public class GroovyJaxrsPublisher
     * @param resourceId id to be assigned to resource
     * @param properties optional resource properties. This parameter may be
     *           <code>null</code>.
-    * @param classPath additional path to Groovy sources
+    * @param src additional path to Groovy sources
+    * @param files Groovy source files to be added in build path directly
     * @throws UnsupportedCharsetException if <code>charset</code> is unsupported
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
@@ -289,10 +315,10 @@ public class GroovyJaxrsPublisher
     * @throws CompilationFailedException if compilation fails from source errors
     */
    public final void publishPerRequest(String source, String charset, ResourceId resourceId,
-      MultivaluedMap<String, String> properties, ClassPath classPath)
+      MultivaluedMap<String, String> properties, SourceFolder[] src, SourceFile[] files)
    {
       publishPerRequest(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId, properties,
-         classPath);
+         src, files);
    }
 
    /**
@@ -309,7 +335,7 @@ public class GroovyJaxrsPublisher
     */
    public void publishSingleton(InputStream in, ResourceId resourceId, MultivaluedMap<String, String> properties)
    {
-      publishSingleton(in, resourceId, properties, null);
+      publishSingleton(in, resourceId, properties, null, null);
    }
 
    /**
@@ -319,21 +345,40 @@ public class GroovyJaxrsPublisher
     * @param resourceId id to be assigned to resource
     * @param properties optional resource properties. This parameter may be
     *           <code>null</code>
-    * @param classPath additional path to Groovy sources
+    * @param src additional path to Groovy sources
+    * @param files Groovy source files to be added in build path directly
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
     *            {@link ResourceBinder#addResource(Object, MultivaluedMap)}
     * @throws CompilationFailedException if compilation fails from source errors
     */
-   public void publishSingleton(InputStream in, ResourceId resourceId, MultivaluedMap<String, String> properties,
-      ClassPath classPath)
+   public void publishSingleton(final InputStream in, final ResourceId resourceId,
+      MultivaluedMap<String, String> properties, final SourceFolder[] src, final SourceFile[] files/*TODO*/)
    {
       Object resource;
       try
       {
-         resource =
-            instantiator.instantiateScript(createCodeSource(in, resourceId.getId()), (classPath == null)
-               ? classLoaderProvider.getGroovyClassLoader() : classLoaderProvider.getGroovyClassLoader(classPath));
+         ExtendedGroovyClassLoader cl =
+            (src == null) ? classLoaderProvider.getGroovyClassLoader() : classLoaderProvider.getGroovyClassLoader(src);
+         @SuppressWarnings("rawtypes")
+         Class clazz = cl.parseClass(in, resourceId.getId(), files);
+         resource = createInstance(clazz);
+      }
+      catch (IllegalArgumentException e)
+      {
+         throw new ResourcePublicationException(e.getMessage());
+      }
+      catch (InstantiationException e)
+      {
+         throw new ResourcePublicationException(e.getMessage());
+      }
+      catch (IllegalAccessException e)
+      {
+         throw new ResourcePublicationException(e.getMessage());
+      }
+      catch (InvocationTargetException e)
+      {
+         throw new ResourcePublicationException(e.getMessage());
       }
       catch (MalformedURLException e)
       {
@@ -358,7 +403,7 @@ public class GroovyJaxrsPublisher
     */
    public final void publishSingleton(String source, ResourceId resourceId, MultivaluedMap<String, String> properties)
    {
-      publishSingleton(source, DEFAULT_CHARSET, resourceId, properties, null);
+      publishSingleton(source, DEFAULT_CHARSET, resourceId, properties, null, null);
    }
 
    /**
@@ -369,16 +414,17 @@ public class GroovyJaxrsPublisher
     * @param resourceId name of resource
     * @param properties optional resource properties. This parameter may be
     *           <code>null</code>.
-    * @param classPath additional path to Groovy sources
+    * @param src additional path to Groovy sources
+    * @param files Groovy source files to be added in build path directly
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
     *            {@link ResourceBinder#addResource(Object, MultivaluedMap)}
     * @throws CompilationFailedException if compilation fails from source errors
     */
    public final void publishSingleton(String source, ResourceId resourceId, MultivaluedMap<String, String> properties,
-      ClassPath classPath)
+      SourceFolder[] src, SourceFile[] files)
    {
-      publishSingleton(source, DEFAULT_CHARSET, resourceId, properties, classPath);
+      publishSingleton(source, DEFAULT_CHARSET, resourceId, properties, src, files);
    }
 
    /**
@@ -401,7 +447,7 @@ public class GroovyJaxrsPublisher
       MultivaluedMap<String, String> properties)
    {
       publishSingleton(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId, properties,
-         null);
+         null, null);
    }
 
    /**
@@ -414,7 +460,8 @@ public class GroovyJaxrsPublisher
     * @param resourceId name of resource
     * @param properties optional resource properties. This parameter may be
     *           <code>null</code>.
-    * @param classPath additional path to Groovy sources
+    * @param src additional path to Groovy sources
+    * @param files Groovy source files to be added in build path directly
     * @throws UnsupportedCharsetException if <code>charset</code> is unsupported
     * @throws NullPointerException if <code>resourceId == null</code>
     * @throws ResourcePublicationException see
@@ -422,10 +469,10 @@ public class GroovyJaxrsPublisher
     * @throws CompilationFailedException if compilation fails from source errors
     */
    public final void publishSingleton(String source, String charset, ResourceId resourceId,
-      MultivaluedMap<String, String> properties, ClassPath classPath)
+      MultivaluedMap<String, String> properties, SourceFolder[] src, SourceFile[] files)
    {
       publishSingleton(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), resourceId, properties,
-         classPath);
+         src, files);
    }
 
    /**
@@ -440,14 +487,10 @@ public class GroovyJaxrsPublisher
    {
       String path = resources.get(resourceId);
       if (path == null)
-      {
          return null;
-      }
       ObjectFactory<AbstractResourceDescriptor> resource = binder.removeResource(path);
       if (resource != null)
-      {
          resources.remove(resourceId);
-      }
       return resource;
    }
 
@@ -461,25 +504,26 @@ public class GroovyJaxrsPublisher
     *           message in compilation of Groovy fails. If this parameter is
     *           <code>null</code> then GroovyClassLoader will use automatically
     *           generated name
-    * @param classPath additional path to Groovy sources
+    * @param src additional path to Groovy sources
+    * @param files Groovy source files to be added in build path directly
     * @throws MalformedScriptException if source has errors or there is no
     *            required JAX-RS annotation
     */
-   public void validateResource(final InputStream in, final String name, final ClassPath classPath)
-      throws MalformedScriptException
+   public void validateResource(final InputStream in, final String name, final SourceFolder[] src,
+      final SourceFile[] files) throws MalformedScriptException
    {
-      Class<?> rc;
+      //Class<?> rc;
       try
       {
-         rc = AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
+         //rc = 
+         AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>()
+         {
             public Class<?> run() throws MalformedURLException
             {
-               GroovyClassLoader cl =
-                  (classPath == null) ? classLoaderProvider.getGroovyClassLoader() : classLoaderProvider
-                     .getGroovyClassLoader(classPath);
-               if (name == null || name.length() == 0)
-                  return cl.parseClass(createCodeSource(in, cl.generateScriptName()));
-               return cl.parseClass(createCodeSource(in, name));
+               ExtendedGroovyClassLoader cl =
+                  (src == null) ? classLoaderProvider.getGroovyClassLoader() : classLoaderProvider
+                     .getGroovyClassLoader(src);
+               return cl.parseClass(in, (name != null && name.length() > 0) ? name : cl.generateScriptName(), files);
             }
          });
       }
@@ -521,7 +565,7 @@ public class GroovyJaxrsPublisher
     */
    public void validateResource(InputStream in, String name) throws MalformedScriptException
    {
-      validateResource(in, name, null);
+      validateResource(in, name, null, null);
    }
 
    /**
@@ -536,14 +580,15 @@ public class GroovyJaxrsPublisher
     *           message in compilation of Groovy fails. If this parameter is
     *           <code>null</code> then GroovyClassLoader will use automatically
     *           generated name
-    * @param classPath additional path to Groovy sources
+    * @param src additional path to Groovy sources
+    * @param files Groovy source files to be added in build path directly
     * @throws MalformedScriptException if source has errors or there is no
     *            required JAX-RS annotation
     */
-   public final void validateResource(String source, String charset, String name, ClassPath classPath)
+   public final void validateResource(String source, String charset, String name, SourceFolder[] src, SourceFile[] files)
       throws MalformedScriptException
    {
-      validateResource(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), name, classPath);
+      validateResource(source, charset == null ? DEFAULT_CHARSET : Charset.forName(charset), name, src, files);
    }
 
    /**
@@ -556,13 +601,15 @@ public class GroovyJaxrsPublisher
     *           message in compilation of Groovy fails. If this parameter is
     *           <code>null</code> then GroovyClassLoader will use automatically
     *           generated name
-    * @param classPath additional path to Groovy sources
+    * @param src additional path to Groovy sources
+    * @param files Groovy source files to be added in build path directly
     * @throws MalformedScriptException if source has errors or there is no
     *            required JAX-RS annotation
     */
-   public final void validateResource(String source, String name, ClassPath classPath) throws MalformedScriptException
+   public final void validateResource(String source, String name, SourceFolder[] src, SourceFile[] files)
+      throws MalformedScriptException
    {
-      validateResource(source, DEFAULT_CHARSET, name, classPath);
+      validateResource(source, DEFAULT_CHARSET, name, src, files);
    }
 
    /**
@@ -580,28 +627,55 @@ public class GroovyJaxrsPublisher
     */
    public final void validateResource(String source, String name) throws MalformedScriptException
    {
-      validateResource(source, DEFAULT_CHARSET, name, null);
+      validateResource(source, DEFAULT_CHARSET, name, null, null);
+   }
+
+   @SuppressWarnings("rawtypes")
+   private Object createInstance(Class clazz) throws IllegalArgumentException, InstantiationException,
+      IllegalAccessException, InvocationTargetException
+   {
+      ExoContainer container = ExoContainerContext.getCurrentContainer();
+      Constructor[] constructors = clazz.getConstructors();
+      //Sort constructors by number of parameters. With more parameters must be first.
+      Arrays.sort(constructors, constructorComparator);
+      l : for (Constructor<?> c : constructors)
+      {
+         Class<?>[] parameterTypes = c.getParameterTypes();
+         if (parameterTypes.length == 0)
+            return c.newInstance();
+         Object[] parameters = new Object[parameterTypes.length];
+         for (int i = 0; i < parameterTypes.length; i++)
+         {
+            Object param = container.getComponentInstanceOfType(parameterTypes[i]);
+            if (param == null)
+               continue l;
+            parameters[i] = param;
+         }
+         return c.newInstance(parameters);
+      }
+      throw new ResourcePublicationException("Unbale create instance of class " + clazz.getName()
+         + ". Required constructor's dependencies can't be resolved. ");
    }
 
    private void publishPerRequest(String source, Charset charset, ResourceId resourceId,
-      MultivaluedMap<String, String> properties, ClassPath classPath)
+      MultivaluedMap<String, String> properties, SourceFolder[] src, SourceFile[] files)
    {
       byte[] bytes = source.getBytes(charset);
-      publishPerRequest(new ByteArrayInputStream(bytes), resourceId, properties, classPath);
+      publishPerRequest(new ByteArrayInputStream(bytes), resourceId, properties, src, files);
    }
 
    private void publishSingleton(String source, Charset charset, ResourceId resourceId,
-      MultivaluedMap<String, String> properties, ClassPath classPath)
+      MultivaluedMap<String, String> properties, SourceFolder[] src, SourceFile[] files)
    {
       byte[] bytes = source.getBytes(charset);
-      publishSingleton(new ByteArrayInputStream(bytes), resourceId, properties, classPath);
+      publishSingleton(new ByteArrayInputStream(bytes), resourceId, properties, src, files);
    }
 
-   private void validateResource(String source, Charset charset, String name, ClassPath classPath)
+   private void validateResource(String source, Charset charset, String name, SourceFolder[] src, SourceFile[] files)
       throws MalformedScriptException
    {
       byte[] bytes = source.getBytes(charset);
-      validateResource(new ByteArrayInputStream(bytes), name, classPath);
+      validateResource(new ByteArrayInputStream(bytes), name, src, files);
    }
 
    /**
@@ -614,13 +688,13 @@ public class GroovyJaxrsPublisher
     */
    protected GroovyCodeSource createCodeSource(final InputStream in, final String name)
    {
-      GroovyCodeSource gcs = AccessController.doPrivileged(new PrivilegedAction<GroovyCodeSource>() {
+      GroovyCodeSource gcs = AccessController.doPrivileged(new PrivilegedAction<GroovyCodeSource>()
+      {
          public GroovyCodeSource run()
          {
-            return new GroovyCodeSource(in, name, "/groovy/script/jaxrs");
+            return new GroovyCodeSource(in, name, ExtendedGroovyClassLoader.CODE_BASE);
          }
       });
-
       gcs.setCachable(false);
       return gcs;
    }

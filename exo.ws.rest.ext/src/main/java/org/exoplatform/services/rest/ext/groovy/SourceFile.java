@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 eXo Platform SAS.
+ * Copyright (C) 2009 eXo Platform SAS.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -18,29 +18,18 @@
  */
 package org.exoplatform.services.rest.ext.groovy;
 
+import java.net.URL;
+
 /**
- * @author <a href="mailto:andrey.parfonov@exoplatform.com">Andrey Parfonov</a>
+ * Describe location of Groovy source file.
+ * 
+ * @author <a href="andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public class ClassPath
+public class SourceFile extends ClassPathEntry
 {
-   private ClassPathEntry[] entries;
-
-   private String[] extensions;
-
-   public ClassPath(ClassPathEntry[] entries, String[] extensions)
+   public SourceFile(URL path)
    {
-      this.entries = entries;
-      this.extensions = extensions;
-   }
-
-   public ClassPathEntry[] getEntries()
-   {
-      return entries;
-   }
-
-   public String[] getExtensions()
-   {
-      return extensions;
+      super(path);
    }
 }

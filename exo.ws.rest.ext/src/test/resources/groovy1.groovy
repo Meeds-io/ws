@@ -4,10 +4,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 
 @Path("a")
-class CroovyResource1
+class GroovyResource1
 {
    
-   CroovyResource1(@Context HttpServletRequest req1)
+   GroovyResource1(@Context HttpServletRequest req1)
    {
       this.req1 = req1;
    }

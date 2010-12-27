@@ -39,27 +39,19 @@ import java.util.Map.Entry;
  */
 public class DefaultGroovyResourceLoader implements GroovyResourceLoader
 {
-   private static final String[] DEFAULT_SCRIPT_EXTENSIONS = new String[]{".groovy"};
-
-   protected final String[] extensions;
-
-   protected final URL[] roots;
-
-   protected final URL[] files;
+   private static final String DEFAULT_SOURCE_FILE_EXTENSION = ".groovy";
 
    // TODO need configurable ?
    private int maxEntries = 512;
 
    protected final Map<String, URL> resources;
 
+   protected final URL[] roots;
+
    @SuppressWarnings("serial")
-   public DefaultGroovyResourceLoader(URL[] roots, URL[] files, String[] extensions) throws MalformedURLException
+   public DefaultGroovyResourceLoader(URL[] roots) throws MalformedURLException
    {
-      this.files = files;
       this.roots = new URL[roots.length];
-      if (extensions == null || extensions.length == 0)
-         extensions = DEFAULT_SCRIPT_EXTENSIONS;
-      this.extensions = extensions;
       for (int i = 0; i < roots.length; i++)
       {
          String str = roots[i].toString();
@@ -68,22 +60,13 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
          else
             this.roots[i] = roots[i];
       }
-      resources = Collections.synchronizedMap(new LinkedHashMap<String, URL>() {
+      resources = Collections.synchronizedMap(new LinkedHashMap<String, URL>()
+      {
          protected boolean removeEldestEntry(Entry<String, URL> eldest)
          {
             return size() > maxEntries;
          }
       });
-   }
-
-   public DefaultGroovyResourceLoader(URL[] roots, URL[] files) throws MalformedURLException
-   {
-      this(roots, files, null);
-   }
-
-   public DefaultGroovyResourceLoader(URL[] roots) throws MalformedURLException
-   {
-      this(roots, new URL[0]);
    }
 
    public DefaultGroovyResourceLoader(URL root) throws MalformedURLException
@@ -94,29 +77,25 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
    /**
     * {@inheritDoc}
     */
-   public final URL loadGroovySource(String classname) throws MalformedURLException
+   public final URL loadGroovySource(String filename) throws MalformedURLException
    {
       URL resource = null;
-      final String baseName = classname.replace('.', '/');
-      String[] extensions = getScriptExtensions();
-      for (int i = 0; i < extensions.length && resource == null; i++)
+      final String ffilename = filename.replace('.', '/') + getSourceFileExtension();
+      try
       {
-         final String ext = extensions[i];
-         try
+         resource = AccessController.doPrivileged(new PrivilegedExceptionAction<URL>()
          {
-            resource = AccessController.doPrivileged(new PrivilegedExceptionAction<URL>() {
-               public URL run() throws MalformedURLException
-               {
-                  return getResource(baseName + ext);
-               }
-            });
-         }
-         catch (PrivilegedActionException e)
-         {
-            Throwable cause = e.getCause();
-            // MalformedURLException
-            throw (MalformedURLException)cause;
-         }
+            public URL run() throws MalformedURLException
+            {
+               return getResource(ffilename);
+            }
+         });
+      }
+      catch (PrivilegedActionException e)
+      {
+         Throwable cause = e.getCause();
+         // MalformedURLException
+         throw (MalformedURLException)cause;
       }
       return resource;
    }
@@ -131,12 +110,6 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
          boolean inCache = resource != null;
          if (inCache && !checkResource(resource))
             resource = null; // Resource in cache is unreachable.
-         for (int i = 0; i < files.length && resource == null; i++)
-         {
-            URL tmp = files[i];
-            if (tmp.toString().endsWith(filename) && checkResource(tmp))
-               resource = tmp;
-         }
          for (int i = 0; i < roots.length && resource == null; i++)
          {
             URL tmp = new URL(roots[i], filename);
@@ -148,8 +121,12 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
          else if (inCache)
             resources.remove(filename);
       }
-
       return resource;
+   }
+
+   protected String getSourceFileExtension()
+   {
+      return DEFAULT_SOURCE_FILE_EXTENSION;
    }
 
    protected boolean checkResource(URL resource)
@@ -163,10 +140,5 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
       {
          return false;
       }
-   }
-
-   protected String[] getScriptExtensions()
-   {
-      return extensions;
    }
 }
