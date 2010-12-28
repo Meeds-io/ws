@@ -42,7 +42,8 @@ import java.util.Set;
 
 /**
  * @author <a href="andrew00x@gmail.com">Andrey Parfonov</a>
- * @version $Id$
+ * @version $Id: ExtendedGroovyClassLoader.java 3731 2010-12-27 13:35:46Z
+ *          aparfonov $
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class ExtendedGroovyClassLoader extends GroovyClassLoader
@@ -66,13 +67,13 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
       protected Class createClass(byte[] code, ClassNode classNode)
       {
          ExtendedInnerLoader cl = (ExtendedInnerLoader)getDefiningClassLoader();
-         String classname = classNode.getName();
+         /*String classname = classNode.getName();
          int i = classname.lastIndexOf('.');
          if (i != -1)
          {
             String pkgname = classname.substring(0, i);
             cl.definePackage(pkgname);
-         }
+         }*/
          Class clazz = cl.defineClass(classNode.getName(), code, cunit.getAST().getCodeSource());
          getLoadedClasses().add(clazz);
          if (target == null)
@@ -115,13 +116,13 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
       protected Class createClass(byte[] code, ClassNode classNode)
       {
          ExtendedInnerLoader cl = (ExtendedInnerLoader)getDefiningClassLoader();
-         String classname = classNode.getName();
+         /*String classname = classNode.getName();
          int i = classname.lastIndexOf('.');
          if (i != -1)
          {
             String pkgname = classname.substring(0, i);
             cl.definePackage(pkgname);
-         }
+         }*/
          Class clazz = cl.defineClass(classNode.getName(), code, cunit.getAST().getCodeSource());
          getLoadedClasses().add(clazz);
          ModuleNode module = classNode.getModule();
@@ -195,8 +196,14 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
             cunit.setClassgenCallback(collector);
             cunit.compile(phase);
 
-            for (Iterator iter = collector.getLoadedClasses().iterator(); iter.hasNext();)
-               setClassCacheEntry((Class)iter.next());
+            for (Iterator iter = collector.getLoadedClasses().iterator(); iter.hasNext();) {
+               Class clazz = (Class)iter.next();
+               String classname = clazz.getName();
+               int i = classname.lastIndexOf('.');
+               if (i != -1)
+                  definePackage(classname.substring(0, i), null, null, null, null, null, null, null);
+               setClassCacheEntry(clazz);
+            }
 
             target = collector.getTarget();
 
@@ -229,6 +236,10 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
          for (Iterator iter = collector.getLoadedClasses().iterator(); iter.hasNext();)
          {
             Class clazz = (Class)iter.next();
+            String classname = clazz.getName();
+            int i = classname.lastIndexOf('.');
+            if (i != -1)
+               definePackage(classname.substring(0, i), null, null, null, null, null, null, null);
             setClassCacheEntry(clazz);
          }
          List<Class> compiledClasses = collector.getCompiledClasses();
