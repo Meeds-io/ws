@@ -196,12 +196,18 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
             cunit.setClassgenCallback(collector);
             cunit.compile(phase);
 
-            for (Iterator iter = collector.getLoadedClasses().iterator(); iter.hasNext();) {
+            for (Iterator iter = collector.getLoadedClasses().iterator(); iter.hasNext();)
+            {
                Class clazz = (Class)iter.next();
                String classname = clazz.getName();
                int i = classname.lastIndexOf('.');
                if (i != -1)
-                  definePackage(classname.substring(0, i), null, null, null, null, null, null, null);
+               {
+                  String pkgname = classname.substring(0, i);
+                  Package pkg = getPackage(pkgname);
+                  if (pkg == null)
+                     definePackage(pkgname, null, null, null, null, null, null, null);
+               }
                setClassCacheEntry(clazz);
             }
 
@@ -239,7 +245,12 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
             String classname = clazz.getName();
             int i = classname.lastIndexOf('.');
             if (i != -1)
-               definePackage(classname.substring(0, i), null, null, null, null, null, null, null);
+            {
+               String pkgname = classname.substring(0, i);
+               Package pkg = getPackage(pkgname);
+               if (pkg == null)
+                  definePackage(pkgname, null, null, null, null, null, null, null);
+            }
             setClassCacheEntry(clazz);
          }
          List<Class> compiledClasses = collector.getCompiledClasses();
