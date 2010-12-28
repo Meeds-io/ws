@@ -39,14 +39,13 @@ public class GroovyClassLoaderProvider
    /** Preset default GroovyClassLoader. */
    private ExtendedGroovyClassLoader defaultClassLoader;
 
-   // TODO
    public GroovyClassLoaderProvider()
    {
       this(AccessController.doPrivileged(new PrivilegedAction<ExtendedGroovyClassLoader>()
       {
          public ExtendedGroovyClassLoader run()
          {
-            return new ExtendedGroovyClassLoader(getClass().getClassLoader());
+            return new ExtendedGroovyClassLoader(GroovyClassLoaderProvider.class.getClassLoader());
          }
       }));
    }
