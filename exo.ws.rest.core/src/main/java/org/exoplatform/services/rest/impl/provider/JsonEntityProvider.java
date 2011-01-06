@@ -70,10 +70,9 @@ public class JsonEntityProvider implements EntityProvider<Object>
    // and if this content type set trust it and try parse/write
 
    /** Do not process via JSON "known" JAX-RS types and some more. */
-   private static final Class<?>[] IGNORED =
-      new Class<?>[]{byte[].class, char[].class, DataSource.class, DOMSource.class, File.class, InputStream.class,
-         OutputStream.class, JAXBElement.class, MultivaluedMap.class, Reader.class, Writer.class, SAXSource.class,
-         StreamingOutput.class, StreamSource.class, String.class};
+   private static final Class<?>[] IGNORED = new Class<?>[]{byte[].class, char[].class, DataSource.class,
+      DOMSource.class, File.class, InputStream.class, OutputStream.class, JAXBElement.class, MultivaluedMap.class,
+      Reader.class, Writer.class, SAXSource.class, StreamingOutput.class, StreamSource.class, String.class};
 
    private static boolean isIgnored(Class<?> type)
    {
@@ -110,6 +109,12 @@ public class JsonEntityProvider implements EntityProvider<Object>
 
          parser.parse(entityStream, handler);
          JsonValue jsonValue = handler.getJsonObject();
+
+         if (JsonValue.class.isAssignableFrom(type))
+         {
+            // If requested object is JsonValue then stop processing here.
+            return jsonValue;
+         }
 
          Types jtype = JsonUtils.getType(type);
          if (jtype == Types.ARRAY_BOOLEAN || jtype == Types.ARRAY_BYTE || jtype == Types.ARRAY_SHORT
@@ -166,27 +171,34 @@ public class JsonEntityProvider implements EntityProvider<Object>
       {
          JsonGeneratorImpl generator = new JsonGeneratorImpl();
          JsonValue jsonValue = null;
-         Types jtype = JsonUtils.getType(type);
-         if (jtype == Types.ARRAY_BOOLEAN || jtype == Types.ARRAY_BYTE || jtype == Types.ARRAY_SHORT
-            || jtype == Types.ARRAY_INT || jtype == Types.ARRAY_LONG || jtype == Types.ARRAY_FLOAT
-            || jtype == Types.ARRAY_DOUBLE || jtype == Types.ARRAY_CHAR || jtype == Types.ARRAY_STRING
-            || jtype == Types.ARRAY_OBJECT)
+         if (t instanceof JsonValue)
          {
-            jsonValue = generator.createJsonArray(t);
-         }
-         else if (jtype == Types.COLLECTION)
-         {
-            jsonValue = generator.createJsonArray((Collection<?>)t);
-         }
-         else if (jtype == Types.MAP)
-         {
-            jsonValue = generator.createJsonObjectFromMap((Map<String, ?>)t);
+            // Don't do any transformation if object is prepared JsonValue.
+            jsonValue = (JsonValue)t;
          }
          else
          {
-            jsonValue = generator.createJsonObject(t);
+            Types jtype = JsonUtils.getType(type);
+            if (jtype == Types.ARRAY_BOOLEAN || jtype == Types.ARRAY_BYTE || jtype == Types.ARRAY_SHORT
+               || jtype == Types.ARRAY_INT || jtype == Types.ARRAY_LONG || jtype == Types.ARRAY_FLOAT
+               || jtype == Types.ARRAY_DOUBLE || jtype == Types.ARRAY_CHAR || jtype == Types.ARRAY_STRING
+               || jtype == Types.ARRAY_OBJECT)
+            {
+               jsonValue = generator.createJsonArray(t);
+            }
+            else if (jtype == Types.COLLECTION)
+            {
+               jsonValue = generator.createJsonArray((Collection<?>)t);
+            }
+            else if (jtype == Types.MAP)
+            {
+               jsonValue = generator.createJsonObjectFromMap((Map<String, ?>)t);
+            }
+            else
+            {
+               jsonValue = generator.createJsonObject(t);
+            }
          }
-
          JsonWriterImpl jsonWriter = new JsonWriterImpl(entityStream);
          jsonValue.writeTo(jsonWriter);
          jsonWriter.flush();
