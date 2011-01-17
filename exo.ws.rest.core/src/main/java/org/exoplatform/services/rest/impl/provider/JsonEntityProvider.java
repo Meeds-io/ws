@@ -169,7 +169,6 @@ public class JsonEntityProvider implements EntityProvider<Object>
    {
       try
       {
-         JsonGeneratorImpl generator = new JsonGeneratorImpl();
          JsonValue jsonValue = null;
          if (t instanceof JsonValue)
          {
@@ -178,6 +177,7 @@ public class JsonEntityProvider implements EntityProvider<Object>
          }
          else
          {
+            JsonGeneratorImpl generator = new JsonGeneratorImpl();
             Types jtype = JsonUtils.getType(type);
             if (jtype == Types.ARRAY_BOOLEAN || jtype == Types.ARRAY_BYTE || jtype == Types.ARRAY_SHORT
                || jtype == Types.ARRAY_INT || jtype == Types.ARRAY_LONG || jtype == Types.ARRAY_FLOAT

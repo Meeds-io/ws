@@ -18,7 +18,6 @@
  */
 package org.exoplatform.services.rest.impl;
 
-import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.ApplicationContext;
@@ -31,6 +30,7 @@ import org.exoplatform.services.rest.resource.ResourceDescriptorVisitor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.List;
 
@@ -66,8 +66,9 @@ public class FieldInjectorImpl implements FieldInjector
    private final Annotation annotation;
 
    /**
-    * Default value for this parameter, default value can be used if there is not
-    * found required parameter in request. See {@link javax.ws.rs.DefaultValue}.
+    * Default value for this parameter, default value can be used if there is
+    * not found required parameter in request. See
+    * {@link javax.ws.rs.DefaultValue}.
     */
    private final String defaultValue;
 
@@ -75,7 +76,6 @@ public class FieldInjectorImpl implements FieldInjector
     * See {@link javax.ws.rs.Encoded}.
     */
    private final boolean encoded;
-
 
    /** See {@link java.lang.reflect.Field} . */
    private final java.lang.reflect.Field jfield;
@@ -214,8 +214,7 @@ public class FieldInjectorImpl implements FieldInjector
          {
             if (!Modifier.isPublic(jfield.getModifiers()))
             {
-               SecurityHelper.doPrivilegedAction(new PrivilegedAction<Void>()
-               {
+               AccessController.doPrivileged(new PrivilegedAction<Void>() {
                   public Void run()
                   {
                      jfield.setAccessible(true);
@@ -255,9 +254,9 @@ public class FieldInjectorImpl implements FieldInjector
    public String toString()
    {
       StringBuffer sb = new StringBuffer("[ FieldInjectorImpl: ");
-      sb.append("annotation: " + getAnnotation()).append("; type: " + getParameterClass()).append(
-         "; generic-type : " + getGenericType()).append("; default-value: " + getDefaultValue()).append(
-         "; encoded: " + isEncoded()).append(" ]");
+      sb.append("annotation: " + getAnnotation()).append("; type: " + getParameterClass())
+         .append("; generic-type : " + getGenericType()).append("; default-value: " + getDefaultValue())
+         .append("; encoded: " + isEncoded()).append(" ]");
       return sb.toString();
    }
 

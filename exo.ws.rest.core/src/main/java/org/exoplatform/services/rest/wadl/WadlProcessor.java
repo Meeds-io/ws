@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest.wadl;
 
+import org.exoplatform.services.rest.ComponentLifecycleScope;
 import org.exoplatform.services.rest.impl.resource.AbstractResourceDescriptorImpl;
 import org.exoplatform.services.rest.method.MethodParameter;
 import org.exoplatform.services.rest.resource.AbstractResourceDescriptor;
@@ -138,7 +139,7 @@ public final class WadlProcessor
     * Process sub-resource methods.
     * 
     * @param wadlResource see
-    *          {@link org.exoplatform.services.rest.wadl.research.Resource}
+    *           {@link org.exoplatform.services.rest.wadl.research.Resource}
     * @param resourceDescriptor see {@link AbstractResourceDescriptor}
     */
    private void processSubResourceMethods(org.exoplatform.services.rest.wadl.research.Resource wadlResource,
@@ -207,7 +208,7 @@ public final class WadlProcessor
     * Process sub-resource locators.
     * 
     * @param wadlResource see
-    *          {@link org.exoplatform.services.rest.wadl.research.Resource}
+    *           {@link org.exoplatform.services.rest.wadl.research.Resource}
     * @param resourceDescriptor see {@link AbstractResourceDescriptor}
     */
    private void processSubResourceLocators(org.exoplatform.services.rest.wadl.research.Resource wadlResource,
@@ -215,8 +216,11 @@ public final class WadlProcessor
    {
       for (SubResourceLocatorDescriptor srld : resourceDescriptor.getSubResourceLocators().values())
       {
+         // Specify SINGLETON life-cycle to avoid processing constructors and fields.
+         // We are not interested about it since creation instance of resource is 
+         // responsibility of sub-resource locator.
          AbstractResourceDescriptor subResourceDescriptor =
-            new AbstractResourceDescriptorImpl(srld.getMethod().getReturnType());
+            new AbstractResourceDescriptorImpl(srld.getMethod().getReturnType(), ComponentLifecycleScope.SINGLETON);
          org.exoplatform.services.rest.wadl.research.Resource wadlSubResource = processResource(subResourceDescriptor);
          wadlSubResource.setPath(srld.getPathValue().getPath());
          wadlResource.getMethodOrResource().add(wadlSubResource);

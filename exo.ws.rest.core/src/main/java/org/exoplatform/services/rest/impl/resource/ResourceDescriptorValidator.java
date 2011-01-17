@@ -112,6 +112,16 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
 
       checkObjectModel(ard);
 
+      int resMethodCount =
+         ard.getResourceMethods().size() + ard.getSubResourceMethods().size() + ard.getSubResourceLocators().size();
+      if (resMethodCount == 0)
+      {
+         String msg =
+            "Not found any resource methods, sub-resource methods" + " or sub-resource locators in "
+               + ard.getObjectClass().getName();
+         throw new RuntimeException(msg);
+      }
+
       // check all resource methods
       for (List<ResourceMethodDescriptor> l : ard.getResourceMethods().values())
       {
@@ -167,8 +177,8 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
 
    /**
     * Validate SubResourceMethodDescriptor. SubResourceMethodDescriptor is a
-    * method which annotated with path annotation and has HTTP method annotation.
-    * This method can process the request directly. {@inheritDoc}
+    * method which annotated with path annotation and has HTTP method
+    * annotation. This method can process the request directly. {@inheritDoc}
     */
    public void visitSubResourceMethodDescriptor(SubResourceMethodDescriptor srmd)
    {
@@ -184,8 +194,8 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
 
    /**
     * Check method parameter for valid annotations. NOTE If a any method
-    * parameter is annotated with {@link FormParam} then type of entity parameter
-    * must be MultivalueMap&lt;String, String&gt;.
+    * parameter is annotated with {@link FormParam} then type of entity
+    * parameter must be MultivalueMap&lt;String, String&gt;.
     * 
     * @param rmd See {@link ResourceMethodDescriptor}
     */
@@ -261,7 +271,7 @@ public class ResourceDescriptorValidator implements ResourceDescriptorVisitor
     * @param type generic type
     * @see #checkGenericType(Type)
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings("rawtypes")
    private static void checkFormParam(Class clazz, Type type)
    {
       if (MultivaluedMap.class != clazz || !checkGenericType(type))

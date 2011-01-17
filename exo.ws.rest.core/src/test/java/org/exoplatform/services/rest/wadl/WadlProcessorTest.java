@@ -106,15 +106,20 @@ public class WadlProcessorTest extends BaseTest
       @Path("sub/{x}")
       public Resource2 m7()
       {
-         return new Resource2();
+         return new Resource2Impl();
       }
 
    }
 
-   public static class Resource2
+   public static interface Resource2
    {
       @GET
       @Produces("text/plain")
+      public String m0(@PathParam("x") String x);
+   }
+   
+   public static class Resource2Impl implements Resource2
+   {
       public String m0(@PathParam("x") String x)
       {
          return x;
