@@ -94,7 +94,7 @@ public class GroovyJaxrsPublisher
 
    protected final Map<ResourceId, String> resources = Collections.synchronizedMap(new HashMap<ResourceId, String>());
 
-   protected GroovyJaxrsPublisher(ResourceBinder binder, GroovyScriptInstantiator instantiator,
+   public GroovyJaxrsPublisher(ResourceBinder binder, GroovyScriptInstantiator instantiator,
       GroovyClassLoaderProvider classLoaderProvider)
    {
       this.binder = binder;
