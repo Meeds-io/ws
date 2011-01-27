@@ -68,7 +68,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
  * Lookup resource which can serve request.
- *
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
@@ -455,7 +455,7 @@ public class RequestDispatcher
 
    /**
     * Dispatch {@link ContainerRequest} to resource which can serve request.
-    *
+    * 
     * @param request See {@link GenericContainerRequest}
     * @param response See {@link GenericContainerResponse}
     */
@@ -517,9 +517,9 @@ public class RequestDispatcher
    /**
     * Get last element from path parameters. This element will be used as
     * request path for child resources.
-    *
+    * 
     * @param parameterValues See
-    *        {@link ApplicationContextImpl#getParameterValues()}
+    *           {@link ApplicationContextImpl#getParameterValues()}
     * @return last element from given list or empty string if last element is
     *         null
     */
@@ -532,16 +532,16 @@ public class RequestDispatcher
    /**
     * Process resource methods, sub-resource methods and sub-resource locators
     * to find the best one for serve request.
-    *
+    * 
     * @param request See {@link GenericContainerRequest}
     * @param response See {@link GenericContainerResponse}
     * @param context See {@link ApplicationContextImpl}
     * @param resourceFactory the root resource factory or resource factory which
-    *        was created by previous sub-resource locator
+    *           was created by previous sub-resource locator
     * @param resource instance of resource class
     * @param requestPath request path, it is relative path to the base URI or
-    *        other resource which was called before (one of sub-resource
-    *        locators)
+    *           other resource which was called before (one of sub-resource
+    *           locators)
     */
    private void dispatch(GenericContainerRequest request, GenericContainerResponse response,
       ApplicationContext context, ObjectFactory<AbstractResourceDescriptor> resourceFactory, Object resource,
@@ -612,7 +612,7 @@ public class RequestDispatcher
 
    /**
     * Invoke resource methods.
-    *
+    * 
     * @param rmd See {@link ResourceMethodDescriptor}
     * @param resource instance of resource class
     * @param context See {@link ApplicationContextImpl}
@@ -633,7 +633,7 @@ public class RequestDispatcher
 
    /**
     * Invoke sub-resource methods.
-    *
+    * 
     * @param requestPath request path
     * @param srmd See {@link SubResourceMethodDescriptor}
     * @param resource instance of resource class
@@ -660,7 +660,7 @@ public class RequestDispatcher
 
    /**
     * Invoke sub-resource locators.
-    *
+    * 
     * @param requestPath request path
     * @param srld See {@link SubResourceLocatorDescriptor}
     * @param resource instance of resource class
@@ -703,7 +703,7 @@ public class RequestDispatcher
     * SubResourceLocatorDescriptor has higher priority. And finally if zero was
     * returned then UriPattern is equals, in this case
     * SubResourceMethodDescriptor must be selected.
-    *
+    * 
     * @param srmd See {@link SubResourceMethodDescriptor}
     * @param srld See {@link SubResourceLocatorDescriptor}
     * @return result of comparison sub-resources
@@ -722,7 +722,7 @@ public class RequestDispatcher
    /**
     * Process result of invoked method, and set {@link Response} parameters
     * dependent of returned object.
-    *
+    * 
     * @param o result of invoked method
     * @param returnType type of returned object
     * @param request See {@link GenericContainerRequest}
@@ -764,7 +764,7 @@ public class RequestDispatcher
 
    /**
     * Process resource methods.
-    *
+    * 
     * @param <T> ResourceMethodDescriptor extension
     * @param rmm See {@link ResourceMethodMap}
     * @param request See {@link GenericContainerRequest}
@@ -775,11 +775,13 @@ public class RequestDispatcher
    private static <T extends ResourceMethodDescriptor> boolean processResourceMethod(ResourceMethodMap<T> rmm,
       GenericContainerRequest request, GenericContainerResponse response, List<T> methods)
    {
-      List<T> rmds = rmm.getList(request.getMethod());
+      String method = request.getMethod();
+      List<T> rmds = rmm.getList(method);
       if (rmds == null || rmds.size() == 0)
       {
          response.setResponse(Response.status(405).header("Allow", HeaderHelper.convertToString(rmm.getAllow()))
-            .entity("Method not allowed.").type(MediaType.TEXT_PLAIN).build());
+            .entity(method + " method is not allowed for resource " + ApplicationContextImpl.getCurrent().getPath())
+            .type(MediaType.TEXT_PLAIN).build());
          return false;
       }
       MediaType contentType = request.getMediaType();
@@ -800,8 +802,8 @@ public class RequestDispatcher
 
       if (methods.isEmpty())
       {
-         response.setResponse(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).entity(
-            "Media type " + contentType + " is not supported.").type(MediaType.TEXT_PLAIN).build());
+         response.setResponse(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE)
+            .entity("Media type " + contentType + " is not supported.").type(MediaType.TEXT_PLAIN).build());
          return false;
       }
 
@@ -842,21 +844,21 @@ public class RequestDispatcher
          return true;
       }
 
-      response.setResponse(Response.status(Response.Status.NOT_ACCEPTABLE).entity("Not Acceptable").type(
-         MediaType.TEXT_PLAIN).build());
+      response.setResponse(Response.status(Response.Status.NOT_ACCEPTABLE).entity("Not Acceptable")
+         .type(MediaType.TEXT_PLAIN).build());
 
       return false;
    }
 
    /**
     * Process sub-resource methods.
-    *
+    * 
     * @param srmm See {@link SubResourceLocatorMap}
     * @param requestedPath part of requested path
     * @param request See {@link GenericContainerRequest}
     * @param response See {@link GenericContainerResponse}
     * @param capturingValues the list for keeping template values. See
-    *        {@link javax.ws.rs.core.UriInfo#getPathParameters()}
+    *           {@link javax.ws.rs.core.UriInfo#getPathParameters()}
     * @param methods list for method resources
     * @return true if at least one sub-resource method found false otherwise
     */
@@ -883,8 +885,9 @@ public class RequestDispatcher
 
       if (rmm == null)
       {
-         response.setResponse(Response.status(Status.NOT_FOUND).entity(
-            "There is no any resources matched to request path " + requestedPath).type(MediaType.TEXT_PLAIN).build());
+         response.setResponse(Response.status(Status.NOT_FOUND)
+            .entity("There is no any resources matched to request path " + requestedPath).type(MediaType.TEXT_PLAIN)
+            .build());
          return false;
       }
 
@@ -906,7 +909,7 @@ public class RequestDispatcher
 
    /**
     * Process sub-resource locators.
-    *
+    * 
     * @param srlm See {@link SubResourceLocatorMap}
     * @param requestedPath part of requested path
     * @param capturingValues the list for keeping template values
@@ -929,12 +932,12 @@ public class RequestDispatcher
 
    /**
     * Get root resource.
-    *
+    * 
     * @param parameterValues is taken from context
     * @param requestPath is taken from context
     * @return root resource
     * @throws WebApplicationException if there is no matched root resources.
-    *         Exception with prepared error response with 'Not Found' status
+    *            Exception with prepared error response with 'Not Found' status
     */
    protected ObjectFactory<AbstractResourceDescriptor> getRootResourse(List<String> parameterValues, String requestPath)
    {
@@ -945,8 +948,9 @@ public class RequestDispatcher
          if (LOG.isDebugEnabled())
             LOG.debug("Root resource not found for " + requestPath);
          // Stop here, there is no matched root resource
-         throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity(
-            "There is no any resources matched to request path " + requestPath).type(MediaType.TEXT_PLAIN).build());
+         throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+            .entity("There is no any resources matched to request path " + requestPath).type(MediaType.TEXT_PLAIN)
+            .build());
       }
       return resourceFactory;
    }
