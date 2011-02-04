@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest;
 
+import org.exoplatform.services.rest.impl.DependencySupplier;
 import org.exoplatform.services.rest.impl.ProviderBinder;
 import org.exoplatform.services.rest.uri.UriPattern;
 
@@ -33,7 +34,7 @@ import javax.ws.rs.ext.Providers;
 /**
  * Provides access to ContainerRequest, ContainerResponse and other context
  * information information.
- *
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
@@ -45,14 +46,14 @@ public interface ApplicationContext extends UriInfo, InitialProperties
     * in matching at
     * {@link org.exoplatform.services.rest.uri.UriPattern#match(String, List)} .
     * List will be cleared during matching.
-    *
+    * 
     * @return the list for template values
     */
    List<String> getParameterValues();
 
    /**
     * Pass in context list of path template parameters .
-    *
+    * 
     * @param parameterNames list of templates parameters
     * @see UriPattern
     */
@@ -65,9 +66,9 @@ public interface ApplicationContext extends UriInfo, InitialProperties
     * the root resource last.
     * </p>
     * So add each new resource at the begin of list.
-    *
+    * 
     * @param resource the resource e. g. resource class, sub-resource method or
-    *        sub-resource locator
+    *           sub-resource locator
     */
    void addMatchedResource(Object resource);
 
@@ -78,9 +79,9 @@ public interface ApplicationContext extends UriInfo, InitialProperties
     * resource URI last.
     * </p>
     * So add each new URI at the begin of list.
-    *
+    * 
     * @param uri the partial part of that matched to resource class,
-    *        sub-resource method or sub-resource locator
+    *           sub-resource method or sub-resource locator
     */
    void addMatchedURI(String uri);
 
@@ -130,6 +131,13 @@ public interface ApplicationContext extends UriInfo, InitialProperties
     * @see GenericContainerResponse
     */
    GenericContainerResponse getContainerResponse();
+
+   /**
+    * @return instance of actual dependency resolver. It will be used for
+    *         injection fields annotated with 'inject' annotation and
+    *         constructor parameters not annotated with JAX-RS annotations
+    */
+   DependencySupplier getDependencySupplier();
 
    /**
     * @return set of providers

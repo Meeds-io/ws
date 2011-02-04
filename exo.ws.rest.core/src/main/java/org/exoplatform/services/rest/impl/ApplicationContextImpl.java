@@ -60,7 +60,7 @@ public class ApplicationContextImpl implements ApplicationContext
 
    /**
     * Set ApplicationContext for current thread.
-    *
+    * 
     * @param context the ApplicationContext.
     */
    public static void setCurrent(ApplicationContext context)
@@ -158,19 +158,28 @@ public class ApplicationContextImpl implements ApplicationContext
     */
    private MultivaluedMap<String, String> queryParameters;
 
+   private DependencySupplier dependencySupplier;
+
    /**
     * Constructs new instance of ApplicationContext.
-    *
+    * 
     * @param request See {@link GenricContainerRequest}
     * @param response See {@link GenericContainerResponse}
     * @param providerBinder
     */
    public ApplicationContextImpl(GenericContainerRequest request, GenericContainerResponse response,
-      ProviderBinder providers)
+      ProviderBinder providers, DependencySupplier dependencySupplier)
    {
       this.request = request;
       this.response = response;
       this.providers = providers;
+      this.dependencySupplier = dependencySupplier;
+   }
+
+   public ApplicationContextImpl(GenericContainerRequest request, GenericContainerResponse response,
+      ProviderBinder providers)
+   {
+      this(request, response, providers, new DependencySupplier());
    }
 
    /**
@@ -248,6 +257,19 @@ public class ApplicationContextImpl implements ApplicationContext
    public GenericContainerResponse getContainerResponse()
    {
       return response;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public DependencySupplier getDependencySupplier()
+   {
+      return dependencySupplier;
+   }
+
+   public void setDependencySupplier(DependencySupplier dependencySupplier)
+   {
+      this.dependencySupplier = dependencySupplier;
    }
 
    /**
@@ -355,8 +377,8 @@ public class ApplicationContextImpl implements ApplicationContext
             {
                if (!pathParameters.containsKey(key))
                {
-                  pathParameters.putSingle(UriComponent.decode(key, UriComponent.PATH_SEGMENT), UriComponent.decode(
-                     encodedPathParameters.getFirst(key), UriComponent.PATH));
+                  pathParameters.putSingle(UriComponent.decode(key, UriComponent.PATH_SEGMENT),
+                     UriComponent.decode(encodedPathParameters.getFirst(key), UriComponent.PATH));
                }
             }
          }

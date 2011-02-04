@@ -18,8 +18,6 @@
  */
 package org.exoplatform.services.rest.impl;
 
-import org.exoplatform.container.ExoContainer;
-import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.ApplicationContext;
@@ -54,26 +52,15 @@ import javax.ws.rs.ext.Provider;
  */
 public class ConstructorDescriptorImpl implements ConstructorDescriptor
 {
-
-   /**
-    * Logger.
-    */
+   /** Logger. */
    private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.ConstructorDescriptorImpl");
 
-   /**
-    * ConstructorDescriptor comparator.
-    */
+   /** ConstructorDescriptor comparator. */
    public static final Comparator<ConstructorDescriptor> CONSTRUCTOR_COMPARATOR = new ConstructorComparator();
 
-   /**
-    * Compare two ConstructorDescriptor in number parameters order.
-    */
+   /** Compare two ConstructorDescriptor in number parameters order. */
    private static class ConstructorComparator implements Comparator<ConstructorDescriptor>
    {
-
-      /**
-       * {@inheritDoc}
-       */
       public int compare(ConstructorDescriptor o1, ConstructorDescriptor o2)
       {
          int r = o2.getParameters().size() - o1.getParameters().size();
@@ -83,19 +70,13 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
       }
    }
 
-   /**
-    * Constructor.
-    */
+   /** Constructor. */
    private final Constructor<?> constructor;
 
-   /**
-    * Collection of constructor's parameters.
-    */
+   /** Collection of constructor's parameters. */
    private final List<ConstructorParameter> parameters;
 
-   /**
-    * Resource class.
-    */
+   /** Resource class. */
    private final Class<?> resourceClass;
 
    /**
@@ -111,20 +92,16 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
 
       if (paramTypes.length == 0)
       {
-
          parameters = java.util.Collections.emptyList();
-
       }
       else
       {
-
          Type[] getParamTypes = constructor.getGenericParameterTypes();
          Annotation[][] annotations = constructor.getParameterAnnotations();
          List<ConstructorParameter> params = new ArrayList<ConstructorParameter>(paramTypes.length);
 
          for (int i = 0; i < paramTypes.length; i++)
          {
-
             String defaultValue = null;
             Annotation annotation = null;
             boolean encoded = false;
@@ -142,7 +119,6 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
                Class<?> ac = a.annotationType();
                if (allowedAnnotation.contains(ac.getName()))
                {
-
                   if (annotation == null)
                   {
                      annotation = a;
@@ -154,15 +130,12 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
                            + annotation + " and " + a + " can't be applied to one parameter.";
                      throw new RuntimeException(msg);
                   }
-
-                  // @Encoded has not sense for Provider. Provider may use only
-                  // @Context annotation for constructor parameters
+                  // @Encoded has not sense for Provider. Provider may use only @Context annotation for constructor parameters
                }
                else if (ac == Encoded.class && !provider)
                {
                   encoded = true;
-                  // @Default has not sense for Provider. Provider may use only
-                  // @Context annotation for constructor parameters
+                  // @Default has not sense for Provider. Provider may use only @Context annotation for constructor parameters
                }
                else if (ac == DefaultValue.class && !provider)
                {
@@ -186,7 +159,6 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
 
          parameters = java.util.Collections.unmodifiableList(params);
       }
-
    }
 
    /**
@@ -218,7 +190,6 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
     */
    public Object createInstance(ApplicationContext context)
    {
-      ExoContainer container = ExoContainerContext.getCurrentContainer();
       Object[] p = new Object[parameters.size()];
       int i = 0;
       for (ConstructorParameter cp : parameters)
@@ -236,18 +207,18 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
                String msg = "Not able resolve constructor parameter " + cp;
                Class<?> ac = a.annotationType();
                if (ac == MatrixParam.class || ac == QueryParam.class || ac == PathParam.class)
-                  throw new WebApplicationException(e, Response.status(Response.Status.NOT_FOUND).entity(msg).type(
-                     MediaType.TEXT_PLAIN).build());
+                  throw new WebApplicationException(e, Response.status(Response.Status.NOT_FOUND).entity(msg)
+                     .type(MediaType.TEXT_PLAIN).build());
 
-               throw new WebApplicationException(e, Response.status(Response.Status.BAD_REQUEST).entity(msg).type(
-                  MediaType.TEXT_PLAIN).build());
+               throw new WebApplicationException(e, Response.status(Response.Status.BAD_REQUEST).entity(msg)
+                  .type(MediaType.TEXT_PLAIN).build());
             }
          }
          else
          {
             // If parameter not has not annotation then get constructor parameter
-            // from container, this is out of scope JAX-RS specification.
-            Object tmp = container.getComponentInstanceOfType(cp.getParameterClass());
+            // try to find it via DependencySupplier, this is out of scope JAX-RS specification.
+            Object tmp = context.getDependencySupplier().getComponent(cp);
 
             if (tmp == null)
             {
@@ -314,5 +285,4 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
       sb.append(" ]");
       return sb.toString();
    }
-
 }

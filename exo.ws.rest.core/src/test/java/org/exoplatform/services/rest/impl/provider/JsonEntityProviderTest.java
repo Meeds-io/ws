@@ -19,7 +19,6 @@
 package org.exoplatform.services.rest.impl.provider;
 
 import org.exoplatform.services.rest.BaseTest;
-import org.exoplatform.services.rest.RequestHandler;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 
 import java.io.ByteArrayInputStream;
@@ -40,14 +39,14 @@ public class JsonEntityProviderTest extends BaseTest
 
    private static final String DATA = "{\"name\":\"andrew\", \"password\":\"hello\"}";
 
-   private RequestHandler requestHandler;
+   //private RequestHandler requestHandler;
 
    private MediaType mediaType;
 
    public void setUp() throws Exception
    {
       super.setUp();
-      requestHandler = (RequestHandler)container.getComponentInstanceOfType(RequestHandler.class);
+      //requestHandler = (RequestHandler)container.getComponentInstanceOfType(RequestHandler.class);
       assertNotNull(requestHandler);
       mediaType = new MediaType("application", "json");
    }

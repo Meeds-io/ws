@@ -64,6 +64,9 @@
       <type>org.exoplatform.services.rest.impl.RequestHandlerImpl</type>
    </component>
    <component>
+      <type>org.exoplatform.services.rest.impl.DependencySupplier</type>
+   </component>
+   <component>
       <type>org.exoplatform.services.rest.impl.RequestDispatcher</type>
    </component>
    <component>

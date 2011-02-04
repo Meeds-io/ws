@@ -86,7 +86,7 @@ public class ApplicationRegistry implements Startable
       }
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void addApplication(Application app)
    {
       String applicationId = app.getClass().getName();
@@ -167,5 +167,4 @@ public class ApplicationRegistry implements Startable
    public void stop()
    {
    }
-
 }

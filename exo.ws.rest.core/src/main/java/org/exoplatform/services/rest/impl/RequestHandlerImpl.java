@@ -80,6 +80,8 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
     */
    private final RequestDispatcher dispatcher;
 
+   private final DependencySupplier dependencySupplier;
+
    public static final String getProperty(String name)
    {
       return properties.get(name);
@@ -88,23 +90,15 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
    public static final void setProperty(String name, String value)
    {
       if (value == null)
-      {
          properties.remove(name);
-      }
       else
-      {
          properties.put(name, value);
-      }
    }
 
-   /**
-    * Constructs new instance of {@link RequestHandler}.
-    *
-    * @param dispatcher See {@link RequestDispatcher}
-    * @param params init parameters
-    */
-   public RequestHandlerImpl(RequestDispatcher dispatcher, InitParams params)
+   public RequestHandlerImpl(RequestDispatcher dispatcher, DependencySupplier dependencySupplier, InitParams params)
    {
+      this.dispatcher = dispatcher;
+      this.dependencySupplier = dependencySupplier;
       if (params != null)
       {
          for (Iterator<ValueParam> i = params.getValueParamIterator(); i.hasNext();)
@@ -113,7 +107,17 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
             properties.put(vp.getName(), vp.getValue());
          }
       }
-      this.dispatcher = dispatcher;
+   }
+
+   /**
+    * Constructs new instance of {@link RequestHandler}.
+    * 
+    * @param dispatcher See {@link RequestDispatcher}
+    * @param params init parameters
+    */
+   public RequestHandlerImpl(RequestDispatcher dispatcher, InitParams params)
+   {
+      this(dispatcher, new DependencySupplier(), params);
    }
 
    // RequestHandler
@@ -121,13 +125,14 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
    /**
     * {@inheritDoc}
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public void handleRequest(GenericContainerRequest request, GenericContainerResponse response) throws Exception
    {
       try
       {
          ProviderBinder defaultProviders = ProviderBinder.getInstance();
-         ApplicationContextImpl context = new ApplicationContextImpl(request, response, defaultProviders);
+         ApplicationContextImpl context =
+            new ApplicationContextImpl(request, response, defaultProviders, dependencySupplier);
          context.getProperties().putAll(properties);
          ApplicationContextImpl.setCurrent(context);
 
@@ -252,7 +257,7 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
 
    /**
     * Create error response with specified status and body message.
-    *
+    * 
     * @param status response status
     * @param message response message
     * @return response
@@ -271,7 +276,7 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
 
    /**
     * Get JAXR header for response status.
-    *
+    * 
     * @param status response status
     * @return JAXRS header or null.
     */
@@ -361,12 +366,10 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
       }
 
       // Register Shutdown Hook for cleaning temporary files.
-      SecurityHelper.doPrivilegedAction(new PrivilegedAction<Void>()
-      {
+      SecurityHelper.doPrivilegedAction(new PrivilegedAction<Void>() {
          public Void run()
          {
-            Runtime.getRuntime().addShutdownHook(new Thread()
-            {
+            Runtime.getRuntime().addShutdownHook(new Thread() {
                @Override
                public void run()
                {
@@ -388,10 +391,10 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
 
    /**
     * Processing {@link ComponentPlugin} for injection external components.
-    *
+    * 
     * @param plugin See {@link ComponentPlugin}
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"rawtypes"})
    public void addPlugin(ComponentPlugin plugin)
    {
       // NOTE!!! ProviderBinder should be already initialized by ResourceBinder
@@ -426,7 +429,8 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
       }
       else if (ExceptionMapperComponentPlugin.class.isAssignableFrom(plugin.getClass()))
       {
-         Set<Class<? extends ExceptionMapper<?>>> emaps = ((ExceptionMapperComponentPlugin)plugin).getExceptionMappers();
+         Set<Class<? extends ExceptionMapper<?>>> emaps =
+            ((ExceptionMapperComponentPlugin)plugin).getExceptionMappers();
          for (Class<? extends ExceptionMapper<?>> mapper : emaps)
             providers.addExceptionMapper(mapper);
       }

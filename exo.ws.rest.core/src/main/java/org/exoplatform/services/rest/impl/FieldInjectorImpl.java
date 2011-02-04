@@ -49,20 +49,13 @@ import javax.ws.rs.ext.Provider;
  */
 public class FieldInjectorImpl implements FieldInjector
 {
-
-   /**
-    * Logger.
-    */
+   /** Logger. */
    private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.FieldInjectorImpl");
 
-   /**
-    * All annotations including JAX-RS annotation.
-    */
+   /** All annotations including JAX-RS annotation. */
    private final Annotation[] annotations;
 
-   /**
-    * JAX-RS annotation.
-    */
+   /** JAX-RS annotation. */
    private final Annotation annotation;
 
    /**
@@ -72,9 +65,7 @@ public class FieldInjectorImpl implements FieldInjector
     */
    private final String defaultValue;
 
-   /**
-    * See {@link javax.ws.rs.Encoded}.
-    */
+   /** See {@link javax.ws.rs.Encoded}. */
    private final boolean encoded;
 
    /** See {@link java.lang.reflect.Field} . */
@@ -86,7 +77,6 @@ public class FieldInjectorImpl implements FieldInjector
     */
    public FieldInjectorImpl(Class<?> resourceClass, java.lang.reflect.Field jfield)
    {
-
       this.jfield = jfield;
       this.annotations = jfield.getDeclaredAnnotations();
 
@@ -119,15 +109,12 @@ public class FieldInjectorImpl implements FieldInjector
                      + annotation.toString() + " and " + a.toString() + " can't be applied to one field.";
                throw new RuntimeException(msg);
             }
-
-            // @Encoded has not sense for Provider. Provider may use only @Context
-            // annotation for fields
+            // @Encoded has not sense for Provider. Provider may use only @Context annotation for fields
          }
          else if (ac == Encoded.class && !provider)
          {
             encoded = true;
-            // @Default has not sense for Provider. Provider may use only @Context
-            // annotation for fields
+            // @Default has not sense for Provider. Provider may use only @Context annotation for fields
          }
          else if (ac == DefaultValue.class && !provider)
          {
@@ -143,7 +130,6 @@ public class FieldInjectorImpl implements FieldInjector
       this.defaultValue = defaultValue;
       this.annotation = annotation;
       this.encoded = encoded || resourceClass.getAnnotation(Encoded.class) != null;
-
    }
 
    /**
@@ -221,22 +207,43 @@ public class FieldInjectorImpl implements FieldInjector
                      return null;
                   }
                });
-
             }
-
             jfield.set(resource, pr.resolve(this, context));
          }
          catch (Throwable e)
          {
-
             Class<?> ac = annotation.annotationType();
             if (ac == MatrixParam.class || ac == QueryParam.class || ac == PathParam.class)
                throw new WebApplicationException(e, Response.status(Response.Status.NOT_FOUND).build());
-
             throw new WebApplicationException(e, Response.status(Response.Status.BAD_REQUEST).build());
          }
       }
-
+      else
+      {
+         Object tmp = context.getDependencySupplier().getComponent(this);
+         if (tmp != null)
+         {
+            try
+            {
+               if (!Modifier.isPublic(jfield.getModifiers()))
+               {
+                  AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                     public Void run()
+                     {
+                        jfield.setAccessible(true);
+                        return null;
+                     }
+                  });
+               }
+               jfield.set(resource, tmp);
+            }
+            catch (Throwable e)
+            {
+               throw new WebApplicationException(e, Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
+            }
+            // TODO Need to throw exception ?????
+         }
+      }
    }
 
    /**
@@ -259,5 +266,4 @@ public class FieldInjectorImpl implements FieldInjector
          .append("; encoded: " + isEncoded()).append(" ]");
       return sb.toString();
    }
-
 }

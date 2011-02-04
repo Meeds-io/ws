@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 import org.exoplatform.container.StandaloneContainer;
 import org.exoplatform.services.rest.impl.ApplicationContextImpl;
 import org.exoplatform.services.rest.impl.ApplicationRegistry;
+import org.exoplatform.services.rest.impl.DependencySupplier;
 import org.exoplatform.services.rest.impl.ProviderBinder;
 import org.exoplatform.services.rest.impl.ProvidersRegistry;
 import org.exoplatform.services.rest.impl.RequestHandlerImpl;
@@ -61,6 +62,8 @@ public abstract class BaseTest extends TestCase
       binder = (ResourceBinder)container.getComponentInstanceOfType(ResourceBinder.class);
       requestHandler = (RequestHandlerImpl)container.getComponentInstanceOfType(RequestHandlerImpl.class);
       providersRegistry = (ProvidersRegistry)container.getComponentInstanceOfType(ProvidersRegistry.class);
+      DependencySupplier dependencySupplier =
+         (DependencySupplier)container.getComponentInstanceOfType(DependencySupplier.class);
 
       // reset default providers to be sure it is clean.
       ProviderBinder.setInstance(new ProviderBinder());
@@ -68,7 +71,8 @@ public abstract class BaseTest extends TestCase
 
       binder.clear();
 
-      ApplicationContextImpl.setCurrent(new ApplicationContextImpl(null, null, providers));
+      ApplicationContextImpl.setCurrent(new ApplicationContextImpl(null, null, providers, dependencySupplier));
+      
       launcher = new ResourceLauncher(requestHandler);
    }
 
