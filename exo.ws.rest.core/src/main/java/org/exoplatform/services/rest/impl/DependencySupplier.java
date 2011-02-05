@@ -104,15 +104,15 @@ public class DependencySupplier
       {
          for (Annotation a : parameter.getAnnotations())
             if (injectAnnotationClass.isInstance(a))
-               return getComponent(parameter.getParameterClass());
+               return getComponent(parameter.getParameterClass(), parameter.getGenericType());
          return null;
       }
       // Annotation required for fields only.
-      return getComponent(parameter.getParameterClass());
+      return getComponent(parameter.getParameterClass(), parameter.getGenericType());
    }
 
    @SuppressWarnings({"rawtypes"})
-   protected Object getComponent(Class<?> parameterClass)
+   protected Object getComponent(Class<?> parameterClass, Type genericType)
    {
       ExoContainer container = ExoContainerContext.getCurrentContainer();
       List injectionProviders = container.getComponentInstancesOfType(javax.inject.Provider.class);
@@ -124,27 +124,53 @@ public class DependencySupplier
             Type injectedType = resolveInjectedType(provider.getClass());
             if (injectedType != null)
             {
-               if (injectedType instanceof Class<?>)
+               if (javax.inject.Provider.class == parameterClass)
                {
-                  if (parameterClass.isAssignableFrom((Class<?>)injectedType))
-                     return javax.inject.Provider.class.isAssignableFrom(parameterClass) ? provider : provider.get();
-               }
-               else if (injectedType instanceof ParameterizedType)
-               {
-                  ParameterizedType pType = (ParameterizedType)injectedType;
-                  Type rawType = pType.getRawType();
-                  if (rawType instanceof Class<?>)
+                  if (genericType instanceof ParameterizedType)
                   {
-                     if (parameterClass.isAssignableFrom((Class<?>)rawType))
-                        return javax.inject.Provider.class.isAssignableFrom(parameterClass) ? provider : provider.get();
-                     // TODO check generic type 
+                     Type[] parameterActualTypes = ((ParameterizedType)genericType).getActualTypeArguments();
+                     if (parameterActualTypes.length > 0)
+                     {
+                        if (parameterActualTypes[0] instanceof Class<?>)
+                        {
+                           Class<?> actualType = (Class<?>)parameterActualTypes[0];
+                           if (actualType == injectedType)
+                              return provider;
+                        }
+                        else if (parameterActualTypes[0] instanceof ParameterizedType)
+                        {
+                           ParameterizedType actualType = (ParameterizedType)parameterActualTypes[0];
+                           if (actualType.equals(injectedType))
+                              return provider;
+                        }
+                     }
+                  }
+               }
+               else
+               {
+                  if (injectedType instanceof Class<?>)
+                  {
+                     if (parameterClass.isAssignableFrom((Class<?>)injectedType))
+                        return provider.get();
+                  }
+                  else if (injectedType instanceof ParameterizedType)
+                  {
+                     ParameterizedType pType = (ParameterizedType)injectedType;
+                     Type rawType = pType.getRawType();
+                     if (rawType instanceof Class<?>)
+                     {
+                        if (parameterClass.isAssignableFrom((Class<?>)rawType))
+                           return provider.get();
+                     }
                   }
                }
             }
          }
       }
-      // Directly look up component in container by class.
-      return container.getComponentInstanceOfType(parameterClass);
+      // Directly look up component in container by class if it is not javax.inject.Provider.
+      if (!javax.inject.Provider.class.isAssignableFrom(parameterClass))
+         return container.getComponentInstanceOfType(parameterClass);
+      return null;
    }
 
    private Type resolveInjectedType(final Class<?> providerClass)

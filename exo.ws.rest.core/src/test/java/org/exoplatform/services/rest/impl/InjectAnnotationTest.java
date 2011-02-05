@@ -40,9 +40,9 @@ public class InjectAnnotationTest extends BaseTest
       public String message = "injected from container";
    }
 
-   public static class Provider0 implements Provider<GenericIngectable<String>>
+   public static class Provider90 implements Provider<GenericIngectable<String>>
    {
-      public/*InjectableComponent*/GenericIngectable<String> get()
+      public GenericIngectable<String> get()
       {
          InjectableComponent injectable = new InjectableComponent();
          injectable.message = "injected from provider";
@@ -68,13 +68,14 @@ public class InjectAnnotationTest extends BaseTest
    public static class Resource2
    {
       @Inject
-      private Provider<InjectableComponent> injected;
+      //private Provider<InjectableComponent> injected;
+      private Provider<GenericIngectable<String>> injected;
 
       @GET
       public String m()
       {
          assertNotNull(injected);
-         InjectableComponent inst = injected.get();
+         InjectableComponent inst = (InjectableComponent)injected.get();
          return inst.message;
       }
    }
@@ -92,23 +93,23 @@ public class InjectAnnotationTest extends BaseTest
 
    public void testInjectFromProvider() throws Exception
    {
-      container.registerComponentInstance(Provider0.class.getName(), new Provider0());
+      container.registerComponentInstance(Provider90.class.getName(), new Provider90());
       registry(Resource1.class);
       ContainerResponse response = launcher.service("GET", "/a", "", null, null, null);
       assertEquals(200, response.getStatus());
       assertEquals("injected from provider", response.getEntity());
       unregistry(Resource1.class);
-      container.unregisterComponent(Provider0.class.getName());
+      container.unregisterComponent(Provider90.class.getName());
    }
 
    public void testInjectProvider() throws Exception
    {
-      container.registerComponentInstance(Provider0.class.getName(), new Provider0());
+      container.registerComponentInstance(Provider90.class.getName(), new Provider90());
       registry(Resource2.class);
       ContainerResponse response = launcher.service("GET", "/b", "", null, null, null);
       assertEquals(200, response.getStatus());
       assertEquals("injected from provider", response.getEntity());
       unregistry(Resource2.class);
-      container.unregisterComponent(Provider0.class.getName());
+      container.unregisterComponent(Provider90.class.getName());
    }
 }
