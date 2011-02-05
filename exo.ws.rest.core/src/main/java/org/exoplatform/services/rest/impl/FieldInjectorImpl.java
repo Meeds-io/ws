@@ -18,8 +18,6 @@
  */
 package org.exoplatform.services.rest.impl;
 
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.ApplicationContext;
 import org.exoplatform.services.rest.FieldInjector;
 import org.exoplatform.services.rest.impl.method.ParameterHelper;
@@ -50,7 +48,7 @@ import javax.ws.rs.ext.Provider;
 public class FieldInjectorImpl implements FieldInjector
 {
    /** Logger. */
-   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.FieldInjectorImpl");
+   //private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.FieldInjectorImpl");
 
    /** All annotations including JAX-RS annotation. */
    private final Annotation[] annotations;
@@ -120,11 +118,11 @@ public class FieldInjectorImpl implements FieldInjector
          {
             defaultValue = ((DefaultValue)a).value();
          }
-         else
+         /*else
          {
             LOG.warn("Field " + jfield.toString() + " contains unknown or not allowed JAX-RS annotation "
                + a.toString() + ". It will be ignored.");
-         }
+         }*/
       }
 
       this.defaultValue = defaultValue;

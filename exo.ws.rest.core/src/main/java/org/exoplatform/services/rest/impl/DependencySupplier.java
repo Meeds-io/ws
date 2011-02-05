@@ -26,6 +26,9 @@ import org.exoplatform.services.rest.FieldInjector;
 import org.exoplatform.services.rest.Parameter;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
@@ -69,7 +72,8 @@ public class DependencySupplier
          final ValueParam injectAnnotationParameter = params.getValueParam("inject.annotation.class");
          try
          {
-            injectAnnotationClass = AccessController.doPrivileged(new PrivilegedExceptionAction<Class>() {
+            injectAnnotationClass = AccessController.doPrivileged(new PrivilegedExceptionAction<Class>()
+            {
                public Class run() throws ClassNotFoundException
                {
                   return Thread.currentThread().getContextClassLoader().loadClass(injectAnnotationParameter.getValue());
@@ -107,21 +111,66 @@ public class DependencySupplier
       return getComponent(parameter.getParameterClass());
    }
 
-   @SuppressWarnings({"rawtypes", "unchecked"})
+   @SuppressWarnings({"rawtypes"})
    protected Object getComponent(Class<?> parameterClass)
    {
       ExoContainer container = ExoContainerContext.getCurrentContainer();
-      List injectionProviders = container.getComponentInstancesOfType(InjectionProvider.class);
+      List injectionProviders = container.getComponentInstancesOfType(javax.inject.Provider.class);
       if (injectionProviders != null && injectionProviders.size() > 0)
       {
          for (Iterator i = injectionProviders.iterator(); i.hasNext();)
          {
-            InjectionProvider provider = (InjectionProvider)i.next();
-            if (provider.isSupported(parameterClass))
-               return javax.inject.Provider.class.isAssignableFrom(parameterClass) ? provider : provider.get();
+            javax.inject.Provider provider = (javax.inject.Provider)i.next();
+            Type injectedType = resolveInjectedType(provider.getClass());
+            if (injectedType != null)
+            {
+               if (injectedType instanceof Class<?>)
+               {
+                  if (parameterClass.isAssignableFrom((Class<?>)injectedType))
+                     return javax.inject.Provider.class.isAssignableFrom(parameterClass) ? provider : provider.get();
+               }
+               else if (injectedType instanceof ParameterizedType)
+               {
+                  ParameterizedType pType = (ParameterizedType)injectedType;
+                  Type rawType = pType.getRawType();
+                  if (rawType instanceof Class<?>)
+                  {
+                     if (parameterClass.isAssignableFrom((Class<?>)rawType))
+                        return javax.inject.Provider.class.isAssignableFrom(parameterClass) ? provider : provider.get();
+                     // TODO check generic type 
+                  }
+               }
+            }
          }
       }
-      // Directly look up component in container by class,
+      // Directly look up component in container by class.
       return container.getComponentInstanceOfType(parameterClass);
+   }
+
+   private Type resolveInjectedType(final Class<?> providerClass)
+   {
+      Method get = null;
+      Type injectedType = null;
+      try
+      {
+         get = AccessController.doPrivileged(new PrivilegedExceptionAction<Method>()
+         {
+            public Method run() throws NoSuchMethodException
+            {
+               return providerClass.getMethod("get");
+            }
+         });
+      }
+      catch (PrivilegedActionException pe)
+      {
+         NoSuchMethodException c = (NoSuchMethodException)pe.getCause();
+         // Should never happen since class implements javax.inject.Provider.
+         throw new RuntimeException(c.getMessage());
+      }
+
+      if (get != null)
+         injectedType = get.getGenericReturnType();
+
+      return injectedType;
    }
 }
