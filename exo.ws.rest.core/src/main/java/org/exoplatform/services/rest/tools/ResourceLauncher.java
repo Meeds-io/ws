@@ -19,6 +19,8 @@
 
 package org.exoplatform.services.rest.tools;
 
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.services.rest.ContainerResponseWriter;
 import org.exoplatform.services.rest.RequestHandler;
 import org.exoplatform.services.rest.impl.ContainerRequest;
@@ -36,7 +38,7 @@ import javax.ws.rs.core.SecurityContext;
 
 /**
  * Request launcher. It can be useful for testing services.
- *
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
@@ -84,7 +86,15 @@ public class ResourceLauncher
          new SecurityContextRequest(method, new URI(requestURI), new URI(baseURI), in, new InputHeadersMap(headers),
             sctx);
       ContainerResponse response = new ContainerResponse(writer);
-      requestHandler.handleRequest(request, response);
+      try
+      {
+         RequestLifeCycle.begin(ExoContainerContext.getCurrentContainer());
+         requestHandler.handleRequest(request, response);
+      }
+      finally
+      {
+         RequestLifeCycle.end();
+      }
       return response;
    }
 
