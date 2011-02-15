@@ -35,6 +35,7 @@ import org.exoplatform.services.rest.resource.AbstractResourceDescriptor;
 import org.picocontainer.Startable;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
@@ -48,7 +49,7 @@ import javax.ws.rs.ext.Provider;
  * Purpose of this class is to get all subclasses of
  * {@link javax.ws.rs.core.Application} from eXo container and to process set of
  * object of classes provided by it as JAX-RS components.
- *
+ * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
@@ -91,71 +92,79 @@ public class ApplicationRegistry implements Startable
    {
       String applicationId = app.getClass().getName();
       ApplicationProviders appProviders = new ApplicationProviders(applicationId);
-      for (Object obj : app.getSingletons())
+      Set<Object> singletons = app.getSingletons();
+      if (singletons != null && singletons.size() > 0)
       {
-         Class clazz = obj.getClass();
-         if (clazz.getAnnotation(Provider.class) != null)
+         for (Object obj : singletons)
          {
-            if (obj instanceof ContextResolver)
-               appProviders.addContextResolver((ContextResolver)obj);
-            if (obj instanceof ExceptionMapper)
-               appProviders.addExceptionMapper((ExceptionMapper)obj);
-            if (obj instanceof MessageBodyReader)
-               appProviders.addMessageBodyReader((MessageBodyReader)obj);
-            if (obj instanceof MessageBodyWriter)
-               appProviders.addMessageBodyWriter((MessageBodyWriter)obj);
-         }
-         else if (clazz.getAnnotation(Filter.class) != null)
-         {
-            if (obj instanceof MethodInvokerFilter)
-               appProviders.addMethodInvokerFilter((MethodInvokerFilter)obj);
-            if (obj instanceof RequestFilter)
-               appProviders.addRequestFilter((RequestFilter)obj);
-            if (obj instanceof ResponseFilter)
-               appProviders.addResponseFilter((ResponseFilter)obj);
-         }
-         else if (clazz.getAnnotation(Path.class) != null)
-         {
-            AbstractResourceDescriptor descriptor = new ApplicationResource(applicationId, obj);
-            descriptor.accept(rdv);
-            resources.addResource(new SingletonObjectFactory<AbstractResourceDescriptor>(descriptor, obj));
-         }
-         else
-         {
-            LOG.warn("Unknown class type: " + clazz.getName() + " found in " + applicationId);
+            Class clazz = obj.getClass();
+            if (clazz.getAnnotation(Provider.class) != null)
+            {
+               if (obj instanceof ContextResolver)
+                  appProviders.addContextResolver((ContextResolver)obj);
+               if (obj instanceof ExceptionMapper)
+                  appProviders.addExceptionMapper((ExceptionMapper)obj);
+               if (obj instanceof MessageBodyReader)
+                  appProviders.addMessageBodyReader((MessageBodyReader)obj);
+               if (obj instanceof MessageBodyWriter)
+                  appProviders.addMessageBodyWriter((MessageBodyWriter)obj);
+            }
+            else if (clazz.getAnnotation(Filter.class) != null)
+            {
+               if (obj instanceof MethodInvokerFilter)
+                  appProviders.addMethodInvokerFilter((MethodInvokerFilter)obj);
+               if (obj instanceof RequestFilter)
+                  appProviders.addRequestFilter((RequestFilter)obj);
+               if (obj instanceof ResponseFilter)
+                  appProviders.addResponseFilter((ResponseFilter)obj);
+            }
+            else if (clazz.getAnnotation(Path.class) != null)
+            {
+               AbstractResourceDescriptor descriptor = new ApplicationResource(applicationId, obj);
+               descriptor.accept(rdv);
+               resources.addResource(new SingletonObjectFactory<AbstractResourceDescriptor>(descriptor, obj));
+            }
+            else
+            {
+               LOG.warn("Unknown class type: " + clazz.getName() + " found in " + applicationId);
+            }
          }
       }
-      for (Class clazz : app.getClasses())
+      Set<Class<?>> classes = app.getClasses();
+      if (classes != null && classes.size() > 0)
       {
-         if (clazz.getAnnotation(Provider.class) != null)
+         for (Class clazz : classes)
          {
-            if (ContextResolver.class.isAssignableFrom(clazz))
-               appProviders.addContextResolver(clazz);
-            if (ExceptionMapper.class.isAssignableFrom(clazz))
-               appProviders.addExceptionMapper(clazz);
-            if (MessageBodyReader.class.isAssignableFrom(clazz))
-               appProviders.addMessageBodyReader(clazz);
-            if (MessageBodyWriter.class.isAssignableFrom(clazz))
-               appProviders.addMessageBodyWriter(clazz);
-         }
-         else if (clazz.getAnnotation(Filter.class) != null)
-         {
-            if (MethodInvokerFilter.class.isAssignableFrom(clazz))
-               appProviders.addMethodInvokerFilter(clazz);
-            if (RequestFilter.class.isAssignableFrom(clazz))
-               appProviders.addRequestFilter(clazz);
-            if (ResponseFilter.class.isAssignableFrom(clazz))
-               appProviders.addResponseFilter(clazz);
-         }
-         else if (clazz.getAnnotation(Path.class) != null)
-         {
-            AbstractResourceDescriptor descriptor = new ApplicationResource(applicationId, clazz);
-            descriptor.accept(rdv);
-            resources.addResource(new PerRequestObjectFactory<AbstractResourceDescriptor>(descriptor));
-         }
-         else
-         {
-            LOG.warn("Unknown class type: " + clazz.getName() + " found in: " + applicationId);
+            if (clazz.getAnnotation(Provider.class) != null)
+            {
+               if (ContextResolver.class.isAssignableFrom(clazz))
+                  appProviders.addContextResolver(clazz);
+               if (ExceptionMapper.class.isAssignableFrom(clazz))
+                  appProviders.addExceptionMapper(clazz);
+               if (MessageBodyReader.class.isAssignableFrom(clazz))
+                  appProviders.addMessageBodyReader(clazz);
+               if (MessageBodyWriter.class.isAssignableFrom(clazz))
+                  appProviders.addMessageBodyWriter(clazz);
+            }
+            else if (clazz.getAnnotation(Filter.class) != null)
+            {
+               if (MethodInvokerFilter.class.isAssignableFrom(clazz))
+                  appProviders.addMethodInvokerFilter(clazz);
+               if (RequestFilter.class.isAssignableFrom(clazz))
+                  appProviders.addRequestFilter(clazz);
+               if (ResponseFilter.class.isAssignableFrom(clazz))
+                  appProviders.addResponseFilter(clazz);
+            }
+            else if (clazz.getAnnotation(Path.class) != null)
+            {
+               AbstractResourceDescriptor descriptor = new ApplicationResource(applicationId, clazz);
+               descriptor.accept(rdv);
+               resources.addResource(new PerRequestObjectFactory<AbstractResourceDescriptor>(descriptor));
+            }
+            else
+            {
+               LOG.warn("Unknown class type: " + clazz.getName() + " found in: " + applicationId);
+            }
          }
       }
       this.providers.addProviders(appProviders);
