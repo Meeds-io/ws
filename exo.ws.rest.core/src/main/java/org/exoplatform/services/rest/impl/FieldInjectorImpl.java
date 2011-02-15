@@ -26,10 +26,13 @@ import org.exoplatform.services.rest.impl.method.ParameterResolverFactory;
 import org.exoplatform.services.rest.resource.ResourceDescriptorVisitor;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.List;
 
 import javax.ws.rs.DefaultValue;
@@ -69,6 +72,8 @@ public class FieldInjectorImpl implements FieldInjector
    /** See {@link java.lang.reflect.Field} . */
    private final java.lang.reflect.Field jfield;
 
+   private final Method setter;
+
    /**
     * @param resourceClass class that contains field <tt>jfield</tt>
     * @param jfield java.lang.reflect.Field
@@ -77,6 +82,7 @@ public class FieldInjectorImpl implements FieldInjector
    {
       this.jfield = jfield;
       this.annotations = jfield.getDeclaredAnnotations();
+      this.setter = getSetter(resourceClass, jfield);
 
       Annotation annotation = null;
       String defaultValue = null;
@@ -128,6 +134,27 @@ public class FieldInjectorImpl implements FieldInjector
       this.defaultValue = defaultValue;
       this.annotation = annotation;
       this.encoded = encoded || resourceClass.getAnnotation(Encoded.class) != null;
+   }
+
+   private static Method getSetter(final Class<?> clazz, final java.lang.reflect.Field jfield)
+   {
+      Method setter = null;
+      try
+      {
+         setter = AccessController.doPrivileged(new PrivilegedExceptionAction<Method>() {
+            public Method run() throws NoSuchMethodException
+            {
+               String name = jfield.getName();
+               String setterName = "set" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
+               return clazz.getMethod(setterName, jfield.getType());
+            }
+         });
+      }
+      catch (PrivilegedActionException e)
+      {
+         // Ignore NoSuchMethodException.
+      }
+      return setter;
    }
 
    /**
@@ -196,17 +223,24 @@ public class FieldInjectorImpl implements FieldInjector
          ParameterResolver<?> pr = ParameterResolverFactory.createParameterResolver(annotation);
          try
          {
-            if (!Modifier.isPublic(jfield.getModifiers()))
+            if (setter != null)
             {
-               AccessController.doPrivileged(new PrivilegedAction<Void>() {
-                  public Void run()
-                  {
-                     jfield.setAccessible(true);
-                     return null;
-                  }
-               });
+               setter.invoke(resource, pr.resolve(this, context));
             }
-            jfield.set(resource, pr.resolve(this, context));
+            else
+            {
+               if (!Modifier.isPublic(jfield.getModifiers()))
+               {
+                  AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                     public Void run()
+                     {
+                        jfield.setAccessible(true);
+                        return null;
+                     }
+                  });
+               }
+               jfield.set(resource, pr.resolve(this, context));
+            }
          }
          catch (Throwable e)
          {
@@ -223,17 +257,24 @@ public class FieldInjectorImpl implements FieldInjector
          {
             try
             {
-               if (!Modifier.isPublic(jfield.getModifiers()))
+               if (setter != null)
                {
-                  AccessController.doPrivileged(new PrivilegedAction<Void>() {
-                     public Void run()
-                     {
-                        jfield.setAccessible(true);
-                        return null;
-                     }
-                  });
+                  setter.invoke(resource, tmp);
                }
-               jfield.set(resource, tmp);
+               else
+               {
+                  if (!Modifier.isPublic(jfield.getModifiers()))
+                  {
+                     AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                        public Void run()
+                        {
+                           jfield.setAccessible(true);
+                           return null;
+                        }
+                     });
+                  }
+                  jfield.set(resource, tmp);
+               }
             }
             catch (Throwable e)
             {

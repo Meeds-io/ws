@@ -80,6 +80,28 @@ public class InjectAnnotationTest extends BaseTest
       }
    }
 
+   @Path("a")
+   public static class Resource3
+   {
+      @Inject
+      private GenericIngectable<String> injected;
+      private boolean injectedThroughSetter = false;
+
+      @GET
+      public String m()
+      {
+         assertNotNull(injected);
+         assertTrue(injectedThroughSetter);
+         return ((InjectableComponent)injected).message;
+      }
+
+      public void setInjected(GenericIngectable<String> injected)
+      {
+         this.injectedThroughSetter = true;
+         this.injected = injected;
+      }
+   }
+
    public void testInjectFromContainer() throws Exception
    {
       container.registerComponentInstance(InjectableComponent.class.getName(), new InjectableComponent());
@@ -111,5 +133,16 @@ public class InjectAnnotationTest extends BaseTest
       assertEquals("injected from provider", response.getEntity());
       unregistry(Resource2.class);
       container.unregisterComponent(Provider90.class.getName());
+   }
+
+   public void testInjectWithSetter() throws Exception
+   {
+      container.registerComponentInstance(InjectableComponent.class.getName(), new InjectableComponent());
+      registry(Resource3.class);
+      ContainerResponse response = launcher.service("GET", "/a", "", null, null, null);
+      assertEquals(200, response.getStatus());
+      assertEquals("injected from container", response.getEntity());
+      unregistry(Resource3.class);
+      container.unregisterComponent(InjectableComponent.class.getName());
    }
 }
