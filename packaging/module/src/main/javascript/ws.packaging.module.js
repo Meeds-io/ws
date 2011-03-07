@@ -36,6 +36,7 @@ function getModule(params) {
     addDependency(module.frameworks.json).
     addDependency(new Project("org.exoplatform.ws", "exo.ws.rest.ext", "jar", module.version)).      
     addDependency(new Project("javax.annotation", "jsr250-api", "jar", "1.0")).
+    addDependency(new Project("javax.inject", "javax.inject", "jar", "1")).
     addDependency(new Project("javax.ws.rs", "jsr311-api", "jar", "1.0")).
     addDependency(new Project("commons-chain", "commons-chain", "jar", "1.2")).
     addDependency(new Project("javax.xml.bind", "jaxb-api", "jar", "2.1"));
