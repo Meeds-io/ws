@@ -116,6 +116,6 @@ public class StandaloneContainerInitializedListener implements ServletContextLis
     */
    public void contextDestroyed(ServletContextEvent event)
    {
-      // container.stop();
+      container.stop();
    }
 }
