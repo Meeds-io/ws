@@ -100,7 +100,7 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
             // if can't read from stream (e.g. steam is empty)
             if (LOG.isDebugEnabled())
             {
-               cause.printStackTrace();
+               LOG.debug(cause.getLocalizedMessage(), cause);
             }
             return null;
          }

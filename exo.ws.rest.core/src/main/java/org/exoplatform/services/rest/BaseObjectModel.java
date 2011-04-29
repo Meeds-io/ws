@@ -100,8 +100,9 @@ public abstract class BaseObjectModel implements ObjectModel
                {
                   if (Modifier.isPublic(modif)
                      || Modifier.isProtected(modif)
-                     || (!Modifier.isPrivate(modif) && ((resourcePackageName == null && scPackageName == null) || resourcePackageName
-                        .equals(scPackageName))))
+                     || (!Modifier.isPrivate(modif) 
+                              && ((resourcePackageName == null && scPackageName == null) 
+                              || resourcePackageName.equals(scPackageName))))
                   {
                      FieldInjector inj = new FieldInjectorImpl(clazz, jfield);
                      // Skip not annotated field. They will be not injected from container.

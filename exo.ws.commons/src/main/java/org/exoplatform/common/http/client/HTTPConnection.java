@@ -1,5 +1,5 @@
 /*
- * @(#)HTTPConnection.java				0.3-3 06/05/2001
+ * @(#)HTTPConnection.java             0.3-3 06/05/2001
  *
  *  This file is part of the HTTPClient package
  *  Copyright (C) 1996-2001 Ronald Tschal�r
@@ -1460,7 +1460,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       }
       catch (XMLStreamException e)
       {
-         e.printStackTrace();
+         log.error(e.getLocalizedMessage(), e);
          throw new IOException("Can't write XML data to output stream.");
       }
       return response;
@@ -1582,7 +1582,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       }
       catch (XMLStreamException e)
       {
-         e.printStackTrace();
+         log.error(e.getLocalizedMessage(), e);
          throw new IOException("Can't write XML data to output stream.");
       }
       return response;
@@ -1639,7 +1639,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       }
       catch (XMLStreamException e)
       {
-         e.printStackTrace();
+         log.error(e.getLocalizedMessage(), e);
          throw new IOException("Can't write XML request.");
       }
       finally
@@ -3786,8 +3786,10 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       try
       {
          if (ServerProtocolVersion >= HTTP_1_1
-            || ((((Proxy_Host == null || Protocol == HTTPS) && (con = resp.getHeader("Connection")) != null) || ((Proxy_Host != null && Protocol != HTTPS) && (con =
-               resp.getHeader("Proxy-Connection")) != null)) && Util.hasToken(con, "keep-alive")))
+            || ((((Proxy_Host == null || Protocol == HTTPS) 
+                     && (con = resp.getHeader("Connection")) != null) || ((Proxy_Host != null && Protocol != HTTPS) 
+                     && (con = resp.getHeader("Proxy-Connection")) != null)) 
+                     && Util.hasToken(con, "keep-alive")))
          {
             doesKeepAlive = true;
             keepAliveUnknown = false;

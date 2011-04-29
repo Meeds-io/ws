@@ -1,5 +1,5 @@
 /*
- * @(#)DefaultAuthHandler.java				0.3-3 06/05/2001
+ * @(#)DefaultAuthHandler.java             0.3-3 06/05/2001
  *
  *  This file is part of the HTTPClient package
  *  Copyright (C) 1996-2001 Ronald Tschal�r
@@ -79,6 +79,11 @@ import java.util.Vector;
  */
 public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
 {
+   /**
+    * The logger
+    */
+   private static final Log LOG = ExoLogger.getLogger("org.exoplatform.common.http.client.DefaultAuthHandler");
+
    private static final byte[] NUL = new byte[0];
 
    private static final int DI_A1 = 0;

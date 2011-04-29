@@ -356,9 +356,8 @@ public class JsonWriterImpl implements JsonWriter
          JsonToken token = stack.pop();
          if (token != JsonToken.object)
          {
-            System.out.println(token);
             // wrong JSON structure.
-            throw new JsonException("Sysntax error. Unexpected element '}'.");
+            throw new JsonException("Sysntax error. Unexpected element '}' : " + token);
          }
          writer.write('}');
          commaFirst = true;

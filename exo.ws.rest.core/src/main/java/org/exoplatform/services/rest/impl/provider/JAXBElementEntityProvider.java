@@ -105,7 +105,7 @@ public class JAXBElementEntityProvider implements EntityProvider<JAXBElement<?>>
             // if can't read from stream (e.g. steam is empty)
             if (LOG.isDebugEnabled())
             {
-               cause.printStackTrace();
+               LOG.debug(cause.getLocalizedMessage(), cause);
             }
             return null;
          }

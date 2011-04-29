@@ -161,7 +161,7 @@ public class DefaultMethodInvoker implements MethodInvoker
                   {
                      if (LOG.isDebugEnabled())
                      {
-                        e.printStackTrace();
+                        LOG.debug(e.getLocalizedMessage(), e);
                      }
                      if (e instanceof WebApplicationException)
                      {
@@ -206,7 +206,7 @@ public class DefaultMethodInvoker implements MethodInvoker
          {
             if (LOG.isDebugEnabled())
             {
-               cause.printStackTrace();
+               LOG.debug(cause.getLocalizedMessage(), cause);
             }
             // get cause of exception that method produces
             Throwable throwable = cause.getCause();

@@ -188,6 +188,11 @@ public class ResourceBinder implements Startable
     * @deprecated Do not need container here any more.
     */
    protected final ExoContainer container;
+   
+   /**
+    * The name of the container
+    */
+   protected final String containerName;
 
    public ResourceBinder(ExoContainerContext containerContext) throws Exception
    {
@@ -217,6 +222,7 @@ public class ResourceBinder implements Startable
 
       rd = RuntimeDelegate.getInstance();
       container = containerContext.getContainer();
+      this.containerName = containerContext.getName();
    }
 
    /**
@@ -641,7 +647,7 @@ public class ResourceBinder implements Startable
     */
    protected void startResourceCleaner()
    {
-      Thread thread = new Thread(new ResourceCleaner(60));
+      Thread thread = new Thread(new ResourceCleaner(60), "Resource Cleaner " + containerName);
       thread.setDaemon(true);
       thread.start();
    }

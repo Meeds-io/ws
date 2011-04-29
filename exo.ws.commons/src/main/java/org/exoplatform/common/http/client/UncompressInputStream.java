@@ -1,5 +1,5 @@
 /*
- * @(#)UncompressInputStream.java			0.3-3 06/05/2001
+ * @(#)UncompressInputStream.java             0.3-3 06/05/2001
  *
  *  This file is part of the HTTPClient package
  *  Copyright (C) 1996-2001 Ronald Tschal�r
@@ -32,6 +32,9 @@
 
 package org.exoplatform.common.http.client;
 
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+
 import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.FilterInputStream;
@@ -48,6 +51,11 @@ import java.io.InputStream;
  */
 class UncompressInputStream extends FilterInputStream
 {
+   /**
+    * The logger
+    */
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.UncompressInputStream");
+
    /**
     * @param is the input stream to decompress
     * @exception IOException if the header is malformed
@@ -175,8 +183,8 @@ class UncompressInputStream extends FilterInputStream
                l_n_bits++;
                l_maxcode = (l_n_bits == maxbits) ? l_maxmaxcode : (1 << l_n_bits) - 1;
 
-               if (debug)
-                  System.err.println("Code-width expanded to " + l_n_bits);
+               if (LOG.isDebugEnabled())
+                  LOG.debug("Code-width expanded to " + l_n_bits);
 
                l_bitmask = (1 << l_n_bits) - 1;
                l_bit_pos = resetbuf(l_bit_pos);
@@ -216,8 +224,8 @@ class UncompressInputStream extends FilterInputStream
                l_maxcode = (1 << l_n_bits) - 1;
                l_bitmask = l_maxcode;
 
-               if (debug)
-                  System.err.println("Code tables reset");
+               if (LOG.isDebugEnabled())
+                  LOG.debug("Code tables reset");
 
                l_bit_pos = resetbuf(l_bit_pos);
                continue main_loop;
@@ -392,10 +400,10 @@ class UncompressInputStream extends FilterInputStream
       if ((header & HDR_FREE) > 0)
          throw new IOException("Header bit 6 set");
 
-      if (debug)
+      if (LOG.isDebugEnabled())
       {
-         System.err.println("block mode: " + block_mode);
-         System.err.println("max bits:   " + maxbits);
+         LOG.debug("block mode: " + block_mode);
+         LOG.debug("max bits:   " + maxbits);
       }
 
       // initialize stuff
@@ -423,7 +431,7 @@ class UncompressInputStream extends FilterInputStream
    {
       if (args.length != 1)
       {
-         System.err.println("Usage: UncompressInputStream <file>");
+         LOG.error("Usage: UncompressInputStream <file>");
          System.exit(1);
       }
 
@@ -443,7 +451,7 @@ class UncompressInputStream extends FilterInputStream
       }
 
       long end = System.currentTimeMillis();
-      System.err.println("Decompressed " + tot + " bytes");
-      System.err.println("Time: " + (end - beg) / 1000. + " seconds");
+      LOG.error("Decompressed " + tot + " bytes");
+      LOG.error("Time: " + (end - beg) / 1000. + " seconds");
    }
 }

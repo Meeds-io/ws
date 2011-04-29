@@ -1,5 +1,5 @@
 /*
- * @(#)URI.java						0.3-3 06/05/2001
+ * @(#)URI.java              0.3-3 06/05/2001
  *
  *  This file is part of the HTTPClient package
  *  Copyright (C) 1996-2001 Ronald Tschal�r
@@ -80,8 +80,8 @@ public class URI
     * <PRE>
     * base   = http://a/b/c/d;p?q
     * rel    = http:g
-    * result = http:g		(correct)
-    * result = http://a/b/c/g	(backwards compatible)
+    * result = http:g      (correct)
+    * result = http://a/b/c/g (backwards compatible)
     * </PRE>
     * 
     * See rfc-2396, section 5.2, step 3, second paragraph.
@@ -557,8 +557,8 @@ public class URI
    public static String canonicalizePath(String path)
    {
       int idx, len = path.length();
-      if (!((idx = path.indexOf("/.")) != -1 && (idx == len - 2 || path.charAt(idx + 2) == '/' || (path.charAt(idx + 2) == '.' && (idx == len - 3 || path
-         .charAt(idx + 3) == '/')))))
+      if (!((idx = path.indexOf("/.")) != -1 && (idx == len - 2 || path.charAt(idx + 2) == '/' 
+         || (path.charAt(idx + 2) == '.' && (idx == len - 3 || path.charAt(idx + 3) == '/')))))
          return path;
 
       char[] p = new char[path.length()]; // clean path

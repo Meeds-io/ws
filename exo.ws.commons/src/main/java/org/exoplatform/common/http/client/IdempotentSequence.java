@@ -1,5 +1,5 @@
 /*
- * @(#)IdempotentSequence.java				0.3-3 06/05/2001
+ * @(#)IdempotentSequence.java             0.3-3 06/05/2001
  *
  *  This file is part of the HTTPClient package
  *  Copyright (C) 1996-2001 Ronald Tschal�r
@@ -31,6 +31,9 @@
  */
 
 package org.exoplatform.common.http.client;
+
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -66,6 +69,11 @@ class IdempotentSequence
 
    // DAV methods
             PROPFIND = 8, PROPPATCH = 9, MKCOL = 10, COPY = 11, MOVE = 12, LOCK = 13, UNLOCK = 14;
+
+   /**
+    * The logger
+    */
+   private static final Log LOG = ExoLogger.getLogger("org.exoplatform.common.http.client.IdempotentSequence");
 
    /** these are the history of previous requests */
    private int[] m_history;
@@ -356,24 +364,24 @@ class IdempotentSequence
       seq.add(new Request(null, "PUT", "/b7", null, null, null, false));
 
       if (!seq.isIdempotent(new Request(null, null, "/b1", null, null, null, false)))
-         System.err.println("Sequence b1 failed");
+         LOG.error("Sequence b1 failed");
       if (!seq.isIdempotent(new Request(null, null, "/b2", null, null, null, false)))
-         System.err.println("Sequence b2 failed");
+         LOG.error("Sequence b2 failed");
       if (!seq.isIdempotent(new Request(null, null, "/b3", null, null, null, false)))
-         System.err.println("Sequence b3 failed");
+         LOG.error("Sequence b3 failed");
       if (seq.isIdempotent(new Request(null, null, "/b4", null, null, null, false)))
-         System.err.println("Sequence b4 failed");
+         LOG.error("Sequence b4 failed");
       if (!seq.isIdempotent(new Request(null, null, "/b5", null, null, null, false)))
-         System.err.println("Sequence b5 failed");
+         LOG.error("Sequence b5 failed");
       if (seq.isIdempotent(new Request(null, null, "/b6", null, null, null, false)))
-         System.err.println("Sequence b6 failed");
+         LOG.error("Sequence b6 failed");
       if (seq.isIdempotent(new Request(null, null, "/b7", null, null, null, false)))
-         System.err.println("Sequence b7 failed");
+         LOG.error("Sequence b7 failed");
       if (seq.isIdempotent(new Request(null, null, "/b8", null, null, null, false)))
-         System.err.println("Sequence b8 failed");
+         LOG.error("Sequence b8 failed");
       if (seq.isIdempotent(new Request(null, null, "/b9", null, null, null, false)))
-         System.err.println("Sequence b9 failed");
+         LOG.error("Sequence b9 failed");
 
-      System.out.println("Tests finished");
+      LOG.error("Tests finished");
    }
 }
