@@ -541,7 +541,7 @@ public class GroovyJaxrsPublisher
       }
       catch (RuntimeException e)
       {
-         // FIXME : Need have proper exception for invalid resources in 'exo.ws.rest.core'. 
+         // TODO : Need have proper exception for invalid resources in 'exo.ws.rest.core'. 
          throw new MalformedScriptException(e.getMessage());
       }*/
    }

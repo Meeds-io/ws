@@ -93,7 +93,7 @@ public class BaseWadlGeneratorImpl implements WadlGenerator
    public org.exoplatform.services.rest.wadl.research.Method createMethod(ResourceMethodDescriptor rmd)
    {
       String httpMethod = rmd.getHttpMethod();
-      // FIXME Ignore HEAD methods currently.
+      // TODO Ignore HEAD methods currently.
       // Implementation of wadl2java for generation client code does not support
       // HEAD method. See https://wadl.dev.java.net/ . 
       // If WADL contains HEAD method description then client code get part of

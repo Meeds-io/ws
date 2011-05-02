@@ -1543,20 +1543,19 @@ class SimpleAuthPrompt implements AuthorizationPrompter
 
       if (challenge.getScheme().equalsIgnoreCase("SOCKS5"))
       {
-         System.out.println("Enter username and password for SOCKS " + "server on host " + challenge.getHost());
-         System.out.println("Authentication Method: username/password");
+         System.out.println("Enter username and password for SOCKS " + "server on host " + challenge.getHost()); //NOSONAR
+         System.out.println("Authentication Method: username/password"); //NOSONAR
       }
       else
       {
-         System.out.println("Enter username and password for realm `" + challenge.getRealm() + "' on host "
-            + challenge.getHost() + ":" + challenge.getPort());
-         System.out.println("Authentication Scheme: " + challenge.getScheme());
+         System.out.println("Enter username and password for realm `" + challenge.getRealm() + "' on host " + challenge.getHost() + ":" + challenge.getPort()); //NOSONAR
+         System.out.println("Authentication Scheme: " + challenge.getScheme()); //NOSONAR
       }
 
       // get username
 
       BufferedReader inp = new BufferedReader(new InputStreamReader(System.in));
-      System.out.print("Username: ");
+      System.out.print("Username: "); //NOSONAR
       System.out.flush();
       try
       {
@@ -1572,7 +1571,7 @@ class SimpleAuthPrompt implements AuthorizationPrompter
       // get password
 
       echo(false);
-      System.out.print("Password: ");
+      System.out.print("Password: "); //NOSONAR
       System.out.flush();
       try
       {
@@ -1582,7 +1581,7 @@ class SimpleAuthPrompt implements AuthorizationPrompter
       {
          return null;
       }
-      System.out.println();
+      System.out.println(); //NOSONAR
       echo(true);
 
       if (pass == null)

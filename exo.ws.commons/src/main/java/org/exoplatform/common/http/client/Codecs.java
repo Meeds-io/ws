@@ -45,7 +45,6 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLConnection;
 import java.util.BitSet;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 /**
@@ -350,67 +349,6 @@ public class Codecs
    }
 
    /**
-    * TBD! How to return file name and mode?
-    * @param rdr the reader from which to read and decode the data
-    * @exception ParseException if either the "begin" or "end" line are not
-    *              found, or the "begin" is incorrect
-    * @exception IOException if the <var>rdr</var> throws an IOException
-    */
-   private final static byte[] uudecode(BufferedReader rdr) throws ParseException, IOException
-   {
-      String line, file_name;
-      int file_mode;
-
-      // search for beginning
-
-      while ((line = rdr.readLine()) != null && !line.startsWith("begin "));
-      if (line == null)
-         throw new ParseException("'begin' line not found");
-
-      // parse 'begin' line
-
-      StringTokenizer tok = new StringTokenizer(line);
-      tok.nextToken(); // throw away 'begin'
-      try
-      // extract mode
-      {
-         file_mode = Integer.parseInt(tok.nextToken(), 8);
-      }
-      catch (Exception e)
-      {
-         throw new ParseException("Invalid mode on line: " + line);
-      }
-      try
-      // extract name
-      {
-         file_name = tok.nextToken();
-      }
-      catch (java.util.NoSuchElementException e)
-      {
-         throw new ParseException("No file name found on line: " + line);
-      }
-
-      // read and parse body
-
-      byte[] body = new byte[1000];
-      int off = 0;
-
-      while ((line = rdr.readLine()) != null && !line.equals("end"))
-      {
-         byte[] tmp = uudecode(line.toCharArray());
-         if (off + tmp.length > body.length)
-            body = Util.resizeArray(body, off + 1000);
-         System.arraycopy(tmp, 0, body, off, tmp.length);
-         off += tmp.length;
-      }
-
-      if (line == null)
-         throw new ParseException("'end' line not found");
-
-      return Util.resizeArray(body, off);
-   }
-
-   /**
     * This method decodes the given uuencoded char[].
     * <P>
     * <em>Note:</em> just the actual data is decoded; any 'begin' and 'end' lines
@@ -482,7 +420,7 @@ public class Codecs
          new char[(int)(str.length() * 1.5)], src[] =
          str.toCharArray();
       char ch;
-      int cnt = 0, didx = 1, last = 0, slen = str.length();
+      int cnt = 0, didx = 1, slen = str.length();
 
       for (int sidx = 0; sidx < slen; sidx++)
       {

@@ -147,7 +147,7 @@ class LinkedList
    {
       // LinkedList Test Suite
 
-      System.err.println("\n*** Linked List Tests ...");
+      System.err.println("\n*** Linked List Tests ..."); //NOSONAR
 
       LinkedList list = new LinkedList();
       list.addToHead("One");
@@ -207,7 +207,7 @@ class LinkedList
       if (list.getFirst() != null)
          throw new Exception("Empty list wrong");
 
-      System.err.println("\n*** Tests finished successfuly");
+      System.err.println("\n*** Tests finished successfuly"); //NOSONAR
    }
 }
 

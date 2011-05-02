@@ -1424,8 +1424,8 @@ public class URI
     */
    public static void main(String args[]) throws Exception
    {
-      System.err.println();
-      System.err.println("*** URI Tests ...");
+      System.err.println(); //NOSONAR
+      System.err.println("*** URI Tests ..."); //NOSONAR
 
       /*
        * Relative URI test set, taken from Section C of rfc-2396 and Roy's test1.
@@ -1781,7 +1781,7 @@ public class URI
       testUnescape("%71there", "qthere");
       testUnescape("%B1there", "\u00B1there");
 
-      System.err.println("*** Tests finished successfuly");
+      System.err.println("*** Tests finished successfuly"); //NOSONAR
    }
 
    private static final String nl = PrivilegedSystemHelper.getProperty("line.separator");
