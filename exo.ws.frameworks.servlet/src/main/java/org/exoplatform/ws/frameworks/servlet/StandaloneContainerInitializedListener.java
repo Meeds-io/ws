@@ -19,7 +19,6 @@
 package org.exoplatform.ws.frameworks.servlet;
 
 import org.exoplatform.container.StandaloneContainer;
-import org.exoplatform.container.configuration.ConfigurationManagerImpl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.naming.InitialContextInitializer;
@@ -128,6 +127,6 @@ public class StandaloneContainerInitializedListener implements ServletContextLis
     */
    public void contextDestroyed(ServletContextEvent event)
    {
-      // container.stop();
+       container.stop();
    }
 }
