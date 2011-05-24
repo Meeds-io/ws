@@ -19,7 +19,6 @@
 package org.exoplatform.ws.frameworks.servlet;
 
 import org.exoplatform.container.StandaloneContainer;
-import org.exoplatform.container.configuration.ConfigurationManagerImpl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.naming.InitialContextInitializer;
@@ -80,13 +79,25 @@ public class StandaloneContainerInitializedListener implements ServletContextLis
          LOG.error("Error of configurationURL read", e);
       }
 
+      //  If no configuration in web.xml check system property.
+      if (configurationURL == null)
+         configurationURL = System.getProperty(CONF_URL_PARAMETER);
+
       try
       {
          StandaloneContainer.addConfigurationURL(configurationURL);
       }
       catch (MalformedURLException e)
       {
-         LOG.error("Error of addConfigurationURL", e);
+         // Try to use path, we do not need have full path (file:/path/conf) to configuration. Any relative path is OK.
+         try
+         {
+            StandaloneContainer.addConfigurationPath(configurationURL);
+         }
+         catch (MalformedURLException e2)
+         {
+            LOG.error("Error of addConfiguration", e2);
+         }
       }
 
       try
@@ -116,6 +127,6 @@ public class StandaloneContainerInitializedListener implements ServletContextLis
     */
    public void contextDestroyed(ServletContextEvent event)
    {
-      // container.stop();
+       container.stop();
    }
 }
