@@ -31,6 +31,13 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -41,6 +48,8 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
 {
    private static final String DEFAULT_SOURCE_FILE_EXTENSION = ".groovy";
 
+   public final ConcurrentMap<String, Future<URL>> findResourceURLTasks = new ConcurrentHashMap<String, Future<URL>>();
+   
    // TODO need configurable ?
    private int maxEntries = 512;
 
@@ -100,30 +109,80 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
       return resource;
    }
 
-   protected URL getResource(String filename) throws MalformedURLException
+   protected URL getResource(final String filename) throws MalformedURLException
    {
-      URL resource = null;
-      filename = filename.intern();
-      synchronized (filename)
+      // First we check the cache outside the synchronized block
+      URL resource = resources.get(filename);
+      if (resource != null && checkResource(resource))
       {
-         resource = resources.get(filename);
-         boolean inCache = resource != null;
-         if (inCache && !checkResource(resource))
-            resource = null; // Resource in cache is unreachable.
-         for (int i = 0; i < roots.length && resource == null; i++)
-         {
-            URL tmp = new URL(roots[i], filename);
-            if (checkResource(tmp))
-               resource = tmp;
-         }
-         if (resource != null)
-            resources.put(filename, resource);
-         else if (inCache)
-            resources.remove(filename);
+         // The resource could be found in the cache and is reachable
+         return resource;
       }
-      return resource;
+      // The resource cannot be found or is unreachable
+      // Check if a corresponding findResourceURL task exists
+      Future<URL> findResourceURLTask = findResourceURLTasks.get(filename);
+      if (findResourceURLTask == null)
+      {
+         // The task doesn't exist so we create it
+         FutureTask<URL> f = new FutureTask<URL>(new Callable<URL>()
+         {
+            public URL call() throws Exception
+            {
+               return findResourceURL(filename);
+            }
+         });
+         // We add the new task to the existing tasks
+         findResourceURLTask = findResourceURLTasks.putIfAbsent(filename, f);
+         if (findResourceURLTask == null)
+         {
+            // The task has not be registered so we launch it
+            findResourceURLTask = f;
+            f.run();
+         }
+      }
+      try
+      {
+         return findResourceURLTask.get();
+      }
+      catch (CancellationException e)
+      {
+         findResourceURLTasks.remove(filename, findResourceURLTask);
+      }
+      catch (ExecutionException e)
+      {
+         throw (MalformedURLException)e.getCause();
+      }
+      catch (InterruptedException e)
+      {
+         Thread.currentThread().interrupt();
+      }
+      return null;
    }
 
+   protected URL findResourceURL(String filename) throws MalformedURLException
+   {
+      URL resource = resources.get(filename);
+      boolean inCache = resource != null;
+      if (inCache && !checkResource(resource))
+         resource = null; // Resource in cache is unreachable.
+      for (int i = 0; i < roots.length && resource == null; i++)
+      {
+         URL tmp = createURL(roots[i], filename);
+         if (checkResource(tmp))
+            resource = tmp;
+      }
+      if (resource != null)
+         resources.put(filename, resource);
+      else if (inCache)
+         resources.remove(filename);
+      return resource;
+   }
+   
+   protected URL createURL(URL root, String filename) throws MalformedURLException
+   {
+      return new URL(root, filename);
+   }
+   
    protected String getSourceFileExtension()
    {
       return DEFAULT_SOURCE_FILE_EXTENSION;
