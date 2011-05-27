@@ -18,13 +18,13 @@
  */
 package org.exoplatform.services.rest;
 
+import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.services.rest.impl.ConstructorDescriptorImpl;
 import org.exoplatform.services.rest.impl.FieldInjectorImpl;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,7 +54,7 @@ public abstract class BaseObjectModel implements ObjectModel
       if (scope == ComponentLifecycleScope.PER_REQUEST)
       {
          Constructor<?>[] jConstructors = 
-            AccessController.doPrivileged(new PrivilegedAction<Constructor<?>[]>() {
+            SecurityHelper.doPrivilegedAction(new PrivilegedAction<Constructor<?>[]>() {
                public Constructor<?>[] run()
                {
                   return BaseObjectModel.this.clazz.getConstructors();
@@ -76,7 +76,7 @@ public abstract class BaseObjectModel implements ObjectModel
          }
          // process field
          java.lang.reflect.Field[] jfields =
-            AccessController.doPrivileged(new PrivilegedAction<java.lang.reflect.Field[]>() {
+            SecurityHelper.doPrivilegedAction(new PrivilegedAction<java.lang.reflect.Field[]>() {
                public java.lang.reflect.Field[] run()
                {
                   return BaseObjectModel.this.clazz.getDeclaredFields();

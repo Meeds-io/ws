@@ -21,10 +21,11 @@ package org.exoplatform.services.rest.ext.groovy;
 
 import groovy.lang.GroovyResourceLoader;
 
+import org.exoplatform.commons.utils.SecurityHelper;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.Collections;
@@ -92,7 +93,7 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
       final String ffilename = filename.replace('.', '/') + getSourceFileExtension();
       try
       {
-         resource = AccessController.doPrivileged(new PrivilegedExceptionAction<URL>()
+         resource = SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<URL>()
          {
             public URL run() throws MalformedURLException
             {

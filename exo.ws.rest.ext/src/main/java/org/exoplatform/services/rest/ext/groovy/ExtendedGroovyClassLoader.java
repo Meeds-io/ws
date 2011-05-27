@@ -27,11 +27,11 @@ import org.codehaus.groovy.control.CompilationUnit;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.Phases;
 import org.codehaus.groovy.control.SourceUnit;
+import org.exoplatform.commons.utils.SecurityHelper;
 
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.AccessController;
 import java.security.CodeSource;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -270,7 +270,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
 
    protected SingleClassCollector createSingleCollector(CompilationUnit unit, SourceUnit sunit)
    {
-      ExtendedInnerLoader loader = AccessController.doPrivileged(new PrivilegedAction<ExtendedInnerLoader>() {
+      ExtendedInnerLoader loader = SecurityHelper.doPrivilegedAction(new PrivilegedAction<ExtendedInnerLoader>() {
          public ExtendedInnerLoader run()
          {
             return new ExtendedInnerLoader(ExtendedGroovyClassLoader.this);
@@ -281,7 +281,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
 
    protected MultipleClassCollector createMultipleCollector(CompilationUnit unit, Set<SourceUnit> setSunit)
    {
-      ExtendedInnerLoader loader = AccessController.doPrivileged(new PrivilegedAction<ExtendedInnerLoader>() {
+      ExtendedInnerLoader loader = SecurityHelper.doPrivilegedAction(new PrivilegedAction<ExtendedInnerLoader>() {
          public ExtendedInnerLoader run()
          {
             return new ExtendedInnerLoader(ExtendedGroovyClassLoader.this);

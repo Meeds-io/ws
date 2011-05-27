@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.resource;
 
+import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.BaseObjectModel;
@@ -44,7 +45,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -244,7 +244,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
    {
       final Class<?> resourceClass = getObjectClass();
 
-      Method[] methods = AccessController.doPrivileged(new PrivilegedAction<Method[]>() {
+      Method[] methods = SecurityHelper.doPrivilegedAction(new PrivilegedAction<Method[]>() {
          public Method[] run()
          {
             return resourceClass.getDeclaredMethods();

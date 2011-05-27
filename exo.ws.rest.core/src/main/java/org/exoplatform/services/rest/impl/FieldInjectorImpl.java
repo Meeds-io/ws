@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest.impl;
 
+import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.services.rest.ApplicationContext;
 import org.exoplatform.services.rest.FieldInjector;
 import org.exoplatform.services.rest.impl.method.ParameterHelper;
@@ -29,7 +30,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
@@ -141,7 +141,7 @@ public class FieldInjectorImpl implements FieldInjector
       Method setter = null;
       try
       {
-         setter = AccessController.doPrivileged(new PrivilegedExceptionAction<Method>() {
+         setter = SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Method>() {
             public Method run() throws NoSuchMethodException
             {
                String name = jfield.getName();
@@ -231,7 +231,7 @@ public class FieldInjectorImpl implements FieldInjector
             {
                if (!Modifier.isPublic(jfield.getModifiers()))
                {
-                  AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                  SecurityHelper.doPrivilegedAction(new PrivilegedAction<Void>() {
                      public Void run()
                      {
                         jfield.setAccessible(true);
@@ -265,7 +265,7 @@ public class FieldInjectorImpl implements FieldInjector
                {
                   if (!Modifier.isPublic(jfield.getModifiers()))
                   {
-                     AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                     SecurityHelper.doPrivilegedAction(new PrivilegedAction<Void>() {
                         public Void run()
                         {
                            jfield.setAccessible(true);

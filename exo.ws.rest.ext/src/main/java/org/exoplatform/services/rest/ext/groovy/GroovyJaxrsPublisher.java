@@ -23,6 +23,7 @@ import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyCodeSource;
 
 import org.codehaus.groovy.control.CompilationFailedException;
+import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.log.ExoLogger;
@@ -42,7 +43,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
-import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
@@ -210,7 +210,7 @@ public class GroovyJaxrsPublisher
    public void publishPerRequest(final InputStream in, final ResourceId resourceId,
       final MultivaluedMap<String, String> properties, final SourceFolder[] src, final SourceFile[] files)
    {
-      Class<?> rc = AccessController.doPrivileged(new PrivilegedAction<Class<?>>() {
+      Class<?> rc = SecurityHelper.doPrivilegedAction(new PrivilegedAction<Class<?>>() {
          public Class<?> run()
          {
             try
@@ -513,7 +513,7 @@ public class GroovyJaxrsPublisher
       try
       {
          //rc = 
-         AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
+         SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Class<?>>() {
             public Class<?> run() throws MalformedURLException
             {
                ExtendedGroovyClassLoader cl =
@@ -684,7 +684,7 @@ public class GroovyJaxrsPublisher
     */
    protected GroovyCodeSource createCodeSource(final InputStream in, final String name)
    {
-      GroovyCodeSource gcs = AccessController.doPrivileged(new PrivilegedAction<GroovyCodeSource>() {
+      GroovyCodeSource gcs = SecurityHelper.doPrivilegedAction(new PrivilegedAction<GroovyCodeSource>() {
          public GroovyCodeSource run()
          {
             return new GroovyCodeSource(in, name, ExtendedGroovyClassLoader.CODE_BASE);

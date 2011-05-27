@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest.impl;
 
+import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
@@ -29,7 +30,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.Iterator;
@@ -72,7 +72,7 @@ public class DependencySupplier
          final ValueParam injectAnnotationParameter = params.getValueParam("inject.annotation.class");
          try
          {
-            injectAnnotationClass = AccessController.doPrivileged(new PrivilegedExceptionAction<Class>()
+            injectAnnotationClass = SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Class>()
             {
                public Class run() throws ClassNotFoundException
                {
@@ -179,7 +179,7 @@ public class DependencySupplier
       Type injectedType = null;
       try
       {
-         get = AccessController.doPrivileged(new PrivilegedExceptionAction<Method>()
+         get = SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Method>()
          {
             public Method run() throws NoSuchMethodException
             {

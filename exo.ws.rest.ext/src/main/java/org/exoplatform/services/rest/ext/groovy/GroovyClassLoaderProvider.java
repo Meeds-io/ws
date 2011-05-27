@@ -20,9 +20,10 @@ package org.exoplatform.services.rest.ext.groovy;
 
 import groovy.lang.GroovyClassLoader;
 
+import org.exoplatform.commons.utils.SecurityHelper;
+
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 /**
@@ -41,7 +42,7 @@ public class GroovyClassLoaderProvider
 
    public GroovyClassLoaderProvider()
    {
-      this(AccessController.doPrivileged(new PrivilegedAction<ExtendedGroovyClassLoader>()
+      this(SecurityHelper.doPrivilegedAction(new PrivilegedAction<ExtendedGroovyClassLoader>()
       {
          public ExtendedGroovyClassLoader run()
          {
@@ -85,7 +86,7 @@ public class GroovyClassLoaderProvider
 
       final GroovyClassLoader parent = getGroovyClassLoader();
       ExtendedGroovyClassLoader classLoader =
-         AccessController.doPrivileged(new PrivilegedAction<ExtendedGroovyClassLoader>()
+         SecurityHelper.doPrivilegedAction(new PrivilegedAction<ExtendedGroovyClassLoader>()
          {
             public ExtendedGroovyClassLoader run()
             {
