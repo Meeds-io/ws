@@ -1,0 +1,60 @@
+Index: exo.ws.rest.core/pom.xml
+===================================================================
+--- exo.ws.rest.core/pom.xml	(revision 4443)
++++ exo.ws.rest.core/pom.xml	(working copy)
+@@ -105,6 +105,25 @@
+    <build>
+       <plugins>
+          <plugin>
++            <groupId>org.codehaus.mojo</groupId>
++            <artifactId>build-helper-maven-plugin</artifactId>
++            <version>1.5</version>
++            <executions>
++               <execution>
++                  <id>add-test-sources</id>
++                  <phase>generate-test-sources</phase>
++                  <goals>
++                     <goal>add-test-source</goal>
++                  </goals>
++                  <configuration>
++                     <sources>
++                        <source>target/generated-test-sources</source>
++                     </sources>
++                  </configuration>
++               </execution>
++            </executions>
++         </plugin>
++         <plugin>
+             <groupId>org.jvnet.jaxb2.maven2</groupId>
+             <artifactId>maven-jaxb2-plugin</artifactId>
+             <executions>
+@@ -148,29 +167,6 @@
+                </execution>
+             </executions>
+          </plugin>
+-         <plugin>
+-            <groupId>org.apache.maven.plugins</groupId>
+-            <artifactId>maven-antrun-plugin</artifactId>
+-            <executions>
+-               <execution>
+-                  <id>0</id>
+-                  <goals>
+-                     <goal>run</goal>
+-                  </goals>
+-                  <phase>generate-test-sources</phase>
+-                  <configuration>
+-                     <tasks>
+-                        <echo>copy files gnerated by JAXB to test source directory</echo>
+-                        <copy todir="src/test/java">
+-                           <fileset dir="target/generated-test-sources">
+-                              <include name="org/**" />
+-                           </fileset>
+-                        </copy>
+-                     </tasks>
+-                  </configuration>
+-               </execution>
+-            </executions>
+-         </plugin>
+       </plugins>
+    </build>
+ </project>
