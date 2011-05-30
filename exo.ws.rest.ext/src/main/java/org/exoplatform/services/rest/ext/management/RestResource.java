@@ -24,12 +24,12 @@ import org.exoplatform.management.spi.ManagedMethodMetaData;
 import org.exoplatform.management.spi.ManagedPropertyMetaData;
 import org.exoplatform.management.spi.ManagedResource;
 import org.exoplatform.management.spi.ManagedTypeMetaData;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.ext.management.invocation.MethodInvoker;
 import org.exoplatform.services.rest.impl.ApplicationContextImpl;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 
-
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,6 +58,11 @@ import javax.ws.rs.ext.MessageBodyReader;
  */
 public class RestResource
 {
+
+   /**
+    * Logger.
+    */
+   private static final Log LOG = ExoLogger.getLogger(RestResource.class);
 
    /** . */
    final Map<String, RestResourceProperty> properties;
@@ -206,7 +211,8 @@ public class RestResource
    {
       for (RestResourceMethod method : methods)
       {
-         if (method.getName().equals(methodName) && method.metaData.getImpact() == impact && method.parameterNames.equals(argNames))
+         if (method.getName().equals(methodName) && method.metaData.getImpact() == impact
+            && method.parameterNames.equals(argNames))
          {
             return method;
          }
@@ -236,7 +242,7 @@ public class RestResource
       }
       catch (Exception e)
       {
-         e.printStackTrace();
+         LOG.error(e);
          return Response.serverError();
       }
       finally
@@ -251,7 +257,7 @@ public class RestResource
       MultivaluedMap<String, String> parameters = info.getQueryParameters();
       ApplicationContextImpl context = (ApplicationContextImpl)info;      
       
-      Type formType = (ParameterizedType)MultivaluedMapImpl.class.getGenericInterfaces()[0];
+      Type formType = MultivaluedMapImpl.class.getGenericInterfaces()[0];
       MediaType contentType = context.getHttpHeaders().getMediaType();
       if (contentType == null) {
          contentType = MediaType.APPLICATION_FORM_URLENCODED_TYPE;
