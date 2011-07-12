@@ -19,10 +19,8 @@
 package org.exoplatform.ws.frameworks.servlet;
 
 import org.exoplatform.container.StandaloneContainer;
-import org.exoplatform.container.configuration.ConfigurationManagerImpl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.naming.InitialContextInitializer;
 
 import java.net.MalformedURLException;
 
@@ -104,16 +102,6 @@ public class StandaloneContainerInitializedListener implements ServletContextLis
       try
       {
          container = StandaloneContainer.getInstance(Thread.currentThread().getContextClassLoader());
-
-         // Patch for tomcat InitialContext
-         InitialContextInitializer ic =
-            (InitialContextInitializer)container.getComponentInstanceOfType(InitialContextInitializer.class);
-
-         if (ic != null)
-         {
-            ic.recall();
-         }
-
          event.getServletContext().setAttribute("org.exoplatform.frameworks.web.eXoContainer", container);
       }
       catch (Exception e)
