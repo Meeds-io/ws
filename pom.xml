@@ -45,8 +45,8 @@
       <exo.product.name>exo-ws</exo.product.name>
       <exo.product.specification>2.1</exo.product.specification>
 
-      <org.exoplatform.kernel.version>2.3.0-GA-SNAPSHOT</org.exoplatform.kernel.version>
-      <org.exoplatform.core.version>2.4.0-GA-SNAPSHOT</org.exoplatform.core.version>
+      <org.exoplatform.kernel.version>2.3.0-CR4</org.exoplatform.kernel.version>
+      <org.exoplatform.core.version>2.4.0-CR4</org.exoplatform.core.version>
    </properties>
 
    <modules>
