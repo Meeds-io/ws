@@ -31,14 +31,14 @@
 
    <groupId>org.exoplatform.ws</groupId>
    <artifactId>ws-parent</artifactId>
-   <version>2.2.0-GA-SNAPSHOT</version>
+   <version>2.2.0-CR4</version>
    <packaging>pom</packaging>
    <name>eXo WS</name>
 
    <scm>
-      <connection>scm:svn:http://anonsvn.jboss.org/repos/exo-jcr/ws/trunk</connection>
-      <developerConnection>scm:svn:https://svn.jboss.org/repos/exo-jcr/ws/trunk</developerConnection>
-      <url>http://fisheye.jboss.org/browse/exo-jcr/ws/trunk</url>
+      <connection>scm:svn:http://anonsvn.jboss.org/repos/exo-jcr/ws/tags/2.2.0-CR4</connection>
+      <developerConnection>scm:svn:https://svn.jboss.org/repos/exo-jcr/ws/tags/2.2.0-CR4</developerConnection>
+      <url>http://fisheye.jboss.org/browse/exo-jcr/ws/tags/2.2.0-CR4</url>
    </scm>
 
    <properties>
