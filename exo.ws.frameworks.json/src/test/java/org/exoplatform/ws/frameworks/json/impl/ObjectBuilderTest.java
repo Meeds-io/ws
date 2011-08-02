@@ -23,6 +23,7 @@ import org.exoplatform.ws.frameworks.json.BeanWithSimpleEnum;
 import org.exoplatform.ws.frameworks.json.Book;
 import org.exoplatform.ws.frameworks.json.BookEnum;
 import org.exoplatform.ws.frameworks.json.BookStorage;
+import org.exoplatform.ws.frameworks.json.ClassTransfBean;
 import org.exoplatform.ws.frameworks.json.JavaCollectionBean;
 import org.exoplatform.ws.frameworks.json.JavaMapBean;
 import org.exoplatform.ws.frameworks.json.JsonParser;
@@ -359,5 +360,21 @@ public class ObjectBuilderTest extends JsonTest
       //System.out.println(jsonValue);
       BeanWithBookEnum o = ObjectBuilder.createObject(BeanWithBookEnum.class, jsonValue);
       assertEquals(BookEnum.BEGINNING_C, o.getBook());
+   }
+   
+   public void testClass() throws Exception
+   {
+      String source = "{\"klass\":\"" + ForTestClass001.class.getName() + "\"}";
+      JsonParser jsonParser = new JsonParserImpl();
+      JsonDefaultHandler handler = new JsonDefaultHandler();
+      jsonParser.parse(new ByteArrayInputStream(source.getBytes()), handler);
+      JsonValue jsonValue = handler.getJsonObject();
+      //System.out.println(jsonValue);
+      ClassTransfBean o = ObjectBuilder.createObject(ClassTransfBean.class, jsonValue);
+      assertEquals(ForTestClass001.class, o.getKlass());
+   }
+
+   public static class ForTestClass001
+   {
    }
 }

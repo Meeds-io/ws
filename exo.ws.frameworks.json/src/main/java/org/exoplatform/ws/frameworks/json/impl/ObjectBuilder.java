@@ -339,7 +339,7 @@ public class ObjectBuilder
     * @return Object.
     * @throws JsonException if any errors occurs.
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    public static <T> T createObject(Class<T> clazz, JsonValue jsonValue) throws JsonException
    {
       if (jsonValue == null || jsonValue.isNull())
@@ -485,6 +485,15 @@ public class ObjectBuilder
             return jsonValue.getStringValue().charAt(0);
          case STRING :
             return jsonValue.getStringValue();
+         case CLASS :
+            try
+            {
+               return Class.forName(jsonValue.getStringValue());
+            }
+            catch (ClassNotFoundException e)
+            {
+               return null;
+            }
          case ARRAY_BOOLEAN : {
             boolean[] params = new boolean[jsonValue.size()];
             Iterator<JsonValue> values = jsonValue.getElements();

@@ -25,6 +25,7 @@ import org.exoplatform.ws.frameworks.json.Book;
 import org.exoplatform.ws.frameworks.json.BookEnum;
 import org.exoplatform.ws.frameworks.json.BookStorage;
 import org.exoplatform.ws.frameworks.json.BookWrapper;
+import org.exoplatform.ws.frameworks.json.ClassTransfBean;
 import org.exoplatform.ws.frameworks.json.JavaMapBean;
 import org.exoplatform.ws.frameworks.json.StringEnum;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
@@ -242,4 +243,16 @@ public class JsonGeneratorTest extends JsonTest
       assertEquals(BookEnum.JUNIT_IN_ACTION.name(), jsonValue.getElement("book").getStringValue());
    }
 
+   public void testBeanClassTransf() throws Exception
+   {
+      ClassTransfBean be = new ClassTransfBean();
+      be.setKlass(ForTestClass000.class);
+      JsonValue jsonValue = new JsonGeneratorImpl().createJsonObject(be);
+      //System.out.println(jsonValue);
+      assertEquals(ForTestClass000.class.getName(), jsonValue.getElement("klass").getStringValue());
+   }
+
+   public static class ForTestClass000
+   {
+   }
 }

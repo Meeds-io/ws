@@ -210,7 +210,7 @@ public class JsonGeneratorImpl implements JsonGenerator
     * @return JsonValue.
     * @throws JsonException if any errors occurs.
     */
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({"unchecked", "rawtypes"})
    private JsonValue createJsonValue(Object object) throws JsonException
    {
       Types type = JsonUtils.getType(object);
@@ -238,6 +238,8 @@ public class JsonGeneratorImpl implements JsonGenerator
             return new StringValue((String)object);
          case ENUM :
             return new StringValue(((Enum)object).name());
+         case CLASS :
+            return new StringValue(((Class)object).getName());
          case ARRAY_BOOLEAN : {
             JsonValue jsonArray = new ArrayValue();
             int length = Array.getLength(object);
@@ -385,7 +387,7 @@ public class JsonGeneratorImpl implements JsonGenerator
    private static Set<String> getTransientFields(final Class<?> clazz)
    {
       Set<String> set = new HashSet<String>();
-
+      
       Field[] fields = SecurityHelper.doPrivilegedAction(new PrivilegedAction<Field[]>()
       {
          public Field[] run()
