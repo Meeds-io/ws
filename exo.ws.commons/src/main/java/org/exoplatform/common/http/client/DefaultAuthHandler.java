@@ -198,6 +198,7 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
       // try to get rid of any unencoded passwords in memory
 
       answer = null;
+      System.gc();
 
       // Done
 
