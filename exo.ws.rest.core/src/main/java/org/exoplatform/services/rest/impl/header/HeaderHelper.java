@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.header;
 
+import org.exoplatform.commons.utils.Tools;
 import org.exoplatform.services.rest.header.QualityValue;
 
 import java.text.ParseException;
@@ -447,7 +448,7 @@ public final class HeaderHelper
          l.add(new SimpleDateFormat(RFC_1123_DATE_FORMAT, Locale.US));
          l.add(new SimpleDateFormat(RFC_1036_DATE_FORMAT, Locale.US));
          l.add(new SimpleDateFormat(ANSI_C_DATE_FORMAT, Locale.US));
-         TimeZone tz = TimeZone.getTimeZone("GMT");
+         TimeZone tz = Tools.getTimeZone("GMT");
          l.get(0).setTimeZone(tz);
          l.get(1).setTimeZone(tz);
          l.get(2).setTimeZone(tz);
