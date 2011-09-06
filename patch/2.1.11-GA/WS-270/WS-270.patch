@@ -1,0 +1,50 @@
+Index: exo.ws.rest.core/src/main/java/org/exoplatform/services/rest/impl/header/HeaderHelper.java
+===================================================================
+--- exo.ws.rest.core/src/main/java/org/exoplatform/services/rest/impl/header/HeaderHelper.java	(revision 4792)
++++ exo.ws.rest.core/src/main/java/org/exoplatform/services/rest/impl/header/HeaderHelper.java	(working copy)
+@@ -18,6 +18,7 @@
+  */
+ package org.exoplatform.services.rest.impl.header;
+ 
++import org.exoplatform.commons.utils.Tools;
+ import org.exoplatform.services.rest.header.QualityValue;
+ 
+ import java.text.ParseException;
+@@ -443,7 +444,7 @@
+          l.add(new SimpleDateFormat(RFC_1123_DATE_FORMAT, Locale.US));
+          l.add(new SimpleDateFormat(RFC_1036_DATE_FORMAT, Locale.US));
+          l.add(new SimpleDateFormat(ANSI_C_DATE_FORMAT, Locale.US));
+-         TimeZone tz = TimeZone.getTimeZone("GMT");
++         TimeZone tz = Tools.getTimeZone("GMT");
+          l.get(0).setTimeZone(tz);
+          l.get(1).setTimeZone(tz);
+          l.get(2).setTimeZone(tz);
+Index: exo.ws.commons/src/main/java/org/exoplatform/common/util/HierarchicalProperty.java
+===================================================================
+--- exo.ws.commons/src/main/java/org/exoplatform/common/util/HierarchicalProperty.java	(revision 4792)
++++ exo.ws.commons/src/main/java/org/exoplatform/common/util/HierarchicalProperty.java	(working copy)
+@@ -18,13 +18,14 @@
+  */
+ package org.exoplatform.common.util;
+ 
++import org.exoplatform.commons.utils.Tools;
++
+ import java.text.SimpleDateFormat;
+ import java.util.ArrayList;
+ import java.util.Calendar;
+ import java.util.HashMap;
+ import java.util.List;
+ import java.util.Locale;
+-import java.util.TimeZone;
+ 
+ import javax.xml.namespace.QName;
+ 
+@@ -103,7 +104,7 @@
+    {
+       this(name, null);
+       SimpleDateFormat dateFormat = new SimpleDateFormat(formatPattern, Locale.ENGLISH);
+-      dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
++      dateFormat.setTimeZone(Tools.getTimeZone("GMT"));
+       this.value = dateFormat.format(dateValue.getTime());
+    }
+ 
