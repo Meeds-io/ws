@@ -147,7 +147,7 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
       }
       catch (CancellationException e)
       {
-         findResourceURLTasks.remove(filename, findResourceURLTask);
+         // ignore me
       }
       catch (ExecutionException e)
       {
@@ -156,6 +156,10 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
       catch (InterruptedException e)
       {
          Thread.currentThread().interrupt();
+      }
+      finally
+      {
+         findResourceURLTasks.remove(filename, findResourceURLTask);
       }
       return null;
    }
