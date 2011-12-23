@@ -789,11 +789,16 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     */
    public HTTPResponse Head(String file, NVPair[] form_data, NVPair[] headers) throws IOException, ModuleException
    {
-      String File = stripRef(file), query = Codecs.nv2query(form_data);
-      if (query != null && query.length() > 0)
-         File += "?" + query;
+      String query = Codecs.nv2query(form_data);
+      StringBuffer resource = new StringBuffer(stripRef(file));
 
-      return setupRequest("HEAD", File, headers, null, null);
+      if (query != null && query.length() > 0)
+      {
+         resource.append("?");
+         resource.append(query);
+      }
+
+      return setupRequest("HEAD", resource.toString(), headers, null, null);
    }
 
    /**
@@ -826,11 +831,15 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     */
    public HTTPResponse Head(String file, String query, NVPair[] headers) throws IOException, ModuleException
    {
-      String File = stripRef(file);
-      if (query != null && query.length() > 0)
-         File += "?" + Codecs.URLEncode(query);
+      StringBuffer resource = new StringBuffer(stripRef(file));
 
-      return setupRequest("HEAD", File, headers, null, null);
+      if (query != null && query.length() > 0)
+      {
+         resource.append("?");
+         resource.append(Codecs.URLEncode(query));
+      }
+
+      return setupRequest("HEAD", resource.toString(), headers, null, null);
    }
 
    /**
@@ -876,11 +885,16 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     */
    public HTTPResponse Get(String file, NVPair[] form_data, NVPair[] headers) throws IOException, ModuleException
    {
-      String File = stripRef(file), query = Codecs.nv2query(form_data);
-      if (query != null && query.length() > 0)
-         File += "?" + query;
+      String query = Codecs.nv2query(form_data);
+      StringBuffer resource = new StringBuffer(stripRef(file));
 
-      return setupRequest("GET", File, headers, null, null);
+      if (query != null && query.length() > 0)
+      {
+         resource.append("?");
+         resource.append(query);
+      }
+
+      return setupRequest("GET", resource.toString(), headers, null, null);
    }
 
    /**
@@ -913,11 +927,15 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    @Deprecated
    public HTTPResponse Get(String file, String query, NVPair[] headers) throws IOException, ModuleException
    {
-      String File = stripRef(file);
-      if (query != null && query.length() > 0)
-         File += "?" + Codecs.URLEncode(query);
+      StringBuffer resource = new StringBuffer(stripRef(file));
 
-      return setupRequest("GET", File, headers, null, null);
+      if (query != null && query.length() > 0)
+      {
+         resource.append("?");
+         resource.append(Codecs.URLEncode(query));
+      }
+
+      return setupRequest("GET", resource.toString(), headers, null, null);
    }
 
    /**
@@ -2166,8 +2184,10 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       }
 
       if (log.isDebugEnabled())
-         log.debug("Added module " + module.getName() + " to " + ((list == DefaultModuleList) ? "default " : "")
+      {
+         log.debug("Added module " + module.getName() + " to " + ((list == DefaultModuleList) ? "default " : "") //NOSONAR
             + "list");
+      }
 
       return true;
    }
@@ -2181,9 +2201,10 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       if (removed)
       {
          if (log.isDebugEnabled())
-            log.debug("Removed module " + module.getName() + " from " + ((list == DefaultModuleList) ? "default " : "")
+         {
+            log.debug("Removed module " + module.getName() + " from " + ((list == DefaultModuleList) ? "default " : "") //NOSONAR
                + "list");
-
+         }
       }
 
       return removed;
@@ -3617,7 +3638,9 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          try
          {
             if (!Util.hasToken(co_hdr, "TE"))
-               co_hdr += ", TE";
+            {
+               co_hdr += ", TE"; //NOSONAR
+            }
          }
          catch (ParseException pe)
          {
@@ -3625,10 +3648,14 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          }
       }
       else
+      {
          co_hdr = "TE";
+      }
 
       if (ug_idx != -1)
-         co_hdr += ", Upgrade";
+      {
+         co_hdr += ", Upgrade"; //NOSONAR
+      }
 
       if (co_hdr != null)
       {

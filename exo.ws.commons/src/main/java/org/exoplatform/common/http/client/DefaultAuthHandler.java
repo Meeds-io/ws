@@ -841,10 +841,12 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
          A1 = extra[DI_A1];
 
       A2 = method + ":" + params[uri].getValue();
+
       if (qop != -1 && params[qop].getValue().equalsIgnoreCase("auth-int"))
       {
-         A2 += ":" + hash;
+         A2 += ":" + hash; //NOSONAR
       }
+
       A2 = MD5.hexDigest(A2);
 
       if (qop == -1)
@@ -1215,8 +1217,12 @@ class VerifyRspAuth implements HashVerifier, GlobalConstants
 
       // draft-01 was: A2 = resp.getStatusCode() + ":" + uri;
       A2 = ":" + uri;
+
       if (qop.equalsIgnoreCase("auth-int"))
-         A2 += ":" + MD5.toHex(hash);
+      {
+         A2 += ":" + MD5.toHex(hash); //NOSONAR
+      }
+
       A2 = MD5.hexDigest(A2);
 
       hash = MD5.digest(A1 + ":" + nonce + ":" + nc + ":" + cnonce + ":" + qop + ":" + A2);

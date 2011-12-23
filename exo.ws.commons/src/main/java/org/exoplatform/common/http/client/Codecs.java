@@ -740,8 +740,12 @@ public class Codecs
          {
             int next = findEOL(data, start) + 2;
             if (next - 2 <= start)
+            {
                break; // empty line -> end of headers
+            }
+
             hdr = new String(data, start, next - 2 - start, "8859_1");
+
             start = next;
 
             // handle line continuation
@@ -749,12 +753,13 @@ public class Codecs
             while (next < data.length - 1 && ((ch = data[next]) == ' ' || ch == '\t'))
             {
                next = findEOL(data, start) + 2;
-               hdr += new String(data, start, next - 2 - start, "8859_1");
+               hdr += new String(data, start, next - 2 - start, "8859_1"); //NOSONAR
                start = next;
             }
 
             if (!hdr.regionMatches(true, 0, "Content-Disposition", 0, 19))
                continue;
+
             Vector pcd = Util.parseHeader(hdr.substring(hdr.indexOf(':') + 1));
             HttpHeaderElement elem = Util.getElement(pcd, "form-data");
 
