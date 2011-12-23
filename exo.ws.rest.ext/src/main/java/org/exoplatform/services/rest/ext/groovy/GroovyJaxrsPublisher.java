@@ -540,8 +540,7 @@ public class GroovyJaxrsPublisher
          new AbstractResourceDescriptorImpl(rc).accept(ResourceDescriptorValidator.getInstance());
       }
       catch (RuntimeException e)
-      {
-         // TODO : Need have proper exception for invalid resources in 'exo.ws.rest.core'. 
+      { 
          throw new MalformedScriptException(e.getMessage());
       }*/
    }

@@ -240,9 +240,14 @@ public class HierarchicalProperty
 
    private String makeStringFromQName(QName qname)
    {
-      String str = "";
+      StringBuffer str = new StringBuffer();
+
       if (qname.getPrefix() != null && qname.getPrefix().length() > 0)
-         str += qname.getPrefix() + ":";
-      return str + qname.getLocalPart();
+      {
+         str.append(qname.getPrefix());
+         str.append(":");
+      }
+
+      return str.append(qname.getLocalPart()).toString();
    }
 }

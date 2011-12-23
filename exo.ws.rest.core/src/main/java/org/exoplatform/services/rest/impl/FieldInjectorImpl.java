@@ -280,7 +280,6 @@ public class FieldInjectorImpl implements FieldInjector
             {
                throw new WebApplicationException(e, Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
             }
-            // TODO Need to throw exception ?????
          }
       }
    }

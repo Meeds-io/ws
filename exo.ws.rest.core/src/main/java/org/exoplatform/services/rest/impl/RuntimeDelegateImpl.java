@@ -45,8 +45,8 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant.VariantListBuilder;
 import javax.ws.rs.ext.RuntimeDelegate;
 
@@ -102,7 +102,6 @@ public class RuntimeDelegateImpl extends RuntimeDelegate
    @Override
    public <T> HeaderDelegate<T> createHeaderDelegate(Class<T> type)
    {
-      // TODO mechanism for use external HeaderDelegate
       return (HeaderDelegate<T>)headerDelegates.get(type);
    }
 

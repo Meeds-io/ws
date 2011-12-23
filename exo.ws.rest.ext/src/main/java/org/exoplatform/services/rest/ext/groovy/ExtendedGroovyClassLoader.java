@@ -81,13 +81,17 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
             ClassNode targetClassNode = null;
             SourceUnit targetSunit = null;
             ModuleNode module = classNode.getModule();
+
             if (module != null)
             {
                targetClassNode = (ClassNode)module.getClasses().get(0);
                targetSunit = module.getContext();
             }
-            if (targetSunit == sunit && targetClassNode == classNode)
+
+            if (targetSunit == sunit && targetClassNode == classNode) //NOSONAR
+            {
                target = clazz;
+            }
          }
          return clazz;
       }

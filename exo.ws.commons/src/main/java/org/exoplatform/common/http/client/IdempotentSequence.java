@@ -180,8 +180,10 @@ class IdempotentSequence
          else
          // update thread
          {
-            if (t_state == INDET && methodHasSideEffects(m_history[idx]))
+            if (t_state == INDET && methodHasSideEffects(m_history[idx])) //NOSONAR
+            {
                threads.put(r_history[idx], Boolean.FALSE);
+            }
          }
       }
 

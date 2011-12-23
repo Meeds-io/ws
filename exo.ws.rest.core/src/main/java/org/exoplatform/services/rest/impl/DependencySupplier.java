@@ -134,8 +134,10 @@ public class DependencySupplier
                         if (parameterActualTypes[0] instanceof Class<?>)
                         {
                            Class<?> actualType = (Class<?>)parameterActualTypes[0];
-                           if (actualType == injectedType)
+                           if (actualType == injectedType) //NOSONAR
+                           {
                               return provider;
+                           }
                         }
                         else if (parameterActualTypes[0] instanceof ParameterizedType)
                         {

@@ -214,7 +214,6 @@ public class ParameterHelper
     * @param annotation parameter annotation
     * @return true it parameter is valid, false otherwise
     */
-   // TODO remove this method
    boolean isValidAnnotatedParameter(Class<?> parameterClass, Type parameterType, Annotation annotation)
    {
       if (parameterClass == List.class || parameterClass == Set.class || parameterClass == SortedSet.class)

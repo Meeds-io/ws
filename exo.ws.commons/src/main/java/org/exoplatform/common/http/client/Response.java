@@ -382,12 +382,15 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
    public Date getHeaderAsDate(String hdr) throws IOException, IllegalArgumentException
    {
       String raw_date = getHeader(hdr);
+
       if (raw_date == null)
          return null;
 
       // asctime() format is missing an explicit GMT specifier
       if (raw_date.toUpperCase().indexOf("GMT") == -1 && raw_date.indexOf(' ') > 0)
-         raw_date += " GMT";
+      {
+         raw_date += " GMT"; //NOSONAR
+      }
 
       Date date;
 
@@ -492,7 +495,9 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
 
       // asctime() format is missing an explicit GMT specifier
       if (raw_date.toUpperCase().indexOf("GMT") == -1 && raw_date.indexOf(' ') > 0)
-         raw_date += " GMT";
+      {
+         raw_date += " GMT"; //NOSONAR
+      }
 
       Date date;
 

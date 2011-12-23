@@ -24,9 +24,9 @@ import org.exoplatform.ws.frameworks.json.impl.JsonException;
 import org.exoplatform.ws.frameworks.json.impl.JsonGeneratorImpl;
 import org.exoplatform.ws.frameworks.json.impl.JsonParserImpl;
 import org.exoplatform.ws.frameworks.json.impl.JsonUtils;
+import org.exoplatform.ws.frameworks.json.impl.JsonUtils.Types;
 import org.exoplatform.ws.frameworks.json.impl.JsonWriterImpl;
 import org.exoplatform.ws.frameworks.json.impl.ObjectBuilder;
-import org.exoplatform.ws.frameworks.json.impl.JsonUtils.Types;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
 
 import java.io.File;
@@ -63,7 +63,7 @@ public class JsonEntityProvider implements EntityProvider<Object>
 {
 
    // It is common task for #isReadable() and #isWriteable
-   // TODO Not sure it is required but ...
+   // Not sure it is required but ...
    // Investigation about checking can type be write as JSON (useful JSON).
    // Probably should be better added this checking in JSON framework.
    // Or probably enough check only content type 'application/json'

@@ -36,8 +36,6 @@ import javax.ws.rs.core.MultivaluedMap;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-// TODO this implementation is not efficient, probably can be better extend
-// java.util.AbstractMap
 public final class InputHeadersMap extends HashMap<String, List<String>> implements MultivaluedMap<String, String>
 {
 

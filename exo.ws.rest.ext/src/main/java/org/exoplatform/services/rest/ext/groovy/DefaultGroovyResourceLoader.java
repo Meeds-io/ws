@@ -51,7 +51,6 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
 
    public final ConcurrentMap<String, Future<URL>> findResourceURLTasks = new ConcurrentHashMap<String, Future<URL>>();
    
-   // TODO need configurable ?
    private int maxEntries = 512;
 
    protected final Map<String, URL> resources;

@@ -181,7 +181,6 @@ public final class UriComponent
     * @param component component of URI, scheme, host, port, etc
     * @return encoded string
     */
-   // TODO encoding for IPv6
    public static String encode(String str, int component, boolean containsUriParams)
    {
       if (str == null)
@@ -197,7 +196,6 @@ public final class UriComponent
     * @param containsUriParams true if the source string contains URI parameters
     * @return the source string
     */
-   // TODO validation for IPv6
    public static String validate(String str, int component, boolean containsUriParams)
    {
       for (int i = 0; i < str.length(); i++)
@@ -315,7 +313,6 @@ public final class UriComponent
     *          addresses
     * @return decoded string
     */
-   // TODO decoding for IPv6
    public static String decode(String str, int component)
    {
       if (str == null)

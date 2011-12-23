@@ -213,7 +213,7 @@ class StreamDemultiplexor implements GlobalConstants
       // read the headers and data for all responses preceding us.
 
       ResponseHandler head;
-      while ((head = (ResponseHandler)RespHandlerList.getFirst()) != null && head != resph)
+      while ((head = (ResponseHandler)RespHandlerList.getFirst()) != null && head != resph) //NOSONAR
       {
          try
          {
@@ -553,10 +553,14 @@ class StreamDemultiplexor implements GlobalConstants
          RespHandlerList.remove(resph);
       }
 
-      if (resph == MarkedForClose)
+      if (resph == MarkedForClose) //NOSONAR
+      {
          close(new IOException("Premature end of Keep-Alive"), false);
+      }
       else
+      {
          closeSocketIfAllStreamsClosed();
+      }
    }
 
    /**
@@ -587,7 +591,7 @@ class StreamDemultiplexor implements GlobalConstants
 
          while (resph != null && resph.stream.closed)
          {
-            if (resph == MarkedForClose)
+            if (resph == MarkedForClose) //NOSONAR
             {
                // remove all response handlers first
                ResponseHandler tmp;
@@ -596,7 +600,7 @@ class StreamDemultiplexor implements GlobalConstants
                   tmp = (ResponseHandler)RespHandlerList.getFirst();
                   RespHandlerList.remove(tmp);
                }
-               while (tmp != resph);
+               while (tmp != resph); //NOSONAR
 
                // close the socket
                close(new IOException("Premature end of Keep-Alive"), false);
@@ -658,7 +662,7 @@ class StreamDemultiplexor implements GlobalConstants
                return;
             }
 
-            if (MarkedForClose == resph)
+            if (MarkedForClose == resph) //NOSONAR
                return; // already marked for closing after an earlier resp
 
             lasth = resph;

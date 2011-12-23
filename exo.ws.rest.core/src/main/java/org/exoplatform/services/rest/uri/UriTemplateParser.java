@@ -243,13 +243,13 @@ public class UriTemplateParser
          else
             throw new IllegalArgumentException("Wrong character at part " + str);
       }
+
       name = sb.toString();
-      // TODO remove restriction that not allowed have few path parameters with
-      // the same name. This should be allowed but part of URI template also MUST
-      // be the same. E.g. /a/{x}/b/{x} and /a/{x:\d+}/b/{x:\d+} must be allowed,
-      // but /a/{x}/b/{x:\d+} is not allowed. This task is not high priority.
       if (names.contains(name))
+      {
          throw new IllegalArgumentException("URI template variables name " + name + " already registered.");
+      }
+
       names.add(name);
       return p;
    }

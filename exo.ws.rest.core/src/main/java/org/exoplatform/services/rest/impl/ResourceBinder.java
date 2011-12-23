@@ -210,7 +210,6 @@ public class ResourceBinder implements Startable
       this.invokerFactory = invokerFactory;
       // Initialize RuntimeDelegate instance
       // This is first component in life cycle what needs.
-      // TODO better solution to initialize RuntimeDelegate
       SecurityHelper.doPrivilegedAction(new PrivilegedAction<Void>()
       {
          public Void run()

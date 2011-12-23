@@ -41,7 +41,6 @@ import javax.servlet.http.HttpServletRequestWrapper;
 public class AliasedURLRequestRedirector implements Filter
 {
 
-   //TODO
    private static String START_ESCAPED = "%7B$";
 
    private static String END_ESCAPED = "%7D";
@@ -169,7 +168,6 @@ public class AliasedURLRequestRedirector implements Filter
        * @param path
        * @return
        */
-      //TODO
       private String replaceByMap(String path)
       {
          if (path == null)
