@@ -790,7 +790,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    public HTTPResponse Head(String file, NVPair[] form_data, NVPair[] headers) throws IOException, ModuleException
    {
       String query = Codecs.nv2query(form_data);
-      StringBuffer resource = new StringBuffer(stripRef(file));
+      StringBuilder resource = new StringBuilder(stripRef(file));
 
       if (query != null && query.length() > 0)
       {
@@ -831,7 +831,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     */
    public HTTPResponse Head(String file, String query, NVPair[] headers) throws IOException, ModuleException
    {
-      StringBuffer resource = new StringBuffer(stripRef(file));
+      StringBuilder resource = new StringBuilder(stripRef(file));
 
       if (query != null && query.length() > 0)
       {
@@ -886,7 +886,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    public HTTPResponse Get(String file, NVPair[] form_data, NVPair[] headers) throws IOException, ModuleException
    {
       String query = Codecs.nv2query(form_data);
-      StringBuffer resource = new StringBuffer(stripRef(file));
+      StringBuilder resource = new StringBuilder(stripRef(file));
 
       if (query != null && query.length() > 0)
       {
@@ -927,7 +927,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    @Deprecated
    public HTTPResponse Get(String file, String query, NVPair[] headers) throws IOException, ModuleException
    {
-      StringBuffer resource = new StringBuffer(stripRef(file));
+      StringBuilder resource = new StringBuilder(stripRef(file));
 
       if (query != null && query.length() > 0)
       {

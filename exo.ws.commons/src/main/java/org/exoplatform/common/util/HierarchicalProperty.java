@@ -240,7 +240,7 @@ public class HierarchicalProperty
 
    private String makeStringFromQName(QName qname)
    {
-      StringBuffer str = new StringBuffer();
+      StringBuilder str = new StringBuilder();
 
       if (qname.getPrefix() != null && qname.getPrefix().length() > 0)
       {
