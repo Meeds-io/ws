@@ -346,12 +346,14 @@ public class Cookie2 extends Cookie
             continue;
          }
 
-         // if host name is simple (i.e w/o a domain) then append .local
+         // if host name is simple (i.e w/o a domain) then append .local         
          String eff_host = req.getConnection().getHost();
          if (eff_host.indexOf('.') == -1)
-            eff_host += ".local";
+         {
+            eff_host += ".local"; //NOSONAR
+         }
 
-         // domain must be either .local or must contain at least two dots
+         // domain must be either .local or must contain at least two dots         
          if (!curr.domain.equals(".local") && curr.domain.indexOf('.', 1) == -1)
          {
             log.warn("Bad Set-Cookie2 header: " + set_cookie + ", domain '" + curr.domain + "' is not '.local' and "
@@ -359,7 +361,7 @@ public class Cookie2 extends Cookie
             continue;
          }
 
-         // domain must domain match host
+         // domain must domain match host       
          if (!eff_host.endsWith(curr.domain))
          {
             log.warn("Bad Set-Cookie2 header: " + set_cookie + ", domain '" + curr.domain + "' does not match current"
@@ -367,7 +369,7 @@ public class Cookie2 extends Cookie
             continue;
          }
 
-         // host minus domain may not contain any dots
+         // host minus domain may not contain any dots        
          if (eff_host.substring(0, eff_host.length() - curr.domain.length()).indexOf('.') != -1)
          {
             log.warn("Bad Set-Cookie2 header: " + set_cookie + ", domain '" + curr.domain + "' is more than one '.'"

@@ -493,11 +493,14 @@ public class Cookie implements Serializable
     */
    protected boolean sendWith(RoRequest req)
    {
-      HTTPConnection con = req.getConnection();
+      HTTPConnection con = req.getConnection();      
       String eff_host = con.getHost();
+      
       if (eff_host.indexOf('.') == -1)
-         eff_host += ".local";
-
+      {
+         eff_host += ".local"; //NOSONAR
+      }
+            
       return ((domain.charAt(0) == '.' && eff_host.endsWith(domain) || domain.charAt(0) != '.'
          && eff_host.equals(domain))
          && Util.getPath(req.getRequestURI()).startsWith(path) && (!secure || con.getProtocol().equals("https") || con

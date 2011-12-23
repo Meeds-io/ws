@@ -314,12 +314,17 @@ public class HTTPResponse implements HTTPClientModuleConstants
    public Date getHeaderAsDate(String hdr) throws IOException, IllegalArgumentException, ModuleException
    {
       String raw_date = getHeader(hdr);
+      
       if (raw_date == null)
+      {
          return null;
+      }
 
       // asctime() format is missing an explicit GMT specifier
       if (raw_date.toUpperCase().indexOf("GMT") == -1 && raw_date.indexOf(' ') > 0)
-         raw_date += " GMT";
+      {
+         raw_date += " GMT"; //NOSONAR
+      }
 
       Date date;
 
@@ -414,7 +419,9 @@ public class HTTPResponse implements HTTPClientModuleConstants
 
       // asctime() format is missing an explicit GMT specifier
       if (raw_date.toUpperCase().indexOf("GMT") == -1 && raw_date.indexOf(' ') > 0)
-         raw_date += " GMT";
+      {
+         raw_date += " GMT"; //NOSONAR
+      }
 
       Date date;
 

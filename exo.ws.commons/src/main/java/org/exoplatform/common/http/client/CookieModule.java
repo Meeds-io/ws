@@ -701,8 +701,11 @@ class DefaultCookiePolicyHandler implements CookiePolicyHandler
    public boolean acceptCookie(Cookie cookie, RoRequest req, RoResponse resp)
    {
       String server = req.getConnection().getHost();
+
       if (server.indexOf('.') == -1)
-         server += ".local";
+      {
+         server += ".local"; //NOSONAR
+      }
 
       // Check lists. Reject takes priority over accept
 
