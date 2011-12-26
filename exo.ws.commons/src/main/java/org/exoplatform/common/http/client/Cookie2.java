@@ -463,7 +463,9 @@ public class Cookie2 extends Cookie
 
       String eff_host = con.getHost();
       if (eff_host.indexOf('.') == -1)
-         eff_host += ".local";
+      {
+         eff_host += ".local"; //NOSONAR
+      }
 
       return ((domain.charAt(0) == '.' && eff_host.endsWith(domain) || domain.charAt(0) != '.'
          && eff_host.equals(domain))
