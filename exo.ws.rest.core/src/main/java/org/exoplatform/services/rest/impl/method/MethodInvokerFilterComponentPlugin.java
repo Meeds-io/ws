@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.method;
 
+import org.exoplatform.commons.utils.ClassLoading;
 import org.exoplatform.container.component.BaseComponentPlugin;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
@@ -65,7 +66,7 @@ public class MethodInvokerFilterComponentPlugin extends BaseComponentPlugin
             ValueParam v = i.next();
             try
             {
-               mifs.add((Class<? extends MethodInvokerFilter>)Class.forName(v.getValue()));
+               mifs.add((Class<? extends MethodInvokerFilter>)ClassLoading.forName(v.getValue(), this));
             }
             catch (ClassNotFoundException e)
             {

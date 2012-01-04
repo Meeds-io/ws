@@ -33,6 +33,7 @@
 package org.exoplatform.common.http.client;
 
 import org.exoplatform.commons.utils.PrivilegedSystemHelper;
+import org.exoplatform.commons.utils.ClassLoading;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
@@ -429,7 +430,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          try
          {
             String mname = list[idx];
-            DefaultModuleList.addElement(Class.forName(mname));
+            DefaultModuleList.addElement(ClassLoading.forName(mname, HTTPConnection.class));
 
             if (log.isDebugEnabled())
                log.debug("added module " + list[idx]);
@@ -1924,9 +1925,9 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          try
          {
             if (raw)
-               removeModule(Class.forName(modules[idx]));
+               removeModule(ClassLoading.forName(modules[idx], this));
             else
-               addModule(Class.forName(modules[idx]), -1);
+               addModule(ClassLoading.forName(modules[idx], this), -1);
          }
          catch (ClassNotFoundException cnfe)
          {

@@ -19,6 +19,7 @@
 package org.exoplatform.services.rest.impl;
 
 import org.exoplatform.commons.utils.SecurityHelper;
+import org.exoplatform.commons.utils.ClassLoading;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
@@ -76,7 +77,7 @@ public class DependencySupplier
             {
                public Class run() throws ClassNotFoundException
                {
-                  return Thread.currentThread().getContextClassLoader().loadClass(injectAnnotationParameter.getValue());
+                  return ClassLoading.loadClass(injectAnnotationParameter.getValue(), DependencySupplier.class);
                }
             });
          }

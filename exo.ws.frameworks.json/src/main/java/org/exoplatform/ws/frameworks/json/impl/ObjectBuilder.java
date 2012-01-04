@@ -18,6 +18,7 @@
  */
 package org.exoplatform.ws.frameworks.json.impl;
 
+import org.exoplatform.commons.utils.ClassLoading;
 import org.exoplatform.ws.frameworks.json.impl.JsonUtils.Types;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
 
@@ -487,7 +488,7 @@ public class ObjectBuilder
          case CLASS :
             try
             {
-               return Class.forName(jsonValue.getStringValue());
+               return ClassLoading.forName(jsonValue.getStringValue(), ObjectBuilder.class);
             }
             catch (ClassNotFoundException e)
             {
