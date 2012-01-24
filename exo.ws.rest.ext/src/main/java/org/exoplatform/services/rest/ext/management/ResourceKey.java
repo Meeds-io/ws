@@ -33,7 +33,7 @@ public final class ResourceKey
    {
       if (name == null)
       {
-         throw new NullPointerException();
+         throw new IllegalArgumentException();
       }
       this.name = name;
    }

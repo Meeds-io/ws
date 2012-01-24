@@ -49,7 +49,7 @@ class DefaultModule implements HTTPClientModule
    /** number of times the request will be retried */
    private int req_timeout_retries;
 
-   private static final Log log = ExoLogger.getLogger("exo.ws.commons.DefaultModule");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.DefaultModule");
 
    // Constructors
 
@@ -92,16 +92,16 @@ class DefaultModule implements HTTPClientModule
 
             if (req_timeout_retries-- == 0 || req.getStream() != null)
             {
-               if (log.isDebugEnabled())
-                  log.debug("Status " + sts + " " + resp.getReasonLine()
+               if (LOG.isDebugEnabled())
+                  LOG.debug("Status " + sts + " " + resp.getReasonLine()
                      + " not handled - maximum number of retries exceeded");
 
                return RSP_CONTINUE;
             }
             else
             {
-               if (log.isDebugEnabled())
-                  log.debug("Handling " + sts + " " + resp.getReasonLine() + " - resending request");
+               if (LOG.isDebugEnabled())
+                  LOG.debug("Handling " + sts + " " + resp.getReasonLine() + " - resending request");
 
                return RSP_REQUEST;
             }
@@ -116,12 +116,16 @@ class DefaultModule implements HTTPClientModule
             }
             catch (IOException ioe)
             {
+               if (LOG.isTraceEnabled())
+               {
+                  LOG.trace("An exception occurred: " + ioe.getMessage());
+               }
             }
             if (req.getData() != null)
                throw new ProtocolException("Received status code 411 even" + " though Content-Length was sent");
 
-            if (log.isDebugEnabled())
-               log.debug("Handling " + sts + " " + resp.getReasonLine()
+            if (LOG.isDebugEnabled())
+               LOG.debug("Handling " + sts + " " + resp.getReasonLine()
                   + " - resending request with 'Content-length: 0'");
 
             req.setData(new byte[0]); // will send Content-Length: 0

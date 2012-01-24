@@ -99,13 +99,21 @@ public class Cookie implements Serializable
    public Cookie(String name, String value, String domain, String path, Date expires, boolean secure)
    {
       if (name == null)
-         throw new NullPointerException("missing name");
+      {
+         throw new IllegalArgumentException("missing name");
+      }
       if (value == null)
-         throw new NullPointerException("missing value");
+      {
+         throw new IllegalArgumentException("missing value");
+      }
       if (domain == null)
-         throw new NullPointerException("missing domain");
+      {
+         throw new IllegalArgumentException("missing domain");
+      }
       if (path == null)
-         throw new NullPointerException("missing path");
+      {
+         throw new IllegalArgumentException("missing path");
+      }
 
       this.name = name;
       this.value = value;
@@ -115,7 +123,9 @@ public class Cookie implements Serializable
       this.secure = secure;
 
       if (this.domain.indexOf('.') == -1)
+      {
          this.domain += ".local";
+      }
    }
 
    /**

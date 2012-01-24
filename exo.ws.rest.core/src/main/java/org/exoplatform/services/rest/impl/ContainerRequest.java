@@ -18,6 +18,8 @@
  */
 package org.exoplatform.services.rest.impl;
 
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.GenericContainerRequest;
 import org.exoplatform.services.rest.impl.header.AcceptLanguage;
 import org.exoplatform.services.rest.impl.header.AcceptMediaType;
@@ -107,6 +109,8 @@ public class ContainerRequest implements GenericContainerRequest
     * Base URI, e.g. servlet path.  
     */
    private URI baseUri;
+
+   private static final Log LOG = ExoLogger.getLogger("org.ws.rest.core.ContainerRequest");
 
    /**
     * Constructs new instance of ContainerRequest.
@@ -568,7 +572,10 @@ public class ContainerRequest implements GenericContainerRequest
       }
       catch (IllegalArgumentException e)
       {
-         // If the specified date is invalid, the header is ignored.
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + e.getMessage());
+         }
       }
 
       return null;
@@ -587,17 +594,23 @@ public class ContainerRequest implements GenericContainerRequest
       String ifModified = getRequestHeaders().getFirst(IF_MODIFIED_SINCE);
 
       if (ifModified == null)
+      {
          return null;
+      }
       try
       {
          long modifiedSince = HeaderHelper.parseDateHeader(ifModified).getTime();
          if (lastModified < modifiedSince)
+         {
             return Response.notModified();
-
+         }
       }
       catch (IllegalArgumentException e)
       {
-         // If the specified date is invalid, the header is ignored.
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + e.getMessage());
+         }
       }
 
       return null;

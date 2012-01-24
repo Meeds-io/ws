@@ -82,19 +82,24 @@ final class RespInputStream extends InputStream implements GlobalConstants
    /** the total number of bytes of entity data read from the demux so far */
    int count = 0;
 
-   private static final Log log = ExoLogger.getLogger("exo.ws.commons.RespInputStream");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.RespInputStream");
 
    static
    {
       try
       {
          dontTimeoutBody = Boolean.getBoolean("HTTPClient.dontTimeoutRespBody");
-         if (log.isDebugEnabled() && dontTimeoutBody)
-            log.debug("Disabling timeouts when " + "reading response body");
-
+         if (LOG.isDebugEnabled() && dontTimeoutBody)
+         {
+            LOG.debug("Disabling timeouts when " + "reading response body");
+         }
       }
       catch (Exception e)
       {
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + e.getMessage());
+         }
       }
    }
 
@@ -150,8 +155,8 @@ final class RespInputStream extends InputStream implements GlobalConstants
       else
       {
          if (resph.resp.cd_type != CD_HDRS)
-            if (log.isDebugEnabled())
-               log.debug("Reading stream " + this.hashCode());
+            if (LOG.isDebugEnabled())
+               LOG.debug("Reading stream " + this.hashCode());
 
          int rcvd;
          if (dontTimeoutBody && resph.resp.cd_type != CD_HDRS)
@@ -221,8 +226,8 @@ final class RespInputStream extends InputStream implements GlobalConstants
          if (dont_truncate && (buffer == null || interrupted))
             readAll(resph.resp.timeout);
 
-         if (log.isDebugEnabled())
-            log.debug("User closed stream " + hashCode());
+         if (LOG.isDebugEnabled())
+            LOG.debug("User closed stream " + hashCode());
 
          demux.closeSocketIfAllStreamsClosed();
 
@@ -271,8 +276,8 @@ final class RespInputStream extends InputStream implements GlobalConstants
     */
    void readAll(int timeout) throws IOException
    {
-      if (log.isDebugEnabled())
-         log.debug("Read-all on stream " + this.hashCode());
+      if (LOG.isDebugEnabled())
+         LOG.debug("Read-all on stream " + this.hashCode());
 
       synchronized (resph.resp)
       {

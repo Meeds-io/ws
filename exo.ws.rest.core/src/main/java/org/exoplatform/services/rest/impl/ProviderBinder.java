@@ -807,7 +807,9 @@ public class ProviderBinder implements ExtendedProviders
                      break;
                   case SINGLETON :
                      if (instance == null)
-                        throw new NullPointerException("ContextResolver instance is null.");
+                     {
+                        throw new IllegalArgumentException("ContextResolver instance is null.");
+                     }
                      factory = new SingletonObjectFactory<ProviderDescriptor>(descriptor, instance);
                      break;
                   case CONTAINER :
@@ -853,7 +855,9 @@ public class ProviderBinder implements ExtendedProviders
             break;
          case SINGLETON :
             if (instance == null)
-               throw new NullPointerException("MessageBodyReader instance is null.");
+            {
+               throw new IllegalArgumentException("MessageBodyReader instance is null.");
+            }
             factory = new SingletonObjectFactory<ProviderDescriptor>(descriptor, instance);
             break;
          case CONTAINER :
@@ -890,7 +894,9 @@ public class ProviderBinder implements ExtendedProviders
             break;
          case SINGLETON :
             if (instance == null)
-               throw new NullPointerException("MessageBodyWriter instance is null.");
+            {
+               throw new IllegalArgumentException("MessageBodyWriter instance is null.");
+            }
             factory = new SingletonObjectFactory<ProviderDescriptor>(descriptor, instance);
             break;
          case CONTAINER :
@@ -947,7 +953,9 @@ public class ProviderBinder implements ExtendedProviders
                      break;
                   case SINGLETON :
                      if (instance == null)
-                        throw new NullPointerException("ExceptionMapper instance is null.");
+                     {
+                        throw new IllegalArgumentException("ExceptionMapper instance is null.");
+                     }
                      factory = new SingletonObjectFactory<ProviderDescriptor>(descriptor, instance);
                      break;
                   case CONTAINER :
@@ -980,7 +988,9 @@ public class ProviderBinder implements ExtendedProviders
             break;
          case SINGLETON :
             if (instance == null)
-               throw new NullPointerException("RequestFilter instance is null.");
+            {
+               throw new IllegalArgumentException("RequestFilter instance is null.");
+            }
             factory = new SingletonObjectFactory<FilterDescriptor>(descriptor, instance);
             break;
          case CONTAINER :
@@ -1010,7 +1020,9 @@ public class ProviderBinder implements ExtendedProviders
             break;
          case SINGLETON :
             if (instance == null)
-               throw new NullPointerException("ResponseFilter instance is null.");
+            {
+               throw new IllegalArgumentException("ResponseFilter instance is null.");
+            }
             factory = new SingletonObjectFactory<FilterDescriptor>(descriptor, instance);
             break;
          case CONTAINER :
@@ -1040,7 +1052,9 @@ public class ProviderBinder implements ExtendedProviders
             break;
          case SINGLETON :
             if (instance == null)
-               throw new NullPointerException("MethodInvokerFilter instance is null.");
+            {
+               throw new IllegalArgumentException("MethodInvokerFilter instance is null.");
+            }
             factory = new SingletonObjectFactory<FilterDescriptor>(descriptor, instance);
             break;
          case CONTAINER :

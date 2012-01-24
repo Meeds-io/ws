@@ -81,7 +81,7 @@ class AuthorizationModule implements HTTPClientModule
 
    private Response saved_resp;
 
-   private static final Log log = ExoLogger.getLogger("exo.ws.commons.AuthorizationModule");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.AuthorizationModule");
 
    // Constructors
 
@@ -127,22 +127,22 @@ class AuthorizationModule implements HTTPClientModule
          copyFrom((AuthorizationModule)deferred_auth_list.remove(out));
          req.copyFrom(saved_req);
 
-         if (log.isDebugEnabled())
-            log.debug("Handling deferred auth challenge");
+         if (LOG.isDebugEnabled())
+            LOG.debug("Handling deferred auth challenge");
 
          handle_auth_challenge(req, saved_resp);
 
          if (auth_sent != null)
          {
-            if (log.isDebugEnabled())
-               log.debug("Sending request with Authorization '" + auth_sent + "'");
+            if (LOG.isDebugEnabled())
+               LOG.debug("Sending request with Authorization '" + auth_sent + "'");
 
          }
          else
          {
 
-            if (log.isDebugEnabled())
-               log.debug("Sending request with Proxy-Authorization '" + prxy_sent + "'");
+            if (LOG.isDebugEnabled())
+               LOG.debug("Sending request with Proxy-Authorization '" + prxy_sent + "'");
          }
          return REQ_RESTART;
       }
@@ -193,8 +193,8 @@ class AuthorizationModule implements HTTPClientModule
          prxy_sent = guess;
          prxy_from_4xx = false;
 
-         if (log.isDebugEnabled())
-            log.debug("Preemptively sending Proxy-Authorization '" + guess + "'");
+         if (LOG.isDebugEnabled())
+            LOG.debug("Preemptively sending Proxy-Authorization '" + guess + "'");
 
       }
       if (rem_idx >= 0)
@@ -253,8 +253,8 @@ class AuthorizationModule implements HTTPClientModule
          auth_sent = guess;
          auth_from_4xx = false;
 
-         if (log.isDebugEnabled())
-            log.debug("Preemptively sending Authorization '" + guess + "'");
+         if (LOG.isDebugEnabled())
+            LOG.debug("Preemptively sending Authorization '" + guess + "'");
 
       }
       if (rem_idx >= 0)
@@ -288,7 +288,11 @@ class AuthorizationModule implements HTTPClientModule
                AuthorizationInfo.getAuthorization(auth_sent, req, resp, false).addPath(req.getRequestURI());
             }
             catch (AuthSchemeNotImplException asnie)
-            { /* shouldn't happen */
+            {
+               if (LOG.isTraceEnabled())
+               {
+                  LOG.trace("An exception occurred: " + asnie.getMessage());
+               }
             }
          }
 
@@ -343,8 +347,8 @@ class AuthorizationModule implements HTTPClientModule
             {
                if (!HTTPConnection.deferStreamed)
                {
-                  if (log.isDebugEnabled())
-                     log.debug("Status " + sts + " not handled - request has an output stream");
+                  if (LOG.isDebugEnabled())
+                     LOG.debug("Status " + sts + " not handled - request has an output stream");
 
                   return RSP_CONTINUE;
                }
@@ -356,16 +360,16 @@ class AuthorizationModule implements HTTPClientModule
                req.getStream().reset();
                resp.setRetryRequest(true);
 
-               if (log.isDebugEnabled())
-                  log.debug("Handling of status " + sts + " deferred because an output stream was used");
+               if (LOG.isDebugEnabled())
+                  LOG.debug("Handling of status " + sts + " deferred because an output stream was used");
 
                return RSP_CONTINUE;
             }
 
             // handle the challenge
 
-            if (log.isDebugEnabled())
-               log.debug("Handling status: " + sts + " " + resp.getReasonLine());
+            if (LOG.isDebugEnabled())
+               LOG.debug("Handling status: " + sts + " " + resp.getReasonLine());
 
             handle_auth_challenge(req, resp);
 
@@ -379,17 +383,25 @@ class AuthorizationModule implements HTTPClientModule
                }
                catch (IOException ioe)
                {
+                  if (LOG.isTraceEnabled())
+                  {
+                     LOG.trace("An exception occurred: " + ioe.getMessage());
+                  }
                }
 
                if (auth_sent != null)
                {
-                  if (log.isDebugEnabled())
-                     log.debug("Resending request with Authorization '" + auth_sent + "'");
+                  if (LOG.isDebugEnabled())
+                  {
+                     LOG.debug("Resending request with Authorization '" + auth_sent + "'");
+                  }
                }
                else
                {
-                  if (log.isDebugEnabled())
-                     log.debug("Resending request with Proxy-Authorization '" + prxy_sent + "'");
+                  if (LOG.isDebugEnabled())
+                  {
+                     LOG.debug("Resending request with Proxy-Authorization '" + prxy_sent + "'");
+                  }
                }
 
                return RSP_REQUEST;
@@ -397,13 +409,17 @@ class AuthorizationModule implements HTTPClientModule
 
             if (req.getStream() != null)
             {
-               if (log.isDebugEnabled())
-                  log.debug("Status " + sts + " not handled - request has an output stream");
+               if (LOG.isDebugEnabled())
+               {
+                  LOG.debug("Status " + sts + " not handled - request has an output stream");
+               }
             }
             else
             {
-               if (log.isDebugEnabled())
-                  log.debug("No Auth Info found - status " + sts + " not handled");
+               if (LOG.isDebugEnabled())
+               {
+                  LOG.debug("No Auth Info found - status " + sts + " not handled");
+               }
             }
             return RSP_CONTINUE;
 
@@ -516,11 +532,11 @@ class AuthorizationModule implements HTTPClientModule
       // get the list of challenges the server sent
       AuthorizationInfo[] challenges = AuthorizationInfo.parseAuthString(auth_str, req, resp);
 
-      if (log.isDebugEnabled())
+      if (LOG.isDebugEnabled())
       {
-         log.debug("Parsed " + challenges.length + " challenges:");
+         LOG.debug("Parsed " + challenges.length + " challenges:");
          for (int idx = 0; idx < challenges.length; idx++)
-            log.debug("AuthM: Challenge " + challenges[idx]);
+            LOG.debug("AuthM: Challenge " + challenges[idx]);
       }
 
       if (challenges.length == 0)

@@ -65,7 +65,7 @@ class RedirectionModule implements HTTPClientModule
    /** used for deferred redirection retries */
    private Request saved_req;
 
-   private static final Log log = ExoLogger.getLogger("exo.ws.commons.RedirectionModule");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.RedirectionModule");
 
    // Constructors
 
@@ -140,10 +140,14 @@ class RedirectionModule implements HTTPClientModule
          }
          catch (ParseException pe)
          {
+            if (LOG.isTraceEnabled())
+            {
+               LOG.trace("An exception occurred: " + pe.getMessage());
+            }
          }
 
-         if (log.isDebugEnabled())
-            log.debug("Matched request in permanent redirection list - redoing request to " + lastURI.toExternalForm());
+         if (LOG.isDebugEnabled())
+            LOG.debug("Matched request in permanent redirection list - redoing request to " + lastURI.toExternalForm());
 
          if (!con.isCompatibleWith(new_loc))
          {
@@ -203,8 +207,8 @@ class RedirectionModule implements HTTPClientModule
              */
             if (req.getMethod().equals("POST") || req.getMethod().equals("PUT"))
             {
-               if (log.isDebugEnabled())
-                  log.debug("Received status: " + sts + " " + resp.getReasonLine() + " - treating as 303");
+               if (LOG.isDebugEnabled())
+                  LOG.debug("Received status: " + sts + " " + resp.getReasonLine() + " - treating as 303");
 
                sts = 303;
             }
@@ -213,15 +217,15 @@ class RedirectionModule implements HTTPClientModule
          case 303 : // See Other (use GET)
          case 307 : // Moved Temporarily (we mean it!)
 
-            if (log.isDebugEnabled())
-               log.debug("Handling status: " + sts + " " + resp.getReasonLine());
+            if (LOG.isDebugEnabled())
+               LOG.debug("Handling status: " + sts + " " + resp.getReasonLine());
 
             // the spec says automatic redirection may only be done if
             // the second request is a HEAD or GET.
             if (!req.getMethod().equals("GET") && !req.getMethod().equals("HEAD") && sts != 303)
             {
-               if (log.isDebugEnabled())
-                  log.debug("Not redirected because method is neither HEAD nor GET");
+               if (LOG.isDebugEnabled())
+                  LOG.debug("Not redirected because method is neither HEAD nor GET");
 
                if (sts == 301 && resp.getHeader("Location") != null)
                   update_perm_redir_list(req, resLocHdr(resp.getHeader("Location"), req));
@@ -235,16 +239,16 @@ class RedirectionModule implements HTTPClientModule
 
             if (sts == 305 || sts == 306)
             {
-               if (log.isDebugEnabled())
-                  log.debug("Handling status: " + sts + " " + resp.getReasonLine());
+               if (LOG.isDebugEnabled())
+                  LOG.debug("Handling status: " + sts + " " + resp.getReasonLine());
 
             }
 
             // Don't accept 305 from a proxy
             if (sts == 305 && req.getConnection().getProxyHost() != null)
             {
-               if (log.isDebugEnabled())
-                  log.debug("305 ignored because a proxy is already in use");
+               if (LOG.isDebugEnabled())
+                  LOG.debug("305 ignored because a proxy is already in use");
 
                resp.setEffectiveURI(lastURI);
                return RSP_CONTINUE;
@@ -259,12 +263,12 @@ class RedirectionModule implements HTTPClientModule
              */
             if (level >= 15 || resp.getHeader("Location") == null)
             {
-               if (log.isDebugEnabled())
+               if (LOG.isDebugEnabled())
                {
                   if (level >= 15)
-                     log.debug("Not redirected because of too many levels of redirection");
+                     LOG.debug("Not redirected because of too many levels of redirection");
                   else
-                     log.debug("Not redirected because no Location header was present");
+                     LOG.debug("Not redirected because no Location header was present");
                }
 
                resp.setEffectiveURI(lastURI);
@@ -364,8 +368,8 @@ class RedirectionModule implements HTTPClientModule
                   {
                      if (!HTTPConnection.deferStreamed)
                      {
-                        if (log.isDebugEnabled())
-                           log.debug("Status " + sts + " not handled - request has an output stream");
+                        if (LOG.isDebugEnabled())
+                           LOG.debug("Status " + sts + " not handled - request has an output stream");
 
                         return RSP_CONTINUE;
                      }
@@ -410,6 +414,10 @@ class RedirectionModule implements HTTPClientModule
             }
             catch (IOException ioe)
             {
+               if (LOG.isTraceEnabled())
+               {
+                  LOG.trace("An exception occurred: " + ioe.getMessage());
+               }
             }
 
             if (sts != 305 && sts != 306)
@@ -419,16 +427,20 @@ class RedirectionModule implements HTTPClientModule
                   lastURI = new URI(loc, nres);
                }
                catch (ParseException pe)
-               { /* ??? */
+               {
+                  if (LOG.isTraceEnabled())
+                  {
+                     LOG.trace("An exception occurred: " + pe.getMessage());
+                  }
                }
 
-               if (log.isDebugEnabled())
-                  log.debug("Request redirected to " + lastURI.toExternalForm() + " using method " + req.getMethod());
+               if (LOG.isDebugEnabled())
+                  LOG.debug("Request redirected to " + lastURI.toExternalForm() + " using method " + req.getMethod());
             }
             else
             {
-               if (log.isDebugEnabled())
-                  log.debug("Resending request using " + "proxy " + mvd.getProxyHost() + ":" + mvd.getProxyPort());
+               if (LOG.isDebugEnabled())
+                  LOG.debug("Resending request using " + "proxy " + mvd.getProxyHost() + ":" + mvd.getProxyPort());
             }
 
             if (req.getStream() != null)
@@ -473,6 +485,10 @@ class RedirectionModule implements HTTPClientModule
       }
       catch (ParseException pe)
       {
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + pe.getMessage());
+         }
       }
 
       if (!cur_loc.equals(new_loc))

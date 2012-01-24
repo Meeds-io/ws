@@ -19,6 +19,8 @@
 package org.exoplatform.services.rest.impl.header;
 
 import org.exoplatform.commons.utils.Tools;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.header.QualityValue;
 
 import java.text.ParseException;
@@ -48,6 +50,8 @@ import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
  */
 public final class HeaderHelper
 {
+
+   private static final Log LOG = ExoLogger.getLogger("org.ws.rest.core.HeaderHelper");
 
    /**
     * Constructor.
@@ -483,7 +487,10 @@ public final class HeaderHelper
       }
       catch (ParseException e)
       {
-         // ignore all ParseException now
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + e.getMessage());
+         }
       }
       // no one format was found
       throw new IllegalArgumentException("Not found appropriated date format for " + header);

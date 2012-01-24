@@ -18,6 +18,8 @@
  */
 package org.exoplatform.ws.frameworks.json.impl;
 
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.ws.frameworks.json.JsonHandler;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
 import org.exoplatform.ws.frameworks.json.value.impl.ArrayValue;
@@ -34,6 +36,8 @@ import org.exoplatform.ws.frameworks.json.value.impl.StringValue;
  */
 public class JsonDefaultHandler implements JsonHandler
 {
+
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.frameworks.json.JsonDefaultHandler");
 
    /** The key. */
    private String key;
@@ -190,7 +194,10 @@ public class JsonDefaultHandler implements JsonHandler
                   }
                   catch (NumberFormatException e)
                   {
-                     // nothing to do!
+                     if (LOG.isTraceEnabled())
+                     {
+                        LOG.trace("An exception occurred: " + e.getMessage());
+                     }
                   }
                }
                else
@@ -217,7 +224,10 @@ public class JsonDefaultHandler implements JsonHandler
                         }
                         catch (NumberFormatException d)
                         {
-                           // nothing to do!
+                           if (LOG.isTraceEnabled())
+                           {
+                              LOG.trace("An exception occurred: " + d.getMessage());
+                           }
                         }
                      }
                      // nothing to do!
@@ -241,7 +251,10 @@ public class JsonDefaultHandler implements JsonHandler
                   }
                   catch (NumberFormatException d)
                   {
-                     // nothing to do!
+                     if (LOG.isTraceEnabled())
+                     {
+                        LOG.trace("An exception occurred: " + d.getMessage());
+                     }
                   }
                }
             }
