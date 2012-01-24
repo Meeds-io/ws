@@ -114,7 +114,7 @@ public class HTTPResponse implements HTTPClientModuleConstants
    /** the method used in the request */
    private String method = null;
 
-   private static final Log log = ExoLogger.getLogger("exo.ws.commons.HTTPResponse");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.HTTPResponse");
 
    // Constructors
 
@@ -137,6 +137,10 @@ public class HTTPResponse implements HTTPClientModuleConstants
       }
       catch (ParseException pe)
       {
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + pe.getMessage());
+         }
       }
       this.method = orig.getMethod();
    }
@@ -504,7 +508,7 @@ public class HTTPResponse implements HTTPClientModuleConstants
          }
          catch (IOException ioe)
          {
-            log.error(method + " " + OriginalURI.getPathAndQuery());
+            LOG.error(method + " " + OriginalURI.getPathAndQuery());
 
             try
             {
@@ -512,6 +516,10 @@ public class HTTPResponse implements HTTPClientModuleConstants
             }
             catch (Exception e)
             {
+               if (LOG.isTraceEnabled())
+               {
+                  LOG.trace("An exception occurred: " + e.getMessage());
+               }
             }
             throw ioe;
          }
@@ -644,7 +652,7 @@ public class HTTPResponse implements HTTPClientModuleConstants
          {
             if (!(e instanceof InterruptedIOException))
             {
-               log.error(method + " " + OriginalURI.getPathAndQuery());
+               LOG.error(method + " " + OriginalURI.getPathAndQuery());
             }
 
             return "Failed to read headers: " + e;
@@ -943,6 +951,10 @@ public class HTTPResponse implements HTTPClientModuleConstants
          }
          catch (IOException ioe)
          {
+            if (LOG.isTraceEnabled())
+            {
+               LOG.trace("An exception occurred: " + ioe.getMessage());
+            }
          }
       }
    }

@@ -82,7 +82,7 @@ class StreamDemultiplexor implements GlobalConstants
    /** the currently set timeout for the socket */
    private int cur_timeout = 0;
 
-   private static final Log log = ExoLogger.getLogger("exo.ws.commons.StreamDemultiplexor");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.StreamDemultiplexor");
 
    static
    {
@@ -132,8 +132,8 @@ class StreamDemultiplexor implements GlobalConstants
     */
    private void init(Socket sock) throws IOException
    {
-      if (log.isDebugEnabled())
-         log.debug("Initializing Stream Demultiplexor (" + this.hashCode() + ")");
+      if (LOG.isDebugEnabled())
+         LOG.debug("Initializing Stream Demultiplexor (" + this.hashCode() + ")");
 
       this.Sock = sock;
       this.Stream = new BufferedInputStream(sock.getInputStream());
@@ -241,8 +241,8 @@ class StreamDemultiplexor implements GlobalConstants
             throw resph.exception;
          }
 
-         if (resph.resp.cd_type != CD_HDRS && log.isDebugEnabled())
-            log.debug("Reading for stream " + resph.stream.hashCode());
+         if (resph.resp.cd_type != CD_HDRS && LOG.isDebugEnabled())
+            LOG.debug("Reading for stream " + resph.stream.hashCode());
 
          if (Timer != null)
             Timer.hyber();
@@ -253,8 +253,8 @@ class StreamDemultiplexor implements GlobalConstants
 
             if (timeout != cur_timeout)
             {
-               if (log.isDebugEnabled())
-                  log.debug("Setting timeout to " + timeout + " ms");
+               if (LOG.isDebugEnabled())
+                  LOG.debug("Setting timeout to " + timeout + " ms");
 
                Sock.setSoTimeout(timeout);
                cur_timeout = timeout;
@@ -453,8 +453,8 @@ class StreamDemultiplexor implements GlobalConstants
    {
       if (Sock == null) // already cleaned up
          return;
-      if (log.isDebugEnabled())
-         log.debug("Closing all streams and socket (" + this.hashCode() + ")");
+      if (LOG.isDebugEnabled())
+         LOG.debug("Closing all streams and socket (" + this.hashCode() + ")");
 
       try
       {
@@ -462,6 +462,10 @@ class StreamDemultiplexor implements GlobalConstants
       }
       catch (IOException ioe)
       {
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + ioe.getMessage());
+         }
       }
       try
       {
@@ -469,6 +473,10 @@ class StreamDemultiplexor implements GlobalConstants
       }
       catch (IOException ioe)
       {
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + ioe.getMessage());
+         }
       }
       Sock = null;
 
@@ -546,8 +554,8 @@ class StreamDemultiplexor implements GlobalConstants
          if (resph != (ResponseHandler)RespHandlerList.getFirst())
             return;
 
-         if (log.isDebugEnabled())
-            log.debug("Closing stream " + resph.stream.hashCode());
+         if (LOG.isDebugEnabled())
+            LOG.debug("Closing stream " + resph.stream.hashCode());
 
          resph.eof = true;
          RespHandlerList.remove(resph);
@@ -655,8 +663,8 @@ class StreamDemultiplexor implements GlobalConstants
             {
                MarkedForClose = resph;
 
-               if (log.isDebugEnabled())
-                  log.debug("Stream " + resp.inp_stream.hashCode() + " marked for close");
+               if (LOG.isDebugEnabled())
+                  LOG.debug("Stream " + resp.inp_stream.hashCode() + " marked for close");
 
                closeSocketIfAllStreamsClosed();
                return;
@@ -674,8 +682,8 @@ class StreamDemultiplexor implements GlobalConstants
          MarkedForClose = lasth; // resp == null, so use last resph
          closeSocketIfAllStreamsClosed();
 
-         if (log.isDebugEnabled())
-            log.debug("Stream " + lasth.stream.hashCode() + " marked for close");
+         if (LOG.isDebugEnabled())
+            LOG.debug("Stream " + lasth.stream.hashCode() + " marked for close");
       }
    }
 
@@ -686,8 +694,8 @@ class StreamDemultiplexor implements GlobalConstants
     */
    void abort()
    {
-      if (log.isDebugEnabled())
-         log.debug("Aborting socket (" + this.hashCode() + ")");
+      if (LOG.isDebugEnabled())
+         LOG.debug("Aborting socket (" + this.hashCode() + ")");
 
       // notify all responses of abort
 
@@ -711,38 +719,48 @@ class StreamDemultiplexor implements GlobalConstants
          {
             try
             {
-               try
+               Sock.setSoLinger(false, 0);
+            }
+            catch (SocketException se)
+            {
+               if (LOG.isTraceEnabled())
                {
-                  Sock.setSoLinger(false, 0);
+                  LOG.trace("An exception occurred: " + se.getMessage());
                }
-               catch (SocketException se)
-               {
-               }
+            }
 
-               try
+            try
+            {
+               if (Stream != null)
                {
                   Stream.close();
                }
-               catch (IOException ioe)
+            }
+            catch (IOException ioe)
+            {
+               if (LOG.isTraceEnabled())
                {
-               }
-               try
-               {
-                  Sock.close();
-               }
-               catch (IOException ioe)
-               {
-               }
-               Sock = null;
-
-               if (Timer != null)
-               {
-                  Timer.kill();
-                  Timer = null;
+                  LOG.trace("An exception occurred: " + ioe.getMessage());
                }
             }
-            catch (NullPointerException npe)
+
+            try
             {
+               Sock.close();
+            }
+            catch (IOException ioe)
+            {
+               if (LOG.isTraceEnabled())
+               {
+                  LOG.trace("An exception occurred: " + ioe.getMessage());
+               }
+            }
+            Sock = null;
+
+            if (Timer != null)
+            {
+               Timer.kill();
+               Timer = null;
             }
 
             Connection.DemuxList.remove(this);
@@ -796,6 +814,9 @@ class StreamDemultiplexor implements GlobalConstants
  */
 class SocketTimeout extends Thread
 {
+
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.SocketTimeout");
+
    private boolean alive = true;
 
    /**
@@ -806,6 +827,7 @@ class SocketTimeout extends Thread
     */
    class TimeoutEntry
    {
+
       boolean restart = false, hyber = false, alive = true;
 
       StreamDemultiplexor demux;
@@ -878,6 +900,10 @@ class SocketTimeout extends Thread
       }
       catch (SecurityException se)
       {
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + se.getMessage());
+         }
       } // Oh well...
       setPriority(MAX_PRIORITY);
 

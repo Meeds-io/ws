@@ -242,7 +242,7 @@ public class RestResource
       }
       catch (Exception e)
       {
-         LOG.error(e);
+         LOG.error(e.getMessage());
          return Response.serverError();
       }
       finally
@@ -259,19 +259,29 @@ public class RestResource
       
       Type formType = MultivaluedMapImpl.class.getGenericInterfaces()[0];
       MediaType contentType = context.getHttpHeaders().getMediaType();
-      if (contentType == null) {
+      if (contentType == null)
+      {
          contentType = MediaType.APPLICATION_FORM_URLENCODED_TYPE;
-      }      
+      }
 
       MultivaluedMap<String, String> form = new MultivaluedMapImpl();      
-      try {
+      try
+      {
          MessageBodyReader reader =
             context.getProviders().getMessageBodyReader(MultivaluedMap.class, formType, null, contentType);
-         if (reader != null) {
-            form = (MultivaluedMap<String, String>)reader.readFrom(MultivaluedMap.class, formType, null, contentType, context
-               .getHttpHeaders().getRequestHeaders(), context.getContainerRequest().getEntityStream());
+         if (reader != null)
+         {
+            form =
+               (MultivaluedMap<String, String>)reader.readFrom(MultivaluedMap.class, formType, null, contentType,
+                  context.getHttpHeaders().getRequestHeaders(), context.getContainerRequest().getEntityStream());
          }
-      } catch (Exception e) {         
+      }
+      catch (Exception e)
+      {
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + e.getMessage());
+         }
       }
       
       parameters.putAll(form);

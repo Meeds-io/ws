@@ -22,6 +22,8 @@ package org.exoplatform.services.rest.ext.groovy;
 import groovy.lang.GroovyResourceLoader;
 
 import org.exoplatform.commons.utils.SecurityHelper;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -48,6 +50,9 @@ import java.util.concurrent.FutureTask;
 public class DefaultGroovyResourceLoader implements GroovyResourceLoader
 {
    private static final String DEFAULT_SOURCE_FILE_EXTENSION = ".groovy";
+
+   private static final Log LOG = ExoLogger
+      .getLogger("org.exoplatform.services.rest.ext.groovy.DefaultGroovyResourceLoader");
 
    public final ConcurrentMap<String, Future<URL>> findResourceURLTasks = new ConcurrentHashMap<String, Future<URL>>();
    
@@ -146,7 +151,10 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
       }
       catch (CancellationException e)
       {
-         // ignore me
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + e.getMessage());
+         }
       }
       catch (ExecutionException e)
       {

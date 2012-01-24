@@ -633,6 +633,10 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
          }
          catch (ParseException pe)
          {
+            if (LOG.isTraceEnabled())
+            {
+               LOG.trace("An exception occurred: " + pe.getMessage());
+            }
          }
 
          StringTokenizer tok = new StringTokenizer(ch_params[ch_domain].getValue());
@@ -943,11 +947,19 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
          }
          catch (IOException ioe)
          {
+            if (LOG.isTraceEnabled())
+            {
+               LOG.trace("An exception occurred: " + ioe.getMessage());
+            }
          }
          return data;
       }
-      catch (Throwable t)
+      catch (IOException e)
       {
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + e.getMessage());
+         }
       }
 
       /*
@@ -975,6 +987,10 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
       }
       catch (ArrayIndexOutOfBoundsException aioobe)
       {
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + aioobe.getMessage());
+         }
       }
 
       return data;
@@ -1313,6 +1329,9 @@ class VerifyDigest implements HashVerifier, GlobalConstants
 
 class SimpleAuthPopup implements AuthorizationPrompter
 {
+
+   private static final Log LOG = ExoLogger.getLogger("org.exoplatform.common.http.client.SimpleAuthPopup");
+
    private static BasicAuthBox inp = null;
 
    /**
@@ -1499,6 +1518,10 @@ class SimpleAuthPopup implements AuthorizationPrompter
             }
             catch (SecurityException se)
             {
+               if (LOG.isTraceEnabled())
+               {
+                  LOG.trace("An exception occurred: " + se.getMessage());
+               }
             }
          }
 
@@ -1538,6 +1561,9 @@ class SimpleAuthPopup implements AuthorizationPrompter
  */
 class SimpleAuthPrompt implements AuthorizationPrompter
 {
+
+   private static final Log LOG = ExoLogger.getLogger("org.exoplatform.common.http.client.SimpleAuthPrompt");
+
    /**
     * the method called by DefaultAuthHandler.
     * @return the username/password pair
@@ -1627,6 +1653,10 @@ class SimpleAuthPrompt implements AuthorizationPrompter
          }
          catch (Exception e)
          {
+            if (LOG.isTraceEnabled())
+            {
+               LOG.trace("An exception occurred: " + e.getMessage());
+            }
          }
    }
 

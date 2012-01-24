@@ -114,7 +114,7 @@ public class CookieModule implements HTTPClientModule
    /** the cookie policy handler */
    private static CookiePolicyHandler cookie_handler = new DefaultCookiePolicyHandler();
 
-   private static final Log log = ExoLogger.getLogger("exo.ws.commons.CookieModule");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.CookieModule");
 
    // read in cookies from disk at startup
 
@@ -148,8 +148,12 @@ public class CookieModule implements HTTPClientModule
          {
             System.runFinalizersOnExit(true);
          }
-         catch (Throwable t)
+         catch (SecurityException t)
          {
+            if (LOG.isTraceEnabled())
+            {
+               LOG.trace("An exception occurred: " + t.getMessage());
+            }
          }
       }
    }
@@ -168,7 +172,11 @@ public class CookieModule implements HTTPClientModule
             ois.close();
          }
       }
-      catch (Throwable t)
+      catch (IOException t)
+      {
+         cookie_jar = null;
+      }
+      catch (ClassNotFoundException e)
       {
          cookie_jar = null;
       }
@@ -199,8 +207,12 @@ public class CookieModule implements HTTPClientModule
                oos.writeObject(cookie_list);
                oos.close();
             }
-            catch (Throwable t)
+            catch (IOException t)
             {
+               if (LOG.isTraceEnabled())
+               {
+                  LOG.trace("An exception occurred: " + t.getMessage());
+               }
             }
          }
       }
@@ -216,6 +228,10 @@ public class CookieModule implements HTTPClientModule
       }
       catch (Exception e)
       {
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + e.getMessage());
+         }
       }
 
       if (file == null)
@@ -307,8 +323,8 @@ public class CookieModule implements HTTPClientModule
 
             if (cookie.hasExpired())
             {
-               if (log.isDebugEnabled())
-                  log.debug("Cookie has expired and is being removed: " + cookie);
+               if (LOG.isDebugEnabled())
+                  LOG.debug("Cookie has expired and is being removed: " + cookie);
 
                if (remove_list == null)
                   remove_list = new Vector();
@@ -375,8 +391,8 @@ public class CookieModule implements HTTPClientModule
 
          req.setHeaders(hdrs);
 
-         if (log.isDebugEnabled())
-            log.debug("Sending cookies '" + value + "'");
+         if (LOG.isDebugEnabled())
+            LOG.debug("Sending cookies '" + value + "'");
 
       }
 
@@ -444,11 +460,11 @@ public class CookieModule implements HTTPClientModule
       else
          cookies = Cookie.parse(set_cookie, req);
 
-      if (log.isDebugEnabled())
+      if (LOG.isDebugEnabled())
       {
-         log.debug("Received and parsed " + cookies.length + " cookies:");
+         LOG.debug("Received and parsed " + cookies.length + " cookies:");
          for (int idx = 0; idx < cookies.length; idx++)
-            log.debug("Cookie " + idx + ": " + cookies[idx]);
+            LOG.debug("Cookie " + idx + ": " + cookies[idx]);
       }
 
       Hashtable cookie_list = Util.getList(cookie_cntxt_list, req.getConnection().getContext());
@@ -459,8 +475,8 @@ public class CookieModule implements HTTPClientModule
             Cookie cookie = (Cookie)cookie_list.get(cookies[idx]);
             if (cookie != null && cookies[idx].hasExpired())
             {
-               if (log.isDebugEnabled())
-                  log.debug("Cookie has expired and is " + "being removed: " + cookie);
+               if (LOG.isDebugEnabled())
+                  LOG.debug("Cookie has expired and is " + "being removed: " + cookie);
 
                cookie_list.remove(cookie); // expired, so remove
             }

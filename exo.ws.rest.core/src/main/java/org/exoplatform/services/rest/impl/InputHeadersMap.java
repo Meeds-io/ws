@@ -70,7 +70,9 @@ public final class InputHeadersMap extends HashMap<String, List<String>> impleme
    public InputHeadersMap(Map<String, List<String>> m)
    {
       if (m == null)
-         throw new NullPointerException();
+      {
+         throw new IllegalArgumentException();
+      }
       this.m = new HashMap<String, List<String>>(m.size());
       for (Map.Entry<String, List<String>> e : m.entrySet())
          this.m.put(e.getKey().toLowerCase(), Collections.unmodifiableList(e.getValue()));

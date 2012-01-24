@@ -19,6 +19,8 @@
 package org.exoplatform.ws.frameworks.json.impl;
 
 import org.exoplatform.commons.utils.ClassLoading;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.ws.frameworks.json.impl.JsonUtils.Types;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
 
@@ -52,6 +54,8 @@ public class ObjectBuilder
       // and has method setMetaClass. Not need to process it.
       SKIP_METHODS.add("setMetaClass");
    }
+
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.frameworks.json.ObjectBuilder");
 
    /**
     * Create array of Java Object from JSON source include multi-dimension
@@ -174,7 +178,10 @@ public class ObjectBuilder
                   }
                   catch (Exception e2)
                   {
-                     // ignore exception here
+                     if (LOG.isTraceEnabled())
+                     {
+                        LOG.trace("An exception occurred: " + e2.getMessage());
+                     }
                   }
                }
             }
@@ -283,7 +290,10 @@ public class ObjectBuilder
                   }
                   catch (Exception e2)
                   {
-                     // ignore exception here
+                     if (LOG.isTraceEnabled())
+                     {
+                        LOG.trace("An exception occurred: " + e2.getMessage());
+                     }
                   }
                }
             }

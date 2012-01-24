@@ -143,7 +143,7 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
    /** should the request be retried by the application? */
    boolean retry = false;
 
-   private static final Log log = ExoLogger.getLogger("exo.ws.commons.Response");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.Response");
 
    static
    {
@@ -577,7 +577,7 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
          }
          catch (IOException ioe)
          {
-            log.error("Response:  (" + inp_stream.hashCode() + ")", ioe);
+            LOG.error("Response:  (" + inp_stream.hashCode() + ")", ioe);
 
             try
             {
@@ -585,6 +585,10 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
             }
             catch (Exception e)
             {
+               if (LOG.isTraceEnabled())
+               {
+                  LOG.trace("An exception occurred: " + e.getMessage());
+               }
             }
             throw ioe;
          }
@@ -732,6 +736,10 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
       }
       catch (ParseException pe)
       {
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + pe.getMessage());
+         }
       }
       if (te_hdr != null)
       {
@@ -758,6 +766,10 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
       }
       catch (ParseException pe)
       {
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + pe.getMessage());
+         }
       }
 
       // now determine content-delimiter
@@ -813,9 +825,9 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
          inp_stream.close(); // we will not receive any more data
       }
 
-      if (log.isDebugEnabled())
+      if (LOG.isDebugEnabled())
       {
-         log.debug("Response entity delimiter: "
+         LOG.debug("Response entity delimiter: "
             + (cd_type == CD_0 ? "No Entity" : cd_type == CD_CLOSE ? "Close" : cd_type == CD_CONTLEN ? "Content-Length"
                : cd_type == CD_CHUNKED ? "Chunked" : cd_type == CD_MP_BR ? "Multipart" : "???") + " ("
             + inp_stream.hashCode() + ")");
@@ -952,12 +964,12 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
     */
    private String readResponseHeaders(InputStream inp) throws IOException
    {
-      if (log.isDebugEnabled())
+      if (LOG.isDebugEnabled())
       {
          if (buf_pos == 0)
-            log.debug("Reading Response headers " + inp_stream.hashCode());
+            LOG.debug("Reading Response headers " + inp_stream.hashCode());
          else
-            log.debug("Resuming reading Response headers " + inp_stream.hashCode());
+            LOG.debug("Resuming reading Response headers " + inp_stream.hashCode());
       }
 
       // read 7 bytes to see type of response
@@ -990,7 +1002,7 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
          }
          catch (EOFException eof)
          {
-            log.error("Response:  (" + inp_stream.hashCode() + ")", eof);
+            LOG.error("Response:  (" + inp_stream.hashCode() + ")", eof);
 
             throw eof;
          }
@@ -1104,8 +1116,8 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
       String sts_line = null;
       StringTokenizer lines = new StringTokenizer(headers, "\r\n"), elem;
 
-      if (log.isDebugEnabled())
-         log.debug("Parsing Response headers from Request " + "\"" + method + " " + resource + "\":  ("
+      if (LOG.isDebugEnabled())
+         LOG.debug("Parsing Response headers from Request " + "\"" + method + " " + resource + "\":  ("
             + inp_stream.hashCode() + ")\n\n" + headers);
 
       // Detect and handle HTTP/0.9 responses
@@ -1198,6 +1210,10 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
       }
       catch (ParseException pe)
       {
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + pe.getMessage());
+         }
       }
    }
 
@@ -1218,8 +1234,8 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
          throw exception;
       }
 
-      if (log.isDebugEnabled())
-         log.debug("Reading Response trailers " + inp_stream.hashCode());
+      if (LOG.isDebugEnabled())
+         LOG.debug("Reading Response trailers " + inp_stream.hashCode());
 
       try
       {
@@ -1231,8 +1247,8 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
 
          if (trailers_read)
          {
-            if (log.isDebugEnabled())
-               log.debug("Parsing Response trailers from " + "Request \"" + method + " " + resource + "\":  ("
+            if (LOG.isDebugEnabled())
+               LOG.debug("Parsing Response trailers from " + "Request \"" + method + " " + resource + "\":  ("
                   + inp_stream.hashCode() + ")\n\n" + hdrs);
 
             parseHeaderFields(new StringTokenizer(hdrs.toString(), "\r\n"), Trailers);
@@ -1356,6 +1372,10 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
          }
          catch (IOException ioe)
          {
+            if (LOG.isTraceEnabled())
+            {
+               LOG.trace("An exception occurred: " + ioe.getMessage());
+            }
          }
       }
    }

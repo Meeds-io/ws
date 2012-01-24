@@ -590,6 +590,10 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
             }
             catch (NoSuchMethodException e)
             {
+               if (LOG.isTraceEnabled())
+               {
+                  LOG.trace("An exception occurred: " + e.getMessage());
+               }
             }
          }
          if (inhMethod == null)
@@ -614,6 +618,10 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
                }
                catch (NoSuchMethodException exc)
                {
+                  if (LOG.isTraceEnabled())
+                  {
+                     LOG.trace("An exception occurred: " + exc.getMessage());
+                  }
                }
             }
          }

@@ -32,7 +32,11 @@
 
 package org.exoplatform.common.http.client;
 
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.ProtocolException;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -93,6 +97,8 @@ import java.util.Vector;
 public class AuthorizationInfo implements Cloneable
 {
    // class fields
+
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.AuthorizationInfo");
 
    /** Holds the list of lists of authorization info structures */
    private static Hashtable CntxtList = new Hashtable();
@@ -1112,9 +1118,42 @@ public class AuthorizationInfo implements Cloneable
             // ai.extra_info = extra_info.clone();
             ai.extra_info = extra_info.getClass().getMethod("clone", null).invoke(extra_info, null);
          }
-         catch (Throwable t)
+         catch (IllegalAccessException e)
          {
+            if (LOG.isTraceEnabled())
+            {
+               LOG.trace("An exception occurred: " + e.getMessage());
+            }
          }
+         catch (IllegalArgumentException e)
+         {
+            if (LOG.isTraceEnabled())
+            {
+               LOG.trace("An exception occurred: " + e.getMessage());
+            }
+         }
+         catch (SecurityException e)
+         {
+            if (LOG.isTraceEnabled())
+            {
+               LOG.trace("An exception occurred: " + e.getMessage());
+            }
+         }
+         catch (InvocationTargetException e)
+         {
+            if (LOG.isTraceEnabled())
+            {
+               LOG.trace("An exception occurred: " + e.getMessage());
+            }
+         }
+         catch (NoSuchMethodException e)
+         {
+            if (LOG.isTraceEnabled())
+            {
+               LOG.trace("An exception occurred: " + e.getMessage());
+            }
+         }
+
          ai.paths = new String[paths.length];
          System.arraycopy(paths, 0, ai.paths, 0, paths.length);
       }

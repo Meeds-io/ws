@@ -32,8 +32,8 @@
 
 package org.exoplatform.common.http.client;
 
-import org.exoplatform.commons.utils.PrivilegedSystemHelper;
 import org.exoplatform.commons.utils.ClassLoading;
+import org.exoplatform.commons.utils.PrivilegedSystemHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
@@ -145,7 +145,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection
    /** the output stream used for POST and PUT */
    private OutputStream output_stream;
 
-   private static final Log log = ExoLogger.getLogger("exo.ws.commons.HttpURLConnection");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.HttpURLConnection");
 
    static
    {
@@ -158,6 +158,10 @@ public class HttpURLConnection extends java.net.HttpURLConnection
       }
       catch (SecurityException se)
       {
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + se.getMessage());
+         }
       }
 
       // get the RedirectionModule class
@@ -179,6 +183,10 @@ public class HttpURLConnection extends java.net.HttpURLConnection
       }
       catch (SecurityException se)
       {
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + se.getMessage());
+         }
       }
    }
 
@@ -220,6 +228,10 @@ public class HttpURLConnection extends java.net.HttpURLConnection
       }
       catch (SecurityException se)
       {
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + se.getMessage());
+         }
       }
 
       try
@@ -236,6 +248,10 @@ public class HttpURLConnection extends java.net.HttpURLConnection
       }
       catch (SecurityException se)
       {
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + se.getMessage());
+         }
       }
 
       // now setup stuff
@@ -293,8 +309,8 @@ public class HttpURLConnection extends java.net.HttpURLConnection
       if (connected)
          throw new ProtocolException("Already connected!");
 
-      if (log.isDebugEnabled())
-         log.debug(urlString + " Setting request method: " + method);
+      if (LOG.isDebugEnabled())
+         LOG.debug(urlString + " Setting request method: " + method);
 
       this.method = method.trim().toUpperCase();
       method_set = true;
@@ -589,8 +605,8 @@ public class HttpURLConnection extends java.net.HttpURLConnection
 
       if (output_stream == null)
       {
-         if (log.isDebugEnabled())
-            log.debug(urlString + " creating output stream");
+         if (LOG.isDebugEnabled())
+            LOG.debug(urlString + " creating output stream");
 
          String cl = getRequestProperty("Content-Length");
          if (cl != null)
@@ -657,8 +673,8 @@ public class HttpURLConnection extends java.net.HttpURLConnection
    public void setRequestProperty(String name, String value)
    {
 
-      if (log.isDebugEnabled())
-         log.debug(urlString + " Setting request property: " + name + " : " + value);
+      if (LOG.isDebugEnabled())
+         LOG.debug(urlString + " Setting request property: " + name + " : " + value);
 
       int idx;
       for (idx = 0; idx < headers.length; idx++)
@@ -698,8 +714,8 @@ public class HttpURLConnection extends java.net.HttpURLConnection
     */
    public static void setDefaultRequestProperty(String name, String value)
    {
-      if (log.isDebugEnabled())
-         log.debug("Setting default request property: " + name + " : " + value);
+      if (LOG.isDebugEnabled())
+         LOG.debug("Setting default request property: " + name + " : " + value);
 
       int idx;
       for (idx = 0; idx < default_headers.length; idx++)
@@ -764,8 +780,8 @@ public class HttpURLConnection extends java.net.HttpURLConnection
       if (connected)
          return;
 
-      if (log.isDebugEnabled())
-         log.debug(urlString + " Connecting ...");
+      if (LOG.isDebugEnabled())
+         LOG.debug(urlString + " Connecting ...");
 
       // useCaches TBD!!!
 
@@ -800,8 +816,8 @@ public class HttpURLConnection extends java.net.HttpURLConnection
    @Override
    public void disconnect()
    {
-      if (log.isDebugEnabled())
-         log.debug(urlString + " Disconnecting ...");
+      if (LOG.isDebugEnabled())
+         LOG.debug(urlString + " Disconnecting ...");
 
       con.stop();
    }

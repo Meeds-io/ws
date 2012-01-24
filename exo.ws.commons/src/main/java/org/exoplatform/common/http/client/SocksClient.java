@@ -60,6 +60,9 @@ import java.net.UnknownHostException;
  */
 class SocksClient
 {
+
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.SocksClient");
+
    /** the host the socks server sits on */
    private String socks_host;
 
@@ -204,6 +207,10 @@ class SocksClient
             }
             catch (IOException ee)
             {
+               if (LOG.isTraceEnabled())
+               {
+                  LOG.trace("An exception occurred: " + ee.getMessage());
+               }
             }
          }
 

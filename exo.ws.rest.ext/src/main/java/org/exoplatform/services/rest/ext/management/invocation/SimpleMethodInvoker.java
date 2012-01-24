@@ -38,7 +38,7 @@ public abstract class SimpleMethodInvoker implements MethodInvoker
    {
       if (method == null)
       {
-         throw new NullPointerException();
+         throw new IllegalArgumentException();
       }
 
       //

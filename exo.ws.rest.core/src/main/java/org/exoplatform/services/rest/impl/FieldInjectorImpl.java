@@ -19,6 +19,8 @@
 package org.exoplatform.services.rest.impl;
 
 import org.exoplatform.commons.utils.SecurityHelper;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.ApplicationContext;
 import org.exoplatform.services.rest.FieldInjector;
 import org.exoplatform.services.rest.impl.method.ParameterHelper;
@@ -27,6 +29,7 @@ import org.exoplatform.services.rest.impl.method.ParameterResolverFactory;
 import org.exoplatform.services.rest.resource.ResourceDescriptorVisitor;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -51,7 +54,7 @@ import javax.ws.rs.ext.Provider;
 public class FieldInjectorImpl implements FieldInjector
 {
    /** Logger. */
-   //private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.FieldInjectorImpl");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.FieldInjectorImpl");
 
    /** All annotations including JAX-RS annotation. */
    private final Annotation[] annotations;
@@ -152,7 +155,10 @@ public class FieldInjectorImpl implements FieldInjector
       }
       catch (PrivilegedActionException e)
       {
-         // Ignore NoSuchMethodException.
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + e.getMessage());
+         }
       }
       return setter;
    }
@@ -242,11 +248,13 @@ public class FieldInjectorImpl implements FieldInjector
                jfield.set(resource, pr.resolve(this, context));
             }
          }
-         catch (Throwable e)
+         catch (Exception e)
          {
             Class<?> ac = annotation.annotationType();
             if (ac == MatrixParam.class || ac == QueryParam.class || ac == PathParam.class)
+            {
                throw new WebApplicationException(e, Response.status(Response.Status.NOT_FOUND).build());
+            }
             throw new WebApplicationException(e, Response.status(Response.Status.BAD_REQUEST).build());
          }
       }
@@ -276,7 +284,15 @@ public class FieldInjectorImpl implements FieldInjector
                   jfield.set(resource, tmp);
                }
             }
-            catch (Throwable e)
+            catch (IllegalAccessException e)
+            {
+               throw new WebApplicationException(e, Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
+            }
+            catch (IllegalArgumentException e)
+            {
+               throw new WebApplicationException(e, Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
+            }
+            catch (InvocationTargetException e)
             {
                throw new WebApplicationException(e, Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
             }

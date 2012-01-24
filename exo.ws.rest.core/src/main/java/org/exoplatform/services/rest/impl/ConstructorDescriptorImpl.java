@@ -262,11 +262,17 @@ public class ConstructorDescriptorImpl implements ConstructorDescriptor
          Throwable cause = invExc.getCause();
          // if WebApplicationException than it may contain response
          if (WebApplicationException.class == cause.getClass())
+         {
             throw (WebApplicationException)cause;
+         }
 
          throw new InternalException(cause);
       }
-      catch (Throwable thr)
+      catch (WebApplicationException thr)
+      {
+         throw new InternalException(thr);
+      }
+      catch (InternalException thr)
       {
          throw new InternalException(thr);
       }
