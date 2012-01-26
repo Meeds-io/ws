@@ -43,7 +43,7 @@ public class InputHeadersMapTest extends TestCase
       try
       {
          um = new InputHeadersMap(null);
-         fail("NullPointerException should be here");
+         fail("IllegalArgumentException should be here");
       }
       catch (IllegalArgumentException e)
       {

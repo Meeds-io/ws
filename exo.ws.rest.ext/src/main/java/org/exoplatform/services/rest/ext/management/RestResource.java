@@ -242,7 +242,7 @@ public class RestResource
       }
       catch (Exception e)
       {
-         LOG.error(e.getMessage());
+         LOG.error("An exception occured: " + e.getMessage());
          return Response.serverError();
       }
       finally

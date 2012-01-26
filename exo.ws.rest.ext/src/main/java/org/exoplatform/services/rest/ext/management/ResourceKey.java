@@ -33,7 +33,7 @@ public final class ResourceKey
    {
       if (name == null)
       {
-         throw new IllegalArgumentException();
+         throw new IllegalArgumentException("parameter name cannot be null");
       }
       this.name = name;
    }
