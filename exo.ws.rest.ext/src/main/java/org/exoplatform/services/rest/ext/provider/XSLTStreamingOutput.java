@@ -109,8 +109,7 @@ public class XSLTStreamingOutput implements StreamingOutput
          }
          else
          {
-            String msg = "XSLT scheme name is null.";
-            throw new IllegalArgumentException(msg);
+            throw new IllegalArgumentException("XSLT scheme name is null.");
          }
          transformer.initResult(new StreamResult(outStream));
          if (xsltParams != null)

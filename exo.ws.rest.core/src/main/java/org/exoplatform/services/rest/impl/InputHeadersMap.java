@@ -71,7 +71,7 @@ public final class InputHeadersMap extends HashMap<String, List<String>> impleme
    {
       if (m == null)
       {
-         throw new IllegalArgumentException();
+         throw new IllegalArgumentException("parameter \"m\" cannot be null");
       }
       this.m = new HashMap<String, List<String>>(m.size());
       for (Map.Entry<String, List<String>> e : m.entrySet())
