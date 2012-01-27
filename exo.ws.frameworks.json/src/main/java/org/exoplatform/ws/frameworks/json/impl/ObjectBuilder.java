@@ -18,6 +18,8 @@
  */
 package org.exoplatform.ws.frameworks.json.impl;
 
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.ws.frameworks.json.impl.JsonUtils.Types;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
 
@@ -43,6 +45,9 @@ import java.util.Map;
  */
 public class ObjectBuilder
 {
+
+   private static final Log LOG = ExoLogger.getLogger("org.exoplatform.ws.frameworks.json.impl.ObjectBuilder");
+
    static final Collection<String> SKIP_METHODS = new HashSet<String>();
    static
    {
@@ -173,7 +178,10 @@ public class ObjectBuilder
                   }
                   catch (Exception e2)
                   {
-                     // ignore exception here
+                     if (LOG.isTraceEnabled())
+                     {
+                        LOG.trace("An exception occurred: " + e2.getMessage());
+                     }
                   }
                }
             }
@@ -282,7 +290,10 @@ public class ObjectBuilder
                   }
                   catch (Exception e2)
                   {
-                     // ignore exception here
+                     if (LOG.isTraceEnabled())
+                     {
+                        LOG.trace("An exception occurred: " + e2.getMessage());
+                     }
                   }
                }
             }
