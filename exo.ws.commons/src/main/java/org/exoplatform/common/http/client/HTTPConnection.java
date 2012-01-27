@@ -3086,6 +3086,10 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
             }
             catch (IOException ioe)
             {
+               if (LOG.isTraceEnabled())
+               {
+                  LOG.trace("An exception occurred: " + ioe.getMessage());
+               }
             }
             early_stall = null;
          }
