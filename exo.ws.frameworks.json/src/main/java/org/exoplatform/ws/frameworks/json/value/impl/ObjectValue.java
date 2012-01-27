@@ -23,8 +23,8 @@ import org.exoplatform.ws.frameworks.json.impl.JsonException;
 import org.exoplatform.ws.frameworks.json.impl.JsonUtils;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
 
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -37,7 +37,7 @@ public class ObjectValue extends JsonValue
    /**
     * Children.
     */
-   private final Map<String, JsonValue> children = new HashMap<String, JsonValue>();
+   private final Map<String, JsonValue> children = new LinkedHashMap<String, JsonValue>();
 
    /**
     * {@inheritDoc}
