@@ -18,6 +18,9 @@
  */
 package org.exoplatform.services.test.mock;
 
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -43,6 +46,8 @@ import javax.servlet.http.HttpServletResponse;
 
 public class MockHttpServletResponse implements HttpServletResponse
 {
+
+   private static final Log LOG = ExoLogger.getLogger("org.exoplatform.services.test.mock.MockHttpServletResponse");
 
    /** The writer. */
    private PrintWriter writer;
@@ -286,7 +291,10 @@ public class MockHttpServletResponse implements HttpServletResponse
       }
       catch (IOException e)
       {
-
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + e.getMessage());
+         }
       }
    }
 
