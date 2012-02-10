@@ -28,6 +28,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -273,7 +274,7 @@ public class ParameterHelper
 
          return Modifier.isStatic(method.getModifiers()) ? method : null;
       }
-      catch (Exception e)
+      catch (PrivilegedActionException e)
       {
          return null;
       }
@@ -293,7 +294,11 @@ public class ParameterHelper
       {
          return clazz.getConstructor(String.class);
       }
-      catch (Exception e)
+      catch (SecurityException e)
+      {
+         return null;
+      }
+      catch (NoSuchMethodException e)
       {
          return null;
       }

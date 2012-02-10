@@ -137,7 +137,7 @@ public class JsonEntityProvider implements EntityProvider<Object>
          return ObjectBuilder.createObject(type, jsonValue);
 
       }
-      catch (Exception e)
+      catch (JsonException e)
       {
          throw new IOException("Can't read from input stream " + e);
       }

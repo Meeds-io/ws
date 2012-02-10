@@ -30,6 +30,8 @@ import org.exoplatform.services.rest.ext.management.invocation.MethodInvoker;
 import org.exoplatform.services.rest.impl.ApplicationContextImpl;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,6 +47,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -240,7 +243,12 @@ public class RestResource
          Object ret = invoker.invoke(resource, argMap);
          return ret == null ? Response.ok() : ValueWrapper.wrap(ret);
       }
-      catch (Exception e)
+      catch (IllegalAccessException e)
+      {
+         LOG.error("An exception occured: " + e.getMessage());
+         return Response.serverError();
+      }
+      catch (InvocationTargetException e)
       {
          LOG.error("An exception occured: " + e.getMessage());
          return Response.serverError();
@@ -276,7 +284,21 @@ public class RestResource
                   context.getHttpHeaders().getRequestHeaders(), context.getContainerRequest().getEntityStream());
          }
       }
-      catch (Exception e)
+      catch (IllegalStateException e)
+      {
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + e.getMessage());
+         }
+      }
+      catch (WebApplicationException e)
+      {
+         if (LOG.isTraceEnabled())
+         {
+            LOG.trace("An exception occurred: " + e.getMessage());
+         }
+      }
+      catch (IOException e)
       {
          if (LOG.isTraceEnabled())
          {

@@ -26,6 +26,8 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.UnsupportedCharsetException;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -131,7 +133,15 @@ public final class IOHelper
       {
          charset = cs != null ? Charset.forName(cs) : DEFAULT_CHARSET;
       }
-      catch (Exception e)
+      catch (IllegalCharsetNameException e)
+      {
+         charset = DEFAULT_CHARSET;
+      }
+      catch (UnsupportedCharsetException e)
+      {
+         charset = DEFAULT_CHARSET;
+      }
+      catch (IllegalArgumentException e)
       {
          charset = DEFAULT_CHARSET;
       }
