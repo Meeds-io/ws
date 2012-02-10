@@ -52,8 +52,8 @@ import java.util.Set;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.ext.ExceptionMapper;
 
 /**
@@ -155,87 +155,80 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
                }
             }
          }
-         catch (Exception e)
+         catch (WebApplicationException e)
          {
-            if (e instanceof WebApplicationException)
+            Response errorResponse = ((WebApplicationException)e).getResponse();
+            ExceptionMapper excmap = context.getProviders().getExceptionMapper(WebApplicationException.class);
+            int errorStatus = errorResponse.getStatus();
+            // should be some of 4xx status
+            if (errorStatus < 500)
             {
-               Response errorResponse = ((WebApplicationException)e).getResponse();
-               ExceptionMapper excmap = context.getProviders().getExceptionMapper(WebApplicationException.class);
-               int errorStatus = errorResponse.getStatus();
-               // should be some of 4xx status
-               if (errorStatus < 500)
+               // Warn about error in debug mode only.
+               if (LOG.isDebugEnabled() && e.getCause() != null)
                {
-                  // Warn about error in debug mode only.
-                  if (LOG.isDebugEnabled() && e.getCause() != null)
-                  {
-                     LOG.warn("WebApplication exception occurs.", e.getCause());
-                  }
-               }
-               else
-               {
-                  if (e.getCause() != null)
-                  {
-                     LOG.warn("WebApplication exception occurs.", e.getCause());
-                  }
-               }
-               if (errorResponse.getEntity() == null)
-               {
-                  if (excmap != null)
-                  {
-                     errorResponse = excmap.toResponse(e);
-                  }
-                  else
-                  {
-                     if (e.getMessage() != null)
-                     {
-                        errorResponse = createErrorResponse(errorStatus, e.getMessage());
-                     }
-                  }
-               }
-               else
-               {
-                  if (errorResponse.getMetadata().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED) == null)
-                  {
-                     String jaxrsHeader = getJaxrsHeader(errorStatus);
-                     if (jaxrsHeader != null)
-                     {
-                        errorResponse.getMetadata().putSingle(ExtHttpHeaders.JAXRS_BODY_PROVIDED, jaxrsHeader);
-                     }
-                  }
-               }
-               response.setResponse(errorResponse);
-            }
-            else if (e instanceof InternalException)
-            {
-               Throwable cause = e.getCause();
-               Class causeClazz = cause.getClass();
-               ExceptionMapper excmap = context.getProviders().getExceptionMapper(causeClazz);
-               while (causeClazz != null && excmap == null)
-               {
-                  excmap = context.getProviders().getExceptionMapper(causeClazz);
-                  if (excmap == null)
-                  {
-                     causeClazz = causeClazz.getSuperclass();
-                  }
-               }
-               if (excmap != null)
-               {
-                  if (LOG.isDebugEnabled())
-                  {
-                     // Hide error message if exception mapper exists.
-                     LOG.warn("Internal error occurs.", cause);
-                  }
-                  response.setResponse(excmap.toResponse(e.getCause()));
-               }
-               else
-               {
-                  LOG.error("Internal error occurs.", cause);
-                  throw new UnhandledException(e.getCause());
+                  LOG.warn("WebApplication exception occurs.", e.getCause());
                }
             }
             else
             {
-               throw new UnhandledException(e);
+               if (e.getCause() != null)
+               {
+                  LOG.warn("WebApplication exception occurs.", e.getCause());
+               }
+            }
+            if (errorResponse.getEntity() == null)
+            {
+               if (excmap != null)
+               {
+                  errorResponse = excmap.toResponse(e);
+               }
+               else
+               {
+                  if (e.getMessage() != null)
+                  {
+                     errorResponse = createErrorResponse(errorStatus, e.getMessage());
+                  }
+               }
+            }
+            else
+            {
+               if (errorResponse.getMetadata().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED) == null)
+               {
+                  String jaxrsHeader = getJaxrsHeader(errorStatus);
+                  if (jaxrsHeader != null)
+                  {
+                     errorResponse.getMetadata().putSingle(ExtHttpHeaders.JAXRS_BODY_PROVIDED, jaxrsHeader);
+                  }
+               }
+            }
+            response.setResponse(errorResponse);
+         }
+         catch (InternalException e)
+         {
+            Throwable cause = e.getCause();
+            Class causeClazz = cause.getClass();
+            ExceptionMapper excmap = context.getProviders().getExceptionMapper(causeClazz);
+            while (causeClazz != null && excmap == null)
+            {
+               excmap = context.getProviders().getExceptionMapper(causeClazz);
+               if (excmap == null)
+               {
+                  causeClazz = causeClazz.getSuperclass();
+               }
+            }
+            if (excmap != null)
+            {
+               if (LOG.isDebugEnabled())
+               {
+                  // Hide error message if exception mapper exists.
+                  LOG.warn("Internal error occurs.", cause);
+               }
+               response.setResponse(excmap.toResponse(e.getCause()));
+            }
+            else
+            {
+               LOG.error("Internal error occurs.", cause);
+               throw new UnhandledException(e.getCause());
             }
          }
 

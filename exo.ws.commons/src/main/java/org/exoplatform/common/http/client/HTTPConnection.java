@@ -3317,26 +3317,64 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
                }
 
                if (req.getStream() != null)
+               {
                   req.getStream().goAhead(req, sock_out, 0);
+               }
                else
+               {
                   sock_out.flush();
+               }
 
                // get a new response.
                // Note: this does not do a read on the socket.
 
                if (resp == null)
+               {
                   resp = new Response(req, (Proxy_Host != null && Protocol != HTTPS), input_demux);
+               }
+            }
+            catch (UnknownHostException e)
+            {
+               LOG.error("Send request error", e);
+
+               closeDemux(e, true);
+
+               throw e;
+            }
+            catch (ConnectException e)
+            {
+               LOG.error("Send request error", e);
+
+               closeDemux(e, true);
+
+               throw e;
+            }
+            catch (NoRouteToHostException e)
+            {
+               LOG.error("Send request error", e);
+
+               closeDemux(e, true);
+
+               throw e;
+            }
+            catch (InterruptedIOException e)
+            {
+               LOG.error("Send request error", e);
+
+               closeDemux(e, true);
+
+               throw e;
             }
             catch (IOException ioe)
             {
-
                LOG.error("Send request error", ioe);
 
                closeDemux(ioe, true);
 
-               if (try_count == 0 || ioe instanceof UnknownHostException || ioe instanceof ConnectException
-                  || ioe instanceof NoRouteToHostException || ioe instanceof InterruptedIOException || req.aborted)
+               if (try_count == 0 || req.aborted)
+               {
                   throw ioe;
+               }
 
                LOG.info("Retrying request");
                continue;

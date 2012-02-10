@@ -583,7 +583,7 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
             {
                inp_stream.close();
             }
-            catch (Exception e)
+            catch (IOException e)
             {
                if (LOG.isTraceEnabled())
                {
@@ -689,16 +689,23 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
          while ((StatusCode == 100 && skip_cont) || // Continue
             (StatusCode > 101 && StatusCode < 200)); // Unknown
       }
+      catch (InterruptedIOException ioe)
+      {
+         throw ioe;
+      }
+      catch (ProtocolException ioe)// thrown internally
+      {
+         exception = ioe;
+         cd_type = CD_CLOSE;
+         if (stream_handler != null)
+         {
+            stream_handler.markForClose(this);
+         }
+         throw ioe;
+      }
       catch (IOException ioe)
       {
-         if (!(ioe instanceof InterruptedIOException))
-            exception = ioe;
-         if (ioe instanceof ProtocolException) // thrown internally
-         {
-            cd_type = CD_CLOSE;
-            if (stream_handler != null)
-               stream_handler.markForClose(this);
-         }
+         exception = ioe;
          throw ioe;
       }
       finally
@@ -1042,10 +1049,13 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
          readLines(inp);
          trailers_read = true;
       }
+      catch (InterruptedIOException ioe)
+      {
+         throw ioe;
+      }
       catch (IOException ioe)
       {
-         if (!(ioe instanceof InterruptedIOException))
-            exception = ioe;
+         exception = ioe;
          throw ioe;
       }
    }

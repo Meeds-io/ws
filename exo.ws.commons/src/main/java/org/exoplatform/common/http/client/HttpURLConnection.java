@@ -41,11 +41,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.NoSuchElementException;
 
 /**
  * This class is a wrapper around HTTPConnection providing the interface defined
@@ -378,10 +380,16 @@ public class HttpURLConnection extends java.net.HttpURLConnection
       try
       {
          if (!connected)
+         {
             connect();
+         }
          return resp.getHeader(name);
       }
-      catch (Exception e)
+      catch (IOException e)
+      {
+         return null;
+      }
+      catch (ModuleException e)
       {
          return null;
       }
@@ -401,10 +409,20 @@ public class HttpURLConnection extends java.net.HttpURLConnection
       try
       {
          if (!connected)
+         {
             connect();
+         }
          return resp.getHeaderAsInt(name);
       }
-      catch (Exception e)
+      catch (NumberFormatException e)
+      {
+         return def;
+      }
+      catch (IOException e)
+      {
+         return def;
+      }
+      catch (ModuleException e)
       {
          return def;
       }
@@ -425,10 +443,20 @@ public class HttpURLConnection extends java.net.HttpURLConnection
       try
       {
          if (!connected)
+         {
             connect();
+         }
          return resp.getHeaderAsDate(name).getTime();
       }
-      catch (Exception e)
+      catch (IllegalArgumentException e)
+      {
+         return def;
+      }
+      catch (IOException e)
+      {
+         return def;
+      }
+      catch (ModuleException e)
       {
          return def;
       }
@@ -481,7 +509,9 @@ public class HttpURLConnection extends java.net.HttpURLConnection
       try
       {
          if (!connected)
+         {
             connect();
+         }
 
          // count number of headers
          int num = 1;
@@ -507,7 +537,15 @@ public class HttpURLConnection extends java.net.HttpURLConnection
          // the 0'th field is special
          hdr_values[0] = resp.getVersion() + " " + resp.getStatusCode() + " " + resp.getReasonLine();
       }
-      catch (Exception e)
+      catch (NoSuchElementException e)
+      {
+         hdr_keys = hdr_values = new String[0];
+      }
+      catch (IOException e)
+      {
+         hdr_keys = hdr_values = new String[0];
+      }
+      catch (ModuleException e)
       {
          hdr_keys = hdr_values = new String[0];
       }
@@ -558,11 +596,21 @@ public class HttpURLConnection extends java.net.HttpURLConnection
       try
       {
          if (!doInput || !connected || resp.getStatusCode() < 300 || resp.getHeaderAsInt("Content-length") <= 0)
+         {
             return null;
+         }
 
          return resp.getInputStream();
       }
-      catch (Exception e)
+      catch (IOException e)
+      {
+         return null;
+      }
+      catch (NumberFormatException e)
+      {
+         return null;
+      }
+      catch (ModuleException e)
       {
          return null;
       }
@@ -644,7 +692,15 @@ public class HttpURLConnection extends java.net.HttpURLConnection
          {
             return resp.getEffectiveURI().toURL();
          }
-         catch (Exception e)
+         catch (MalformedURLException e)
+         {
+            return null;
+         }
+         catch (IOException e)
+         {
+            return null;
+         }
+         catch (ModuleException e)
          {
             return null;
          }

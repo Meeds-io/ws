@@ -26,6 +26,7 @@ import org.exoplatform.ws.frameworks.json.value.JsonValue;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -192,7 +193,11 @@ public class ObjectBuilder
             {
                constructor = collectionClass.getConstructor(new Class[]{Collection.class});
             }
-            catch (Exception e)
+            catch (SecurityException e)
+            {
+               throw new JsonException(e.getMessage(), e);
+            }
+            catch (NoSuchMethodException e)
             {
                throw new JsonException(e.getMessage(), e);
             }
@@ -221,7 +226,23 @@ public class ObjectBuilder
          {
             collection = constructor.newInstance(sourceCollection);
          }
-         catch (Exception e)
+         catch (IllegalAccessException e)
+         {
+            throw new JsonException(e.getMessage(), e);
+         }
+         catch (IllegalArgumentException e)
+         {
+            throw new JsonException(e.getMessage(), e);
+         }
+         catch (InstantiationException e)
+         {
+            throw new JsonException(e.getMessage(), e);
+         }
+         catch (InvocationTargetException e)
+         {
+            throw new JsonException(e.getMessage(), e);
+         }
+         catch (ExceptionInInitializerError e)
          {
             throw new JsonException(e.getMessage(), e);
          }
@@ -287,7 +308,7 @@ public class ObjectBuilder
                   try
                   {
                      constructor = LinkedHashMap.class.asSubclass(mapClass).getConstructor(new Class[]{Map.class});
-                  }
+                  }                  
                   catch (Exception e2)
                   {
                      if (LOG.isTraceEnabled())
@@ -304,7 +325,11 @@ public class ObjectBuilder
             {
                constructor = mapClass.getConstructor(new Class[]{Map.class});
             }
-            catch (Exception e)
+            catch (SecurityException e)
+            {
+               throw new JsonException(e.getMessage(), e);
+            }
+            catch (NoSuchMethodException e)
             {
                throw new JsonException(e.getMessage(), e);
             }
@@ -334,7 +359,23 @@ public class ObjectBuilder
          {
             map = constructor.newInstance(sourceMap);
          }
-         catch (Exception e)
+         catch (ExceptionInInitializerError e)
+         {
+            throw new JsonException(e.getMessage(), e);
+         }
+         catch (IllegalAccessException e)
+         {
+            throw new JsonException(e.getMessage(), e);
+         }
+         catch (IllegalArgumentException e)
+         {
+            throw new JsonException(e.getMessage(), e);
+         }
+         catch (InstantiationException e)
+         {
+            throw new JsonException(e.getMessage(), e);
+         }
+         catch (InvocationTargetException e)
          {
             throw new JsonException(e.getMessage(), e);
          }
@@ -377,7 +418,19 @@ public class ObjectBuilder
       {
          object = clazz.newInstance();
       }
-      catch (Exception e)
+      catch (ExceptionInInitializerError e)
+      {
+         throw new JsonException("Unable instantiate object. " + e.getMessage(), e);
+      }
+      catch (SecurityException e)
+      {
+         throw new JsonException("Unable instantiate object. " + e.getMessage(), e);
+      }
+      catch (IllegalAccessException e)
+      {
+         throw new JsonException("Unable instantiate object. " + e.getMessage(), e);
+      }
+      catch (InstantiationException e)
       {
          throw new JsonException("Unable instantiate object. " + e.getMessage(), e);
       }

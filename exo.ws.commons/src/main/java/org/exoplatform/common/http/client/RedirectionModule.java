@@ -155,7 +155,7 @@ class RedirectionModule implements HTTPClientModule
             {
                con = new HTTPConnection(new_loc);
             }
-            catch (Exception e)
+            catch (ProtocolNotSuppException e)
             {
                throw new Error("HTTPClient Internal Error: unexpected " + "exception '" + e + "'");
             }
@@ -324,7 +324,7 @@ class RedirectionModule implements HTTPClientModule
                      mvd = new HTTPConnection(loc);
                      nres = loc.getPathAndQuery();
                   }
-                  catch (Exception e)
+                  catch (ProtocolNotSuppException e)
                   {
                      if (req.getConnection().getProxyHost() == null || !loc.getScheme().equalsIgnoreCase("ftp"))
                         return RSP_CONTINUE;

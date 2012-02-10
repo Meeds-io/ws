@@ -157,16 +157,22 @@ public class DefaultMethodInvoker implements MethodInvoker
                         entityReader.readFrom(mp.getParameterClass(), mp.getGenericType(), mp.getAnnotations(),
                            contentType, headers, entityStream);
                   }
+                  catch (WebApplicationException e)
+                  {
+                     if (LOG.isDebugEnabled())
+                     {
+                        LOG.debug(e.getLocalizedMessage(), e);
+                     }
+
+                     throw e;
+                  }
                   catch (Exception e)
                   {
                      if (LOG.isDebugEnabled())
                      {
                         LOG.debug(e.getLocalizedMessage(), e);
                      }
-                     if (e instanceof WebApplicationException)
-                     {
-                        throw (WebApplicationException)e;
-                     }
+
                      throw new InternalException(e);
                   }
                }

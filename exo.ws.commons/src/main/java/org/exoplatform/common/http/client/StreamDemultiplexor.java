@@ -219,15 +219,14 @@ class StreamDemultiplexor implements GlobalConstants
          {
             head.stream.readAll(timeout);
          }
+         catch (InterruptedIOException ioe)
+         {
+            throw ioe;
+         }
          catch (IOException ioe)
          {
-            if (ioe instanceof InterruptedIOException)
-               throw ioe;
-            else
-            {
-               resph.exception.fillInStackTrace();
-               throw resph.exception;
-            }
+            resph.exception.fillInStackTrace();
+            throw resph.exception;
          }
       }
 

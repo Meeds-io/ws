@@ -73,7 +73,7 @@ public class StandaloneContainerInitializedListener implements ServletContextLis
                event.getServletContext().getResource(configurationURL.substring(PREFIX_WAR.length())).toExternalForm();
          }
       }
-      catch (Exception e)
+      catch (MalformedURLException e)
       {
          LOG.error("Error of configurationURL read", e);
       }

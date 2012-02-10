@@ -514,7 +514,7 @@ public class HTTPResponse implements HTTPClientModuleConstants
             {
                inp_stream.close();
             }
-            catch (Exception e)
+            catch (IOException e)
             {
                if (LOG.isTraceEnabled())
                {
@@ -648,12 +648,15 @@ public class HTTPResponse implements HTTPClientModuleConstants
          {
             handleResponse();
          }
-         catch (Exception e)
+         catch (ModuleException e)
          {
-            if (!(e instanceof InterruptedIOException))
-            {
-               LOG.error(method + " " + OriginalURI.getPathAndQuery());
-            }
+            LOG.error(method + " " + OriginalURI.getPathAndQuery());
+
+            return "Failed to read headers: " + e;
+         }
+         catch (IOException e)
+         {
+            LOG.error(method + " " + OriginalURI.getPathAndQuery());
 
             return "Failed to read headers: " + e;
          }

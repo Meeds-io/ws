@@ -1651,7 +1651,7 @@ class SimpleAuthPrompt implements AuthorizationPrompter
          {
             Runtime.getRuntime().exec(cmd).waitFor();
          }
-         catch (Exception e)
+         catch (Throwable e)
          {
             if (LOG.isTraceEnabled())
             {
