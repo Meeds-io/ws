@@ -49,7 +49,7 @@ import java.util.zip.InflaterInputStream;
 class TransferEncodingModule implements HTTPClientModule
 {
 
-   private static final Log log = ExoLogger.getLogger("exo.ws.commons.TransferEncodingModule");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.TransferEncodingModule");
 
    // Methods
 
@@ -165,41 +165,41 @@ class TransferEncodingModule implements HTTPClientModule
          String encoding = ((HttpHeaderElement)pte.lastElement()).getName();
          if (encoding.equalsIgnoreCase("gzip"))
          {
-            if (log.isDebugEnabled())
-               log.debug("Pushing gzip-input-stream");
+            if (LOG.isDebugEnabled())
+               LOG.debug("Pushing gzip-input-stream");
 
             resp.inp_stream = new GZIPInputStream(resp.inp_stream);
          }
          else if (encoding.equalsIgnoreCase("deflate"))
          {
-            if (log.isDebugEnabled())
-               log.debug("Pushing inflater-input-stream");
+            if (LOG.isDebugEnabled())
+               LOG.debug("Pushing inflater-input-stream");
 
             resp.inp_stream = new InflaterInputStream(resp.inp_stream);
          }
          else if (encoding.equalsIgnoreCase("compress"))
          {
-            if (log.isDebugEnabled())
-               log.debug("Pushing uncompress-input-stream");
+            if (LOG.isDebugEnabled())
+               LOG.debug("Pushing uncompress-input-stream");
 
             resp.inp_stream = new UncompressInputStream(resp.inp_stream);
          }
          else if (encoding.equalsIgnoreCase("chunked"))
          {
-            if (log.isDebugEnabled())
-               log.debug("Pushing chunked-input-stream");
+            if (LOG.isDebugEnabled())
+               LOG.debug("Pushing chunked-input-stream");
 
             resp.inp_stream = new ChunkedInputStream(resp.inp_stream);
          }
          else if (encoding.equalsIgnoreCase("identity"))
          {
-            if (log.isDebugEnabled())
-               log.debug("Ignoring 'identity' token");
+            if (LOG.isDebugEnabled())
+               LOG.debug("Ignoring 'identity' token");
          }
          else
          {
-            if (log.isDebugEnabled())
-               log.debug("Unknown transfer encoding '" + encoding + "'");
+            if (LOG.isDebugEnabled())
+               LOG.debug("Unknown transfer encoding '" + encoding + "'");
 
             break;
          }

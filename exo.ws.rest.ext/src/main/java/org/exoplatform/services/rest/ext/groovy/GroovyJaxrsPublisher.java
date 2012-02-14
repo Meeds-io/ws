@@ -64,7 +64,7 @@ import javax.ws.rs.core.MultivaluedMap;
  */
 public class GroovyJaxrsPublisher
 {
-   private static final Log log = ExoLogger.getExoLogger(GroovyJaxrsPublisher.class);
+   private static final Log LOG = ExoLogger.getExoLogger(GroovyJaxrsPublisher.class);
 
    @SuppressWarnings("rawtypes")
    private static final Comparator<Constructor> constructorComparator = new Comparator<Constructor>() {
@@ -134,7 +134,7 @@ public class GroovyJaxrsPublisher
    @Deprecated
    public void setGroovyClassLoader(GroovyClassLoader gcl)
    {
-      log.warn("Method setGroovyClassLoader is deprecated.");
+      LOG.warn("Method setGroovyClassLoader is deprecated.");
    }
 
    /**
