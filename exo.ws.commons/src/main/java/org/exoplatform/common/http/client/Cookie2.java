@@ -54,7 +54,7 @@ public class Cookie2 extends Cookie
    /** Make this compatible with V0.3-2 */
    private static final long serialVersionUID = 2208203902820875917L;
 
-   private static final Log log = ExoLogger.getLogger("exo.ws.commons.Cookie2");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.Cookie2");
 
    protected int version;
 
@@ -341,7 +341,7 @@ public class Cookie2 extends Cookie
          // path attribute must be a prefix of the request-URI
          if (!Util.getPath(req.getRequestURI()).startsWith(curr.path))
          {
-            log.warn("Bad Set-Cookie2 header: " + set_cookie + ", path '" + curr.path + "' is not a prefix of the "
+            LOG.warn("Bad Set-Cookie2 header: " + set_cookie + ", path '" + curr.path + "' is not a prefix of the "
                + "request uri '" + req.getRequestURI() + "'");
             continue;
          }
@@ -356,7 +356,7 @@ public class Cookie2 extends Cookie
          // domain must be either .local or must contain at least two dots         
          if (!curr.domain.equals(".local") && curr.domain.indexOf('.', 1) == -1)
          {
-            log.warn("Bad Set-Cookie2 header: " + set_cookie + ", domain '" + curr.domain + "' is not '.local' and "
+            LOG.warn("Bad Set-Cookie2 header: " + set_cookie + ", domain '" + curr.domain + "' is not '.local' and "
                + "doesn't contain two '.'s");
             continue;
          }
@@ -364,7 +364,7 @@ public class Cookie2 extends Cookie
          // domain must domain match host       
          if (!eff_host.endsWith(curr.domain))
          {
-            log.warn("Bad Set-Cookie2 header: " + set_cookie + ", domain '" + curr.domain + "' does not match current"
+            LOG.warn("Bad Set-Cookie2 header: " + set_cookie + ", domain '" + curr.domain + "' does not match current"
                + "host '" + eff_host + "'");
             continue;
          }
@@ -372,7 +372,7 @@ public class Cookie2 extends Cookie
          // host minus domain may not contain any dots        
          if (eff_host.substring(0, eff_host.length() - curr.domain.length()).indexOf('.') != -1)
          {
-            log.warn("Bad Set-Cookie2 header: " + set_cookie + ", domain '" + curr.domain + "' is more than one '.'"
+            LOG.warn("Bad Set-Cookie2 header: " + set_cookie + ", domain '" + curr.domain + "' is more than one '.'"
                + "away from host '" + eff_host + "'");
             continue;
          }
@@ -386,7 +386,7 @@ public class Cookie2 extends Cookie
                   break;
             if (idx2 == curr.port_list.length)
             {
-               log.warn("Bad Set-Cookie2 header: " + set_cookie + ", port list " + "does include current port "
+               LOG.warn("Bad Set-Cookie2 header: " + set_cookie + ", port list " + "does include current port "
                   + req.getConnection().getPort());
                continue;
             }

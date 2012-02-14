@@ -125,7 +125,7 @@ public class HttpOutputStream extends OutputStream
    /** just ignore all the data if told to do so */
    private boolean ignore = false;
 
-   private static final Log log = ExoLogger.getLogger("exo.ws.commons.HttpOutputStream");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.HttpOutputStream");
 
    // Constructors
 
@@ -172,11 +172,11 @@ public class HttpOutputStream extends OutputStream
       if (os == null)
          bos = new ByteArrayOutputStream();
 
-      if (log.isDebugEnabled())
+      if (LOG.isDebugEnabled())
       {
-         log.debug("Stream ready for writing");
+         LOG.debug("Stream ready for writing");
          if (bos != null)
-            log.debug("Buffering all data before sending request");
+            LOG.debug("Buffering all data before sending request");
       }
    }
 
@@ -375,8 +375,8 @@ public class HttpOutputStream extends OutputStream
             req.setHeaders(hdrs);
          }
 
-         if (log.isDebugEnabled())
-            log.debug("Sending request");
+         if (LOG.isDebugEnabled())
+            LOG.debug("Sending request");
 
          try
          {
@@ -405,11 +405,11 @@ public class HttpOutputStream extends OutputStream
             if (length == -1)
             {
 
-               if (log.isDebugEnabled() && trailers.length > 0)
+               if (LOG.isDebugEnabled() && trailers.length > 0)
                {
-                  log.debug("Sending trailers:");
+                  LOG.debug("Sending trailers:");
                   for (int idx = 0; idx < trailers.length; idx++)
-                     log.debug("\t" + trailers[idx].getName() + ": " + trailers[idx].getValue());
+                     LOG.debug("\t" + trailers[idx].getName() + ": " + trailers[idx].getValue());
                }
 
                os.write(Codecs.chunkedEncode(null, 0, 0, trailers, true));
@@ -417,8 +417,8 @@ public class HttpOutputStream extends OutputStream
 
             os.flush();
 
-            if (log.isDebugEnabled())
-               log.debug("All data sent");
+            if (LOG.isDebugEnabled())
+               LOG.debug("All data sent");
 
          }
          catch (IOException ioe)

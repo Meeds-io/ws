@@ -49,7 +49,7 @@ import java.util.zip.InflaterInputStream;
 class ContentEncodingModule implements HTTPClientModule
 {
 
-   private static final Log log = ExoLogger.getLogger("exo.ws.commons.ContentEncodingModule");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.ContentEncodingModule");
 
    // Methods
 
@@ -170,8 +170,8 @@ class ContentEncodingModule implements HTTPClientModule
       String encoding = ((HttpHeaderElement)pce.firstElement()).getName();
       if (encoding.equalsIgnoreCase("gzip") || encoding.equalsIgnoreCase("x-gzip"))
       {
-         if (log.isDebugEnabled())
-            log.debug("Pushing gzip-input-stream");
+         if (LOG.isDebugEnabled())
+            LOG.debug("Pushing gzip-input-stream");
 
          resp.inp_stream = new GZIPInputStream(resp.inp_stream);
          pce.removeElementAt(pce.size() - 1);
@@ -179,8 +179,8 @@ class ContentEncodingModule implements HTTPClientModule
       }
       else if (encoding.equalsIgnoreCase("deflate"))
       {
-         if (log.isDebugEnabled())
-            log.debug("Pushing inflater-input-stream");
+         if (LOG.isDebugEnabled())
+            LOG.debug("Pushing inflater-input-stream");
 
          resp.inp_stream = new InflaterInputStream(resp.inp_stream);
          pce.removeElementAt(pce.size() - 1);
@@ -188,8 +188,8 @@ class ContentEncodingModule implements HTTPClientModule
       }
       else if (encoding.equalsIgnoreCase("compress") || encoding.equalsIgnoreCase("x-compress"))
       {
-         if (log.isDebugEnabled())
-            log.debug("Pushing uncompress-input-stream");
+         if (LOG.isDebugEnabled())
+            LOG.debug("Pushing uncompress-input-stream");
 
          resp.inp_stream = new UncompressInputStream(resp.inp_stream);
          pce.removeElementAt(pce.size() - 1);
@@ -197,15 +197,15 @@ class ContentEncodingModule implements HTTPClientModule
       }
       else if (encoding.equalsIgnoreCase("identity"))
       {
-         if (log.isDebugEnabled())
-            log.debug("Ignoring 'identity' token");
+         if (LOG.isDebugEnabled())
+            LOG.debug("Ignoring 'identity' token");
 
          pce.removeElementAt(pce.size() - 1);
       }
       else
       {
-         if (log.isDebugEnabled())
-            log.debug("Unknown content encoding '" + encoding + "'");
+         if (LOG.isDebugEnabled())
+            LOG.debug("Unknown content encoding '" + encoding + "'");
 
       }
 

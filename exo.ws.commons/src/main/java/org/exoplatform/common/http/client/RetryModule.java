@@ -54,7 +54,7 @@ import java.io.IOException;
 class RetryModule implements HTTPClientModule, GlobalConstants
 {
 
-   private static final Log log = ExoLogger.getLogger("exo.ws.commons.RetryModule");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.RetryModule");
 
    // Constructors
 
@@ -85,7 +85,7 @@ class RetryModule implements HTTPClientModule, GlobalConstants
       }
       catch (RetryException re)
       {
-         log.error("Caught RetryException");
+         LOG.error("Caught RetryException");
 
          boolean got_lock = false;
 
@@ -102,7 +102,7 @@ class RetryModule implements HTTPClientModule, GlobalConstants
 
                for (RetryException e = re.first; e != null; e = e.next)
                {
-                  log.error("Handling exception ", e);
+                  LOG.error("Handling exception ", e);
 
                   Request req = e.request;
                   HTTPConnection con = req.getConnection();
@@ -181,7 +181,7 @@ class RetryModule implements HTTPClientModule, GlobalConstants
 
                   // now resend the request
 
-                  log.info("Retrying request '" + req.getMethod() + " " + req.getRequestURI() + "'");
+                  LOG.info("Retrying request '" + req.getMethod() + " " + req.getRequestURI() + "'");
 
                   if (e.conn_reset)
                      req.num_retries++;

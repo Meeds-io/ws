@@ -70,7 +70,7 @@ public class Cookie implements Serializable
    /** Make this compatible with V0.3-2 */
    private static final long serialVersionUID = 8599975325569296615L;
 
-   private static final Log log = ExoLogger.getLogger("exo.ws.commons.Cookie");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.Cookie");
 
    protected String name;
 
@@ -304,8 +304,8 @@ public class Cookie implements Serializable
             cookie_arr = Util.resizeArray(cookie_arr, cookie_arr.length + 1);
             cookie_arr[cookie_arr.length - 1] = curr;
          }
-         else if (log.isDebugEnabled())
-            log.debug("Ignoring cookie: " + curr);
+         else if (LOG.isDebugEnabled())
+            LOG.debug("Ignoring cookie: " + curr);
       }
 
       return cookie_arr;
@@ -339,7 +339,7 @@ public class Cookie implements Serializable
              * throw new ProtocolException("Bad Set-Cookie header: " + set_cookie +
              * "\nInvalid date found at " + "position " + beg);
              */
-            log.warn("Bad Set-Cookie header: " + set_cookie + ". Invalid date '" + value + "'");
+            LOG.warn("Bad Set-Cookie header: " + set_cookie + ". Invalid date '" + value + "'");
          }
       }
       else if (name.equals("max-age")) // from rfc-2109
@@ -365,7 +365,7 @@ public class Cookie implements Serializable
          // you get everything these days...
          if (value.length() == 0)
          {
-            log.warn("Bad Set-Cookie header: " + set_cookie + ". Domain is empty - ignoring domain");
+            LOG.warn("Bad Set-Cookie header: " + set_cookie + ". Domain is empty - ignoring domain");
             return true;
          }
 
@@ -379,7 +379,7 @@ public class Cookie implements Serializable
          // must be the same domain as in the url
          if (!cookie.domain.endsWith(value))
          {
-            log.warn("Bad Set-Cookie header: " + set_cookie + ". Current domain " + cookie.domain
+            LOG.warn("Bad Set-Cookie header: " + set_cookie + ". Current domain " + cookie.domain
                + " does not match given parsed " + value);
             return false;
          }
@@ -398,7 +398,7 @@ public class Cookie implements Serializable
          // two dots
          if (!value.equals(".local") && value.indexOf('.', 1) == -1)
          {
-            log.warn("Bad Set-Cookie header: " + set_cookie + ". Domain attribute " + value
+            LOG.warn("Bad Set-Cookie header: " + set_cookie + ". Domain attribute " + value
                + "isn't .local and doesn't have at " + "least 2 dots");
             return false;
          }
@@ -416,7 +416,7 @@ public class Cookie implements Serializable
             int dl = cookie.domain.length(), vl = value.length();
             if (dl > vl && cookie.domain.substring(0, dl - vl).indexOf('.') != -1)
             {
-               log.warn("Bad Set-Cookie header: " + set_cookie + ". Domain attribute " + value
+               LOG.warn("Bad Set-Cookie header: " + set_cookie + ". Domain attribute " + value
                   + "is more than one level below " + "current domain " + cookie.domain);
                return false;
             }
