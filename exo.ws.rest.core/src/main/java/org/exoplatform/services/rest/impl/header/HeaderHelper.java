@@ -51,7 +51,7 @@ import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 public final class HeaderHelper
 {
 
-   private static final Log LOG = ExoLogger.getLogger("org.ws.rest.core.HeaderHelper");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.HeaderHelper");
 
    /**
     * Constructor.

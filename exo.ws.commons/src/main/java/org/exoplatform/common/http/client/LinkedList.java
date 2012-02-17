@@ -152,60 +152,99 @@ class LinkedList
       LinkedList list = new LinkedList();
       list.addToHead("One");
       list.addToEnd("Last");
+
       if (!list.getFirst().equals("One"))
-         throw new Exception("First element wrong");
+      {
+         throw new IllegalStateException("First element wrong");
+      }
       if (!list.enumerate().equals("One"))
-         throw new Exception("First element wrong");
+      {
+         throw new IllegalStateException("First element wrong");
+      }
       if (!list.next().equals("Last"))
-         throw new Exception("Last element wrong");
+      {
+         throw new IllegalStateException("Last element wrong");
+      }
       if (list.next() != null)
-         throw new Exception("End of list wrong");
+      {
+         throw new IllegalStateException("End of list wrong");
+      }
       list.remove("One");
       if (!list.getFirst().equals("Last"))
-         throw new Exception("First element wrong");
+      {
+         throw new IllegalStateException("First element wrong");
+      }
       list.remove("Last");
       if (list.getFirst() != null)
-         throw new Exception("End of list wrong");
+      {
+         throw new IllegalStateException("End of list wrong");
+      }
 
       list = new LinkedList();
       list.addToEnd("Last");
       list.addToHead("One");
       if (!list.getFirst().equals("One"))
-         throw new Exception("First element wrong");
+      {
+         throw new IllegalStateException("First element wrong");
+      }
       if (!list.enumerate().equals("One"))
-         throw new Exception("First element wrong");
+      {
+         throw new IllegalStateException("First element wrong");
+      }
       if (!list.next().equals("Last"))
-         throw new Exception("Last element wrong");
+      {
+         throw new IllegalStateException("Last element wrong");
+      }
       if (list.next() != null)
-         throw new Exception("End of list wrong");
+      {
+         throw new IllegalStateException("End of list wrong");
+      }
       if (!list.enumerate().equals("One"))
-         throw new Exception("First element wrong");
+      {
+         throw new IllegalStateException("First element wrong");
+      }
       list.remove("One");
       if (!list.next().equals("Last"))
-         throw new Exception("Last element wrong");
+      {
+         throw new IllegalStateException("Last element wrong");
+      }
       list.remove("Last");
       if (list.next() != null)
-         throw new Exception("End of list wrong");
+      {
+         throw new IllegalStateException("End of list wrong");
+      }
 
       list = new LinkedList();
       list.addToEnd("Last");
       list.addToHead("Two");
       list.addToHead("One");
       if (!list.getFirst().equals("One"))
-         throw new Exception("First element wrong");
+      {
+         throw new IllegalStateException("First element wrong");
+      }
       if (!list.enumerate().equals("One"))
-         throw new Exception("First element wrong");
+      {
+         throw new IllegalStateException("First element wrong");
+      }
       if (!list.next().equals("Two"))
-         throw new Exception("Second element wrong");
+      {
+         throw new IllegalStateException("Second element wrong");
+      }
       if (!list.next().equals("Last"))
-         throw new Exception("Last element wrong");
+      {
+         throw new IllegalStateException("Last element wrong");
+      }
       if (list.next() != null)
-         throw new Exception("End of list wrong");
+      {
+         throw new IllegalStateException("End of list wrong");
+      }
       list.remove("Last");
       list.remove("Two");
       list.remove("One");
       if (list.getFirst() != null)
-         throw new Exception("Empty list wrong");
+      {
+         throw new IllegalStateException("Empty list wrong");
+      }
 
       System.err.println("\n*** Tests finished successfuly"); //NOSONAR
    }

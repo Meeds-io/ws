@@ -47,7 +47,7 @@ import javax.servlet.http.HttpServletResponse;
 public class MockHttpServletResponse implements HttpServletResponse
 {
 
-   private static final Log LOG = ExoLogger.getLogger("org.exoplatform.services.test.mock.MockHttpServletResponse");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.testframework.MockHttpServletResponse");
 
    /** The writer. */
    private PrintWriter writer;
