@@ -73,7 +73,7 @@ class IdempotentSequence
    /**
     * The logger
     */
-   private static final Log LOG = ExoLogger.getLogger("org.exoplatform.common.http.client.IdempotentSequence");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.IdempotentSequence");
 
    /** these are the history of previous requests */
    private int[] m_history;

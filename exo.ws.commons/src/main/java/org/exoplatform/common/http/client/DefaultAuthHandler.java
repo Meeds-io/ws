@@ -82,7 +82,7 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
    /**
     * The logger
     */
-   private static final Log LOG = ExoLogger.getLogger("org.exoplatform.common.http.client.DefaultAuthHandler");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.DefaultAuthHandler");
 
    private static final byte[] NUL = new byte[0];
 
@@ -98,8 +98,6 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
 
    private static boolean prompterSet = false;
 
-   private static final Log log = ExoLogger.getLogger("exo.ws.commons.DefaultAuthHandler");
-
    /**
     * For Digest authentication we need to set the uri, response and opaque
     * parameters. For "Basic" and "SOCKS5" nothing is done.
@@ -114,8 +112,8 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
       else if (!info.getScheme().equalsIgnoreCase("Digest"))
          throw new AuthSchemeNotImplException(info.getScheme());
 
-      if (log.isDebugEnabled())
-         log.debug("Fixing up Authorization for host " + info.getHost() + ":" + info.getPort() + "; scheme: "
+      if (LOG.isDebugEnabled())
+         LOG.debug("Fixing up Authorization for host " + info.getHost() + ":" + info.getPort() + "; scheme: "
             + info.getScheme() + "; realm: " + info.getRealm());
 
       return digest_fixup(info, req, challenge, resp);
@@ -135,8 +133,8 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
    {
       AuthorizationInfo cred;
 
-      if (log.isDebugEnabled())
-         log.debug("Requesting Authorization for host " + challenge.getHost() + ":" + challenge.getPort()
+      if (LOG.isDebugEnabled())
+         LOG.debug("Requesting Authorization for host " + challenge.getHost() + ":" + challenge.getPort()
             + "; scheme: " + challenge.getScheme() + "; realm: " + challenge.getRealm());
 
       // we only handle Basic, Digest and SOCKS5 authentication
@@ -201,8 +199,8 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
 
       // Done
 
-      if (log.isDebugEnabled())
-         log.debug("Got Authorization");
+      if (LOG.isDebugEnabled())
+         LOG.debug("Got Authorization");
 
       return cred;
    }
@@ -753,15 +751,15 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
 
       if (resp.hasEntity())
       {
-         if (log.isDebugEnabled())
-            log.debug("Pushing md5-check-stream to verify digest from " + hdr_name);
+         if (LOG.isDebugEnabled())
+            LOG.debug("Pushing md5-check-stream to verify digest from " + hdr_name);
 
          resp.inp_stream = new MD5InputStream(resp.inp_stream, verifier);
       }
       else
       {
-         if (log.isDebugEnabled())
-            log.debug("Verifying digest from " + hdr_name);
+         if (LOG.isDebugEnabled())
+            LOG.debug("Verifying digest from " + hdr_name);
 
          verifier.verifyHash(MD5.digest(NUL), 0);
       }
@@ -813,8 +811,8 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
          && (qop.getValue().equalsIgnoreCase("auth") || !resp.hasEntity()
             && qop.getValue().equalsIgnoreCase("auth-int")))
       {
-         if (log.isDebugEnabled())
-            log.debug("Verifying rspauth from " + hdr_name);
+         if (LOG.isDebugEnabled())
+            LOG.debug("Verifying rspauth from " + hdr_name);
 
          verifier.verifyHash(MD5.digest(NUL), 0);
       }
@@ -822,8 +820,8 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
       {
          // else push md5 stream and verify after body
 
-         if (log.isDebugEnabled())
-            log.debug("Pushing md5-check-stream to verify rspauth from " + hdr_name);
+         if (LOG.isDebugEnabled())
+            LOG.debug("Pushing md5-check-stream to verify rspauth from " + hdr_name);
 
          resp.inp_stream = new MD5InputStream(resp.inp_stream, verifier);
       }
@@ -901,13 +899,13 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
          A1_hash + ":" + nonce + ":" + req.getMethod() + ":" + (dt == -1 ? "" : hdrs[dt].getValue()) + ":"
             + entity_info + ":" + entity_hash;
 
-      if (log.isDebugEnabled())
+      if (LOG.isDebugEnabled())
       {
-         log.debug("Entity-Info: '" + req.getRequestURI() + ":" + (ct == -1 ? "" : hdrs[ct].getValue()) + ":"
+         LOG.debug("Entity-Info: '" + req.getRequestURI() + ":" + (ct == -1 ? "" : hdrs[ct].getValue()) + ":"
             + entity_body.length + ":" + (ce == -1 ? "" : hdrs[ce].getValue()) + ":"
             + (lm == -1 ? "" : hdrs[lm].getValue()) + ":" + (ex == -1 ? "" : hdrs[ex].getValue()) + "'");
-         log.debug("Entity-Body: '" + entity_hash + "'");
-         log.debug("Entity-Digest: '" + entity_digest + "'");
+         LOG.debug("Entity-Body: '" + entity_hash + "'");
+         LOG.debug("Entity-Digest: '" + entity_digest + "'");
       }
 
       return MD5.hexDigest(entity_digest);
@@ -1330,7 +1328,7 @@ class VerifyDigest implements HashVerifier, GlobalConstants
 class SimpleAuthPopup implements AuthorizationPrompter
 {
 
-   private static final Log LOG = ExoLogger.getLogger("org.exoplatform.common.http.client.SimpleAuthPopup");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.SimpleAuthPopup");
 
    private static BasicAuthBox inp = null;
 
@@ -1562,7 +1560,7 @@ class SimpleAuthPopup implements AuthorizationPrompter
 class SimpleAuthPrompt implements AuthorizationPrompter
 {
 
-   private static final Log LOG = ExoLogger.getLogger("org.exoplatform.common.http.client.SimpleAuthPrompt");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.SimpleAuthPrompt");
 
    /**
     * the method called by DefaultAuthHandler.

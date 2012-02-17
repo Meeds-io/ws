@@ -110,7 +110,7 @@ public class ContainerRequest implements GenericContainerRequest
     */
    private URI baseUri;
 
-   private static final Log LOG = ExoLogger.getLogger("org.ws.rest.core.ContainerRequest");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.ContainerRequest");
 
    /**
     * Constructs new instance of ContainerRequest.

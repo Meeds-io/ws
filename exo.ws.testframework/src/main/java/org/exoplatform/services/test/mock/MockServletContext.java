@@ -47,7 +47,7 @@ import javax.servlet.ServletException;
 public class MockServletContext implements ServletContext
 {
 
-   private static final Log LOG = ExoLogger.getLogger("org.exoplatform.services.MockServletContext");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.testframework.MockServletContext");
 
    /** The name. */
    private String name;

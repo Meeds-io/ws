@@ -51,8 +51,7 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
 {
    private static final String DEFAULT_SOURCE_FILE_EXTENSION = ".groovy";
 
-   private static final Log LOG = ExoLogger
-      .getLogger("org.exoplatform.services.rest.ext.groovy.DefaultGroovyResourceLoader");
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.ext.DefaultGroovyResourceLoader");
 
    public final ConcurrentMap<String, Future<URL>> findResourceURLTasks = new ConcurrentHashMap<String, Future<URL>>();
    
