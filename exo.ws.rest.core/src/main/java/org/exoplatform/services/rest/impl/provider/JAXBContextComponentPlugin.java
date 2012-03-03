@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.provider;
 
+import org.exoplatform.commons.utils.Tools;
 import org.exoplatform.container.component.BaseComponentPlugin;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
@@ -52,7 +53,6 @@ public class JAXBContextComponentPlugin extends BaseComponentPlugin
     * @param params initialize parameters
     * @see InitParams
     */
-   @SuppressWarnings("unchecked")
    public JAXBContextComponentPlugin(InitParams params)
    {
       if (params != null)
@@ -63,7 +63,7 @@ public class JAXBContextComponentPlugin extends BaseComponentPlugin
             ValueParam v = i.next();
             try
             {
-               jcs.add(Class.forName(v.getValue()));
+               jcs.add(Tools.forName(v.getValue(), this));
             }
             catch (ClassNotFoundException e)
             {
