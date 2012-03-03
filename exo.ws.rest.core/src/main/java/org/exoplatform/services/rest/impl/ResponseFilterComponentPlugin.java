@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest.impl;
 
+import org.exoplatform.commons.utils.Tools;
 import org.exoplatform.container.component.BaseComponentPlugin;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
@@ -64,7 +65,7 @@ public class ResponseFilterComponentPlugin extends BaseComponentPlugin
             ValueParam v = i.next();
             try
             {
-               fs.add((Class<? extends ResponseFilter>)Class.forName(v.getValue()));
+               fs.add((Class<? extends ResponseFilter>)Tools.forName(v.getValue(), this));
             }
             catch (ClassNotFoundException e)
             {

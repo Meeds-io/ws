@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest.impl.provider;
 
+import org.exoplatform.commons.utils.Tools;
 import org.exoplatform.container.component.BaseComponentPlugin;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
@@ -61,7 +62,7 @@ public class EntityProviderComponentPlugin extends BaseComponentPlugin
             ValueParam v = i.next();
             try
             {
-               eps.add((Class<? extends EntityProvider>)Class.forName(v.getValue()));
+               eps.add((Class<? extends EntityProvider>)Tools.forName(v.getValue(), this));
             }
             catch (ClassNotFoundException e)
             {
