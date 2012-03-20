@@ -32,6 +32,7 @@
 
 package org.exoplatform.common.http.client;
 
+import org.exoplatform.commons.utils.ClassLoading;
 import org.exoplatform.commons.utils.PrivilegedSystemHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -168,7 +169,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection
       // get the RedirectionModule class
       try
       {
-         redir_mod = Class.forName("HTTPClient.RedirectionModule");
+         redir_mod = ClassLoading.forName("HTTPClient.RedirectionModule", HttpURLConnection.class);
       }
       catch (ClassNotFoundException cnfe)
       {

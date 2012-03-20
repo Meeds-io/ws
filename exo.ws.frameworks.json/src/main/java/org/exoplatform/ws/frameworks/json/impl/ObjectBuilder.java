@@ -18,6 +18,7 @@
  */
 package org.exoplatform.ws.frameworks.json.impl;
 
+import org.exoplatform.commons.utils.ClassLoading;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.ws.frameworks.json.impl.JsonUtils.Types;
@@ -46,9 +47,6 @@ import java.util.Map;
  */
 public class ObjectBuilder
 {
-
-   private static final Log LOG = ExoLogger.getLogger("org.exoplatform.ws.frameworks.json.impl.ObjectBuilder");
-
    static final Collection<String> SKIP_METHODS = new HashSet<String>();
    static
    {
@@ -57,6 +55,8 @@ public class ObjectBuilder
       // and has method setMetaClass. Not need to process it.
       SKIP_METHODS.add("setMetaClass");
    }
+
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.frameworks.json.ObjectBuilder");
 
    /**
     * Create array of Java Object from JSON source include multi-dimension
@@ -308,7 +308,7 @@ public class ObjectBuilder
                   try
                   {
                      constructor = LinkedHashMap.class.asSubclass(mapClass).getConstructor(new Class[]{Map.class});
-                  }
+                  }                  
                   catch (Exception e2)
                   {
                      if (LOG.isTraceEnabled())
@@ -551,7 +551,7 @@ public class ObjectBuilder
          case CLASS :
             try
             {
-               return Class.forName(jsonValue.getStringValue());
+               return ClassLoading.forName(jsonValue.getStringValue(), ObjectBuilder.class);
             }
             catch (ClassNotFoundException e)
             {

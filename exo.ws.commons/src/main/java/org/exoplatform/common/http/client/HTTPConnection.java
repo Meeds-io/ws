@@ -32,6 +32,7 @@
 
 package org.exoplatform.common.http.client;
 
+import org.exoplatform.commons.utils.ClassLoading;
 import org.exoplatform.commons.utils.PrivilegedSystemHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -322,7 +323,9 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          int port = Integer.getInteger("http.proxyPort", -1).intValue();
 
          if (LOG.isDebugEnabled())
+         {
             LOG.debug("using proxy " + host + ":" + port);
+         }
 
          setProxyServer(host, port);
       }
@@ -337,7 +340,9 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
                int port = Integer.getInteger("proxyPort", -1).intValue();
 
                if (LOG.isDebugEnabled())
+               {
                   LOG.debug("using proxy " + host + ":" + port);
+               }
 
                setProxyServer(host, port);
             }
@@ -355,7 +360,9 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       {
          String hosts = PrivilegedSystemHelper.getProperty("HTTPClient.nonProxyHosts");
          if (hosts == null)
+         {
             hosts = PrivilegedSystemHelper.getProperty("http.nonProxyHosts");
+         }
 
          String[] list = Util.splitProperty(hosts);
          dontProxyFor(list);
@@ -383,12 +390,18 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
             int version = Integer.getInteger("HTTPClient.socksVersion", -1).intValue();
 
             if (LOG.isDebugEnabled())
+            {
                LOG.debug("using SOCKS " + host + ":" + port);
+            }
 
             if (version == -1)
+            {
                setSocksServer(host, port);
+            }
             else
+            {
                setSocksServer(host, port, version);
+            }
          }
       }
       catch (Exception e)
@@ -433,16 +446,19 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          try
          {
             String mname = list[idx];
-            DefaultModuleList.addElement(Class.forName(mname));
+            DefaultModuleList.addElement(ClassLoading.forName(mname, HTTPConnection.class));
 
             if (LOG.isDebugEnabled())
+            {
                LOG.debug("added module " + list[idx]);
-
+            }
          }
          catch (ClassNotFoundException cnfe)
          {
             if (!in_applet)
+            {
                throw new NoClassDefFoundError(cnfe.getMessage());
+            }
 
             /*
              * Just ignore it. This allows for example applets to just load the
@@ -462,8 +478,9 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          if (neverPipeline)
          {
             if (LOG.isDebugEnabled())
+            {
                LOG.debug("disabling pipelining");
-
+            }
          }
       }
       catch (Exception e)
@@ -483,8 +500,9 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          if (noKeepAlives)
          {
             if (LOG.isDebugEnabled())
+            {
                LOG.debug("disabling keep-alives");
-
+            }
          }
       }
       catch (Exception e)
@@ -504,8 +522,9 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          if (force_1_0)
          {
             if (LOG.isDebugEnabled())
+            {
                LOG.debug("forcing HTTP/1.0 requests");
-
+            }
          }
       }
       catch (Exception e)
@@ -525,8 +544,9 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          if (no_chunked)
          {
             if (LOG.isDebugEnabled())
+            {
                LOG.debug("never chunking requests");
-
+            }
          }
       }
       catch (Exception e)
@@ -544,12 +564,15 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       {
          if (PrivilegedSystemHelper.getProperty("os.name").indexOf("Windows") >= 0
             && PrivilegedSystemHelper.getProperty("java.version").startsWith("1.1"))
+         {
             haveMSLargeWritesBug = true;
+         }
          if (haveMSLargeWritesBug)
          {
             if (LOG.isDebugEnabled())
+            {
                LOG.debug("splitting large writes into 20K chunks (M$ bug)");
-
+            }
          }
       }
       catch (Exception e)
@@ -572,8 +595,9 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          if (deferStreamed)
          {
             if (LOG.isDebugEnabled())
+            {
                LOG.debug("enabling defered handling of responses to streamed requests");
-
+            }
          }
       }
       catch (Exception e)
@@ -1950,9 +1974,13 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          try
          {
             if (raw)
-               removeModule(Class.forName(modules[idx]));
+            {
+               removeModule(ClassLoading.forName(modules[idx], this));
+            }
             else
-               addModule(Class.forName(modules[idx]), -1);
+            {
+               addModule(ClassLoading.forName(modules[idx], this), -1);
+            }
          }
          catch (ClassNotFoundException cnfe)
          {
@@ -2537,14 +2565,18 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    public static void dontProxyFor(String[] hosts)
    {
       if (hosts == null || hosts.length == 0)
+      {
          return;
+      }
 
       for (int idx = 0; idx < hosts.length; idx++)
       {
          try
          {
             if (hosts[idx] != null)
+            {
                dontProxyFor(hosts[idx]);
+            }
          }
          catch (ParseException pe)
          {
@@ -3041,7 +3073,9 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       if (early_stall != null)
       {
          if (LOG.isDebugEnabled())
+         {
             LOG.debug("Early-stalling Request: " + req.getMethod() + " " + req.getRequestURI());
+         }
 
          synchronized (early_stall)
          {
@@ -3090,14 +3124,18 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
             if (input_demux != null || keepAliveUnknown)
             {
                if (LOG.isDebugEnabled())
+               {
                   LOG.debug("Stalling Request: " + req.getMethod() + " " + req.getRequestURI());
+               }
 
                try
                // wait till the response is received
                {
                   late_stall.getVersion();
                   if (keepAliveUnknown)
+                  {
                      determineKeepAlive(late_stall);
+                  }
                }
                catch (IOException ioe)
                {
@@ -3329,6 +3367,10 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
             }
             catch (IOException ioe)
             {
+               LOG.error("Send request error", ioe);
+
+               closeDemux(ioe, true);
+
                if (try_count == 0 || req.aborted)
                {
                   throw ioe;
@@ -3533,7 +3575,9 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          assembleHeaders(connect, hdr_buf);
 
          if (LOG.isDebugEnabled())
+         {
             LOG.debug("Sending SSL-Tunneling Subrequest");
+         }
 
          // send CONNECT
 
@@ -3543,7 +3587,9 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
          resp = new Response(connect, sock[0].getInputStream());
          if (resp.getStatusCode() == 200)
+         {
             return null;
+         }
 
          // failed!
 
@@ -3655,17 +3701,25 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
       String file = Util.escapeUnsafeChars(req.getRequestURI());
       if (Proxy_Host != null && Protocol != HTTPS && !file.equals("*"))
+      {
          dataout.writeBytes(req.getMethod() + " http://" + Host + ":" + Port + file + " " + RequestProtocolVersion
             + "\r\n");
+      }
       else
+      {
          dataout.writeBytes(req.getMethod() + " " + file + " " + RequestProtocolVersion + "\r\n");
+      }
 
       String h_hdr = (ho_idx >= 0) ? hdrs[ho_idx].getValue().trim() : Host;
       if (Port != URI.defaultPort(getProtocol()))
+      {
          dataout.writeBytes("Host: " + h_hdr + ":" + Port + "\r\n");
+      }
       else
-         // Netscape-Enterprise has some bugs...
+      {
+         // Netscape-Enterprise has some bugs...         
          dataout.writeBytes("Host: " + h_hdr + "\r\n");
+      }
 
       /*
        * What follows is the setup for persistent connections. We default to doing
@@ -3699,7 +3753,9 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          try
          {
             if (ka_idx != -1 && Util.hasToken(con_hdrs[0], "keep-alive"))
+            {
                dataout.writeBytes("Keep-Alive: " + hdrs[ka_idx].getValue().trim() + "\r\n");
+            }
          }
          catch (ParseException pe)
          {
@@ -3770,22 +3826,29 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          dataout.writeBytes(hdrs[te_idx].getValue().trim() + "\r\n");
       }
       else
+      {
          dataout.writeBytes("TE: trailers\r\n");
+      }
 
       // User-Agent
 
       if (ua_idx != -1)
+      {
          dataout.writeBytes("User-Agent: " + hdrs[ua_idx].getValue().trim() + " " + version + "\r\n");
+      }
       else
+      {
          dataout.writeBytes("User-Agent: " + version + "\r\n");
-
+      }
       // Write out any headers left
 
       for (int idx = 0; idx < hdrs.length; idx++)
       {
          if (idx != ct_idx && idx != ua_idx && idx != co_idx && idx != pc_idx && idx != ka_idx && idx != ex_idx
             && idx != te_idx && idx != ho_idx)
+         {
             dataout.writeBytes(hdrs[idx].getName().trim() + ": " + hdrs[idx].getValue().trim() + "\r\n");
+         }
       }
 
       // Handle Content-type, Content-length and Expect headers
@@ -3794,15 +3857,23 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       {
          dataout.writeBytes("Content-type: ");
          if (ct_idx != -1)
+         {
             dataout.writeBytes(hdrs[ct_idx].getValue().trim());
+         }
          else
+         {
             dataout.writeBytes("application/octet-stream");
+         }
          dataout.writeBytes("\r\n");
 
          if (req.getData() != null)
+         {
             dataout.writeBytes("Content-length: " + req.getData().length + "\r\n");
+         }
          else if (req.getStream().getLength() != -1 && tc_idx == -1)
+         {
             dataout.writeBytes("Content-length: " + req.getStream().getLength() + "\r\n");
+         }
 
          if (ex_idx != -1)
          {
@@ -3910,7 +3981,9 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
          }
          else if (resp.getStatusCode() < 400)
+         {
             keepAliveUnknown = false;
+         }
 
          // get maximum number of requests
 
@@ -3959,7 +4032,9 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
    synchronized void closeDemux(IOException ioe, boolean was_reset)
    {
       if (input_demux != null)
+      {
          input_demux.close(ioe, was_reset);
+      }
 
       early_stall = null;
       late_stall = null;
@@ -4032,7 +4107,9 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          try
          {
             if (Socks_client != null)
+            {
                sock = Socks_client.getSocket(actual_host, actual_port);
+            }
             else
             {
                // try all A records
@@ -4042,15 +4119,21 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
                   try
                   {
                      if (LocalAddr == null)
+                     {
                         sock = new Socket(addr_list[idx], actual_port);
+                     }
                      else
+                     {
                         sock = new Socket(addr_list[idx], actual_port, LocalAddr, LocalPort);
+                     }
                      break; // success
                   }
                   catch (SocketException se)
                   {
                      if (idx == addr_list.length - 1 || close)
+                     {
                         throw se; // we tried them all
+                     }
                   }
                }
             }

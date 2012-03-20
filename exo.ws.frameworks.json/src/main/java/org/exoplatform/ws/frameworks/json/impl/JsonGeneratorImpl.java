@@ -39,7 +39,6 @@ import java.lang.reflect.Modifier;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -356,7 +355,8 @@ public class JsonGeneratorImpl implements JsonGenerator
          }
          case MAP :
             JsonValue jsonObject = new ObjectValue();
-            Map<String, Object> map = new HashMap<String, Object>((Map<String, Object>)object);
+            
+            Map<String, Object> map = (Map<String, Object>)object;
             Set<String> keys = map.keySet();
             for (String k : keys)
             {

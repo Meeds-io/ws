@@ -52,4 +52,10 @@ public class GroovySecureRestrictionTest extends BaseTest
       assertTrue(new String(writer.getBody()).startsWith("access denied"));
    }
 
+   @Override
+   public void tearDown() throws Exception
+   {
+      groovyPublisher.resources.clear();
+      super.tearDown();
+   }
 }

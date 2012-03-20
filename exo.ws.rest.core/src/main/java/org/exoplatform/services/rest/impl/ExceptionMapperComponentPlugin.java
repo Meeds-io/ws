@@ -19,6 +19,7 @@
 
 package org.exoplatform.services.rest.impl;
 
+import org.exoplatform.commons.utils.ClassLoading;
 import org.exoplatform.container.component.BaseComponentPlugin;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
@@ -59,7 +60,7 @@ public class ExceptionMapperComponentPlugin extends BaseComponentPlugin
             ValueParam v = i.next();
             try
             {
-               emaps.add((Class<? extends ExceptionMapper<?>>)Class.forName(v.getValue()));
+               emaps.add((Class<? extends ExceptionMapper<?>>)ClassLoading.forName(v.getValue(), this));
             }
             catch (ClassNotFoundException e)
             {

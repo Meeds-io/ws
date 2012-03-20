@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -113,6 +114,28 @@ public class JsonGeneratorTest extends JsonTest
       assertEquals(csharpBook.getTitle(), jsonValue.getElement("csharp").getElement("title").getStringValue());
       assertEquals(javaScriptBook.getTitle(), jsonValue.getElement("js").getElement("title").getStringValue());
       //System.out.println(jsonValue);
+   }
+
+   public void testMapOrder() throws Exception
+   {
+      Map<String, Book> m = new LinkedHashMap<String, Book>();
+      m.put("junit", junitBook);
+      m.put("csharp", csharpBook);
+      m.put("js", javaScriptBook);
+      JsonValue jsonValue = new JsonGeneratorImpl().createJsonObjectFromMap(m);
+      assertTrue(jsonValue.isObject());
+      Iterator<String> iter = jsonValue.getKeys();
+      String[] array = m.keySet().toArray(new String[0]);
+      // Json iterator and source map must have same order, but we see that 
+      // Json is ordered by default      
+      int i = 0;
+      while (iter.hasNext())
+      {
+         String key = iter.next();
+         System.out.println("Key:" + key + " , map key:" + array[i]);
+         assertEquals(key, array[i]);
+         i++;
+      }
    }
 
    public void testMapNull() throws Exception

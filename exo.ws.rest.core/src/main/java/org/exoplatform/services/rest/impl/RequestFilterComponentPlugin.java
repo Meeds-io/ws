@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest.impl;
 
+import org.exoplatform.commons.utils.ClassLoading;
 import org.exoplatform.container.component.BaseComponentPlugin;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
@@ -66,7 +67,7 @@ public class RequestFilterComponentPlugin extends BaseComponentPlugin
             ValueParam v = i.next();
             try
             {
-               fs.add((Class<? extends RequestFilter>)Class.forName(v.getValue()));
+               fs.add((Class<? extends RequestFilter>)ClassLoading.forName(v.getValue(), this));
             }
             catch (ClassNotFoundException e)
             {

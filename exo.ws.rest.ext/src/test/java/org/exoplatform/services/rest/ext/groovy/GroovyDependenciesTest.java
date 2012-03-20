@@ -55,4 +55,10 @@ public class GroovyDependenciesTest extends BaseTest
       assertEquals("dependencies.Dep1", new String(writer.getBody()));
    }
 
+   @Override
+   public void tearDown() throws Exception
+   {
+      groovyPublisher.resources.clear();
+      super.tearDown();
+   }
 }
