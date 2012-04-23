@@ -36,8 +36,8 @@
    <name>eXo WS</name>
 
    <scm>
-      <connection>scm:git:ssh://github.com/exodev/ws.git</connection>
-      <developerConnection>scm:git:ssh://github.com/exodev/ws.git</developerConnection>
+      <connection>scm:git:git://github.com/exodev/ws.git</connection>
+      <developerConnection>scm:git:git@github.com/exodev/ws.git</developerConnection>
       <url>http://fisheye.jboss.org/browse/exo-jcr/ws</url>
    </scm>
 
