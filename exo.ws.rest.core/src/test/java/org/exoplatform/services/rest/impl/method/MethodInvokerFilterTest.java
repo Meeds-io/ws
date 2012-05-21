@@ -24,7 +24,6 @@ import org.exoplatform.services.rest.impl.EnvironmentContext;
 import org.exoplatform.services.rest.impl.ResourceBinder;
 import org.exoplatform.services.rest.method.MethodInvokerFilter;
 import org.exoplatform.services.rest.resource.GenericMethodResource;
-import org.exoplatform.services.rest.resource.ResourceMethodDescriptor;
 import org.exoplatform.services.rest.resource.SubResourceMethodDescriptor;
 import org.exoplatform.services.test.mock.MockHttpServletRequest;
 
@@ -75,8 +74,6 @@ public class MethodInvokerFilterTest extends BaseTest
             if (genericMethodResource instanceof SubResourceMethodDescriptor)
                // not invoke sub-resource method
                throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).build());
-            else if (genericMethodResource instanceof ResourceMethodDescriptor)
-               System.out.println("MethodInvokerFilter1: >>>>>>>>>>>> ResourceMethodDescriptor");
          }
          else
          {
@@ -93,7 +90,6 @@ public class MethodInvokerFilterTest extends BaseTest
 
       public void accept(GenericMethodResource genericMethodResource)
       {
-         System.out.println("MethodInvokerFilter2: >>>>>>>>>>>>");
          throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).build());
       }
 

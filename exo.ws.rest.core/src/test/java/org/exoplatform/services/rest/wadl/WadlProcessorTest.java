@@ -136,7 +136,6 @@ public class WadlProcessorTest extends BaseTest
       JAXBContext jctx = JAXBContext.newInstance(Application.class);
       ByteArrayOutputStream bout = new ByteArrayOutputStream();
       jctx.createMarshaller().marshal(app, bout);
-      System.out.println(new String(bout.toByteArray()));
 
       DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
       f.setNamespaceAware(true);
@@ -169,17 +168,13 @@ public class WadlProcessorTest extends BaseTest
       // boolean head = false;
       for (int i = 0; i < nl.getLength(); i++)
       {
-//System.out.println("\n\n\n\n"+nl.item(i).getClass()+"\n\n\n\n");
          String t = nl.item(i).getNodeValue();
          // if (t.equals("HEAD"))
          // head = true;
          if (t.equals("GET"))
             get = true;
       }
-      // assertTrue(head && get);
       assertTrue(get);
-      for (int i = 0; i < nl.getLength(); i++)
-         System.out.println(">>>>> resource method : " + nl.item(i).getNodeValue());
       str =
          (String)xp.evaluate("//wadl:resource[@path='a/{b}']/wadl:method[@id='m2']/@name", doc, XPathConstants.STRING);
       assertEquals("POST", str);
@@ -211,10 +206,7 @@ public class WadlProcessorTest extends BaseTest
          if (t.equals("GET"))
             subget = true;
       }
-      // assertTrue(subhead && subget);
       assertTrue(subget);
-      for (int i = 0; i < nl.getLength(); i++)
-         System.out.println(">>>>> sub-resource method : " + nl.item(i).getNodeValue());
       str =
          (String)xp.evaluate("count(//wadl:resource[@path='a/{b}']/wadl:resource[@path='{c}/{d}/{e}']/wadl:method)",
             doc, XPathConstants.STRING);
@@ -265,10 +257,7 @@ public class WadlProcessorTest extends BaseTest
          if (t.equals("OPTIONS"))
             childopt = true;
       }
-      // assertTrue(childhead && childget && childopt);
       assertTrue(childget && childopt);
-      for (int i = 0; i < nl.getLength(); i++)
-         System.out.println(">>>>> child resource method : " + nl.item(i).getNodeValue());
 
       str =
          (String)xp.evaluate("count(//wadl:resource[@path='a/{b}']/wadl:resource[@path='sub/{x}']/wadl:method)", doc,

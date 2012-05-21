@@ -57,10 +57,8 @@ public class FileEntityProviderTest extends BaseTest
       char[] c = new char[1024];
       int b = freader.read(c);
       String resstr = new String(c, 0, b);
-      System.out.println(getClass().getName() + " : " + resstr);
       assertEquals(data, resstr);
-      if (result.delete())
-         System.out.println("Tmp file removed");
+      result.delete();
    }
 
    @SuppressWarnings("unchecked")
@@ -79,8 +77,7 @@ public class FileEntityProviderTest extends BaseTest
       writer.writeTo(source, File.class, null, null, null, null, out);
       // compare as bytes
       assertTrue(Arrays.equals(data, out.toByteArray()));
-      if (source.delete())
-         System.out.println("Tmp file removed");
+      source.delete();
    }
 
 }

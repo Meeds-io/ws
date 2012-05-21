@@ -65,8 +65,6 @@ public class StringEntityProviderTest extends BaseTest
       mediaType = new MediaType("text", "plain");
       in = new ByteArrayInputStream(data);
       res = (String)reader.readFrom(String.class, null, null, mediaType, null, in);
-      System.out.println(getClass().getName() + " : " + res);
-      // string is wrong encoded
       assertFalse(TEST_CYR.equals(res));
    }
 
@@ -77,7 +75,6 @@ public class StringEntityProviderTest extends BaseTest
       ByteArrayOutputStream out = new ByteArrayOutputStream();
       writer.writeTo(TEST_CYR, String.class, String.class, null, mediaType, null, out);
       String res = out.toString("windows-1251");
-      System.out.println(getClass().getName() + " : " + res);
       assertTrue(TEST_CYR.equals(res));
 
       out.reset();
@@ -86,7 +83,6 @@ public class StringEntityProviderTest extends BaseTest
       mediaType = new MediaType("text", "plain");
       writer.writeTo(TEST_CYR, String.class, String.class, null, mediaType, null, out);
       res = out.toString("windows-1251");
-      System.out.println(res);
       // string is wrong encoded
       assertFalse(TEST_CYR.equals(res));
    }

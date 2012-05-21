@@ -73,7 +73,6 @@ public class JsonGeneratorTest extends JsonTest
       assertEquals(a[0].getTitle(), iterator.next().getElement("title").getStringValue());
       assertEquals(a[1].getTitle(), iterator.next().getElement("title").getStringValue());
       assertEquals(a[2].getTitle(), iterator.next().getElement("title").getStringValue());
-      //System.out.println(jsonValue);
    }
 
    public void testArrayNull() throws Exception
@@ -92,7 +91,6 @@ public class JsonGeneratorTest extends JsonTest
       assertEquals(l.get(0).getTitle(), iterator.next().getElement("title").getStringValue());
       assertEquals(l.get(1).getTitle(), iterator.next().getElement("title").getStringValue());
       assertEquals(l.get(2).getTitle(), iterator.next().getElement("title").getStringValue());
-      //System.out.println(jsonValue);
    }
 
    public void testCollectionNull() throws Exception
@@ -113,7 +111,6 @@ public class JsonGeneratorTest extends JsonTest
       assertEquals(junitBook.getTitle(), jsonValue.getElement("junit").getElement("title").getStringValue());
       assertEquals(csharpBook.getTitle(), jsonValue.getElement("csharp").getElement("title").getStringValue());
       assertEquals(javaScriptBook.getTitle(), jsonValue.getElement("js").getElement("title").getStringValue());
-      //System.out.println(jsonValue);
    }
 
    public void testMapOrder() throws Exception
@@ -132,7 +129,6 @@ public class JsonGeneratorTest extends JsonTest
       while (iter.hasNext())
       {
          String key = iter.next();
-         System.out.println("Key:" + key + " , map key:" + array[i]);
          assertEquals(key, array[i]);
          i++;
       }
@@ -210,7 +206,6 @@ public class JsonGeneratorTest extends JsonTest
       assertNotNull(jsonValue.getElement("mapList"));
       assertEquals("JUnit in Action",
          jsonValue.getElement("mapList").getElement("3").getElements().next().getElement("title").getStringValue());
-      // System.out.println(jsonValue);
    }
 
    public void testBeanTransientField() throws Exception
@@ -229,7 +224,6 @@ public class JsonGeneratorTest extends JsonTest
       be.setCounts(new StringEnum[]{StringEnum.ONE, StringEnum.TWO});
       be.setCountList(Arrays.asList(StringEnum.ONE, StringEnum.TWO, StringEnum.TREE));
       JsonValue jsonValue = new JsonGeneratorImpl().createJsonObject(be);
-      //System.out.println(jsonValue);
 
       assertEquals("name", jsonValue.getElement("name").getStringValue());
 
@@ -262,7 +256,6 @@ public class JsonGeneratorTest extends JsonTest
       BeanWithBookEnum be = new BeanWithBookEnum();
       be.setBook(BookEnum.JUNIT_IN_ACTION);
       JsonValue jsonValue = new JsonGeneratorImpl().createJsonObject(be);
-      //System.out.println(jsonValue);
       assertEquals(BookEnum.JUNIT_IN_ACTION.name(), jsonValue.getElement("book").getStringValue());
    }
 
@@ -271,7 +264,6 @@ public class JsonGeneratorTest extends JsonTest
       ClassTransfBean be = new ClassTransfBean();
       be.setKlass(ForTestClass000.class);
       JsonValue jsonValue = new JsonGeneratorImpl().createJsonObject(be);
-      //System.out.println(jsonValue);
       assertEquals(ForTestClass000.class.getName(), jsonValue.getElement("klass").getStringValue());
    }
 

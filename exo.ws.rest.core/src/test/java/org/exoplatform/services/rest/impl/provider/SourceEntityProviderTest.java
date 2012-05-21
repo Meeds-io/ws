@@ -147,6 +147,5 @@ public class SourceEntityProviderTest extends BaseTest
 
    private static void write(ByteArrayOutputStream out) throws Exception
    {
-      System.out.println(out.toString("UTF-8"));
    }
 }
