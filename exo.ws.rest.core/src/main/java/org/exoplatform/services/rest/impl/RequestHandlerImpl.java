@@ -20,7 +20,6 @@ package org.exoplatform.services.rest.impl;
 
 import org.exoplatform.commons.utils.PrivilegedFileHelper;
 import org.exoplatform.commons.utils.PrivilegedSystemHelper;
-import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.container.component.ComponentPlugin;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
@@ -43,7 +42,6 @@ import org.picocontainer.Startable;
 import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -331,6 +329,20 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
     */
    public void stop()
    {
+      String tmpDirName = properties.get(WS_RS_TMP_DIR);
+      File tmpDir = new File(tmpDirName);
+      if (!PrivilegedFileHelper.exists(tmpDir))
+      {
+         return;
+      }
+      File[] files = PrivilegedFileHelper.listFiles(tmpDir);
+      for (File file : files)
+      {
+         if (PrivilegedFileHelper.exists(file))
+         {
+            PrivilegedFileHelper.delete(file);
+         }
+      }
    }
 
    //
@@ -341,7 +353,7 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
    public void init()
    {
       // Directory for temporary files
-      final File tmpDir;
+      File tmpDir;
       String tmpDirName = properties.get(WS_RS_TMP_DIR);
       if (tmpDirName == null)
       {
@@ -357,29 +369,6 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
       {
          PrivilegedFileHelper.mkdirs(tmpDir);
       }
-
-      // Register Shutdown Hook for cleaning temporary files.
-      SecurityHelper.doPrivilegedAction(new PrivilegedAction<Void>() {
-         public Void run()
-         {
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-               @Override
-               public void run()
-               {
-                  File[] files = PrivilegedFileHelper.listFiles(tmpDir);
-                  for (File file : files)
-                  {
-                     if (PrivilegedFileHelper.exists(file))
-                     {
-                        PrivilegedFileHelper.delete(file);
-                     }
-                  }
-               }
-            });
-
-            return null;
-         }
-      });
    }
 
    /**
