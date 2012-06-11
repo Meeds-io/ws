@@ -306,7 +306,7 @@ public class Cookie2 extends Cookie
                }
                catch (UnsupportedEncodingException usee)
                {
-                  throw new Error(usee.toString()); /* shouldn't happen */
+                  throw new Error(usee.toString(), usee); /* shouldn't happen */
                }
             }
             else if (name.equals("commenturl")) // CommentURL

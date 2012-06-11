@@ -198,7 +198,7 @@ class RetryModule implements HTTPClientModule, GlobalConstants
          }
          catch (ParseException pe)
          {
-            throw new IOException(pe.getMessage());
+            throw new IOException(pe.getMessage(), pe);
          }
 
          if (re.exception != null)

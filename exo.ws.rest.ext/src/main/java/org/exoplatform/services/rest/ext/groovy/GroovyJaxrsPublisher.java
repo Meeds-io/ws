@@ -222,7 +222,7 @@ public class GroovyJaxrsPublisher
             }
             catch (MalformedURLException e)
             {
-               throw new IllegalArgumentException(e.getMessage());
+               throw new IllegalArgumentException(e.getMessage(), e);
             }
          }
       });
@@ -379,7 +379,7 @@ public class GroovyJaxrsPublisher
       }
       catch (MalformedURLException e)
       {
-         throw new IllegalArgumentException(e.getMessage());
+         throw new IllegalArgumentException(e.getMessage(), e);
       }
       binder.addResource(resource, properties);
       resources.put(resourceId, resource.getClass().getAnnotation(Path.class).value());
@@ -527,7 +527,7 @@ public class GroovyJaxrsPublisher
       {
          Throwable cause = e.getCause();
          // MalformedURLException
-         throw new IllegalArgumentException(cause.getMessage());
+         throw new IllegalArgumentException(cause.getMessage(), e);
       }
       catch (CompilationFailedException e)
       {

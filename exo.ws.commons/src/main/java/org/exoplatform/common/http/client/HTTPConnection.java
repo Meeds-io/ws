@@ -1529,7 +1529,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       catch (XMLStreamException e)
       {
          LOG.error(e.getLocalizedMessage(), e);
-         throw new IOException("Can't write XML data to output stream.");
+         throw new IOException("Can't write XML data to output stream.", e);
       }
       return response;
    }
@@ -1708,7 +1708,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       catch (XMLStreamException e)
       {
          LOG.error(e.getLocalizedMessage(), e);
-         throw new IOException("Can't write XML request.");
+         throw new IOException("Can't write XML request.", e);
       }
       finally
       {
@@ -2225,7 +2225,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       }
       catch (Exception e)
       {
-         throw new RuntimeException(e.toString());
+         throw new RuntimeException(e.toString(), e);
       }
 
       synchronized (list)
@@ -2910,7 +2910,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
             catch (Exception e)
             {
                throw new Error("HTTPClient Internal Error: could not " + "create instance of " + mod.getName() + " -\n"
-                  + e);
+                  + e, e);
             }
          }
 
@@ -3023,7 +3023,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
                }
                catch (ParseException pe)
                {
-                  throw new IOException(pe.toString());
+                  throw new IOException(pe.toString(), pe);
                }
             }
 
@@ -3110,7 +3110,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       }
       catch (ParseException pe)
       {
-         throw new IOException(pe.toString());
+         throw new IOException(pe.toString(), pe);
       }
 
       synchronized (this)
@@ -3187,7 +3187,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
             }
             catch (InterruptedException ie)
             {
-               throw new IOException(ie.toString());
+               throw new IOException(ie.toString(), ie);
             }
          }
 
@@ -3267,7 +3267,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
                }
                catch (ParseException pe)
                {
-                  throw new IOException(pe.toString());
+                  throw new IOException(pe.toString(), pe);
                }
                catch (InterruptedIOException iioe)
                {
@@ -3759,7 +3759,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          }
          catch (ParseException pe)
          {
-            throw new IOException(pe.toString());
+            throw new IOException(pe.toString(), pe);
          }
       }
 
@@ -3785,7 +3785,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          }
          catch (ParseException pe)
          {
-            throw new IOException(pe.toString());
+            throw new IOException(pe.toString(), pe);
          }
       }
       else
@@ -3817,7 +3817,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          }
          catch (ParseException pe)
          {
-            throw new IOException(pe.toString());
+            throw new IOException(pe.toString(), pe);
          }
 
          if (!pte.contains(new HttpHeaderElement("trailers")))
@@ -3890,7 +3890,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          }
          catch (ParseException pe)
          {
-            throw new IOException(pe.toString());
+            throw new IOException(pe.toString(), pe);
          }
 
          // remove any 100-continue tokens

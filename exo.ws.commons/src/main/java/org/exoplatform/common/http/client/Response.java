@@ -333,7 +333,7 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
       }
       catch (ParseException pe)
       {
-         throw new Error(pe.toString());
+         throw new Error(pe.toString(), pe);
       } // shouldn't happen
    }
 
@@ -926,7 +926,7 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
             }
             catch (ModuleException me)
             {
-               throw new IOException(me.toString());
+               throw new IOException(me.toString(), me);
             }
             resp.getVersion();
 
@@ -1144,7 +1144,7 @@ public final class Response implements RoResponse, GlobalConstants, Cloneable
          }
          catch (UnsupportedEncodingException uee)
          {
-            throw new Error(uee.toString());
+            throw new Error(uee.toString(), uee);
          }
 
          return;

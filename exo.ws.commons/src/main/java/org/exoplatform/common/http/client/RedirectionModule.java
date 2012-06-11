@@ -111,7 +111,7 @@ class RedirectionModule implements HTTPClientModule
       }
       catch (ParseException pe)
       {
-         throw new Error("HTTPClient Internal Error: unexpected exception '" + pe + "'");
+         throw new Error("HTTPClient Internal Error: unexpected exception '" + pe + "'", pe);
       }
 
       // handle permanent redirections
@@ -157,7 +157,7 @@ class RedirectionModule implements HTTPClientModule
             }
             catch (ProtocolNotSuppException e)
             {
-               throw new Error("HTTPClient Internal Error: unexpected " + "exception '" + e + "'");
+               throw new Error("HTTPClient Internal Error: unexpected " + "exception '" + e + "'", e);
             }
 
             con.setContext(req.getConnection().getContext());
@@ -389,7 +389,7 @@ class RedirectionModule implements HTTPClientModule
                      }
                      catch (ParseException pe)
                      {
-                        throw new Error("HTTPClient Internal Error: " + "unexpected exception '" + pe + "'");
+                        throw new Error("HTTPClient Internal Error: " + "unexpected exception '" + pe + "'", pe);
                      }
                   }
                }

@@ -69,7 +69,7 @@ class MD5InputStream extends FilterInputStream
       }
       catch (NoSuchAlgorithmException nsae)
       {
-         throw new Error(nsae.toString());
+         throw new Error(nsae.toString(), nsae);
       }
    }
 

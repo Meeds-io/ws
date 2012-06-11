@@ -226,7 +226,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection
       }
       catch (ParseException pe)
       {
-         throw new IOException(pe.toString());
+         throw new IOException(pe.toString(), pe);
       }
       catch (SecurityException se)
       {
@@ -344,7 +344,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection
       }
       catch (ModuleException me)
       {
-         throw new IOException(me.toString());
+         throw new IOException(me.toString(), me);
       }
    }
 
@@ -365,7 +365,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection
       }
       catch (ModuleException me)
       {
-         throw new IOException(me.toString());
+         throw new IOException(me.toString(), me);
       }
    }
 
@@ -574,7 +574,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection
       }
       catch (ModuleException e)
       {
-         throw new IOException(e.toString());
+         throw new IOException(e.toString(), e);
       }
 
       return stream;
@@ -859,7 +859,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection
          }
          catch (ModuleException e)
          {
-            throw new IOException(e.toString());
+            throw new IOException(e.toString(), e);
          }
       }
 

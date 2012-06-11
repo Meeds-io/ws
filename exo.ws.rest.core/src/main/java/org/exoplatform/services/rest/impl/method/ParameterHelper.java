@@ -327,7 +327,7 @@ public class ParameterHelper
             }
             catch (ClassCastException e)
             {
-               throw new RuntimeException("Unsupported type");
+               throw new RuntimeException("Unsupported type", e);
             }
          }
       }

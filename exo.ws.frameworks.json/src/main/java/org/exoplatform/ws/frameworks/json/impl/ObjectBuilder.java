@@ -148,7 +148,7 @@ public class ObjectBuilder
             catch (ClassCastException e)
             {
                throw new JsonException("This type of Collection can't be restored from JSON source. "
-                  + "\nCollection is parameterized by wrong Type: " + parameterizedType + ".");
+                  + "\nCollection is parameterized by wrong Type: " + parameterizedType + ".", e);
             }
          }
          else
@@ -282,7 +282,7 @@ public class ObjectBuilder
             catch (ClassCastException e)
             {
                throw new JsonException("This type of Map can't be restored from JSON source."
-                  + "\nMap is parameterized by wrong Type: " + parameterizedType + ".");
+                  + "\nMap is parameterized by wrong Type: " + parameterizedType + ".", e);
             }
          }
          else

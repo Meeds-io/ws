@@ -76,7 +76,7 @@ class MD5
       }
       catch (NoSuchAlgorithmException nsae)
       {
-         throw new Error(nsae.toString());
+         throw new Error(nsae.toString(), nsae);
       }
    }
 
@@ -96,7 +96,7 @@ class MD5
       }
       catch (NoSuchAlgorithmException nsae)
       {
-         throw new Error(nsae.toString());
+         throw new Error(nsae.toString(), nsae);
       }
    }
 
@@ -134,7 +134,7 @@ class MD5
       }
       catch (UnsupportedEncodingException uee)
       {
-         throw new Error(uee.toString());
+         throw new Error(uee.toString(), uee);
       }
    }
 
@@ -151,7 +151,7 @@ class MD5
       }
       catch (UnsupportedEncodingException uee)
       {
-         throw new Error(uee.toString());
+         throw new Error(uee.toString(), uee);
       }
    }
 }

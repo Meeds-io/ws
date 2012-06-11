@@ -123,15 +123,15 @@ public class XSLTStreamingOutput implements StreamingOutput
       }
       catch (TransformerConfigurationException tce)
       {
-         throw new IOException("Can't write to output stream " + tce);
+         throw new IOException("Can't write to output stream " + tce, tce);
       }
       catch (NotSupportedIOTypeException nse)
       {
-         throw new IOException("Can't write to output stream " + nse);
+         throw new IOException("Can't write to output stream " + nse, nse);
       }
       catch (TransformerException tre)
       {
-         throw new IOException("Can't write to output stream " + tre);
+         throw new IOException("Can't write to output stream " + tre, tre);
       }
    }
 

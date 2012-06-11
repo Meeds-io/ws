@@ -239,7 +239,7 @@ final class RespInputStream extends InputStream implements GlobalConstants
             }
             catch (ModuleException me)
             {
-               throw new IOException(me.toString());
+               throw new IOException(me.toString(), me);
             }
          }
       }

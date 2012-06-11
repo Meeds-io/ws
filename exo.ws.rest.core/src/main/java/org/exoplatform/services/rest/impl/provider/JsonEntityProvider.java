@@ -139,7 +139,7 @@ public class JsonEntityProvider implements EntityProvider<Object>
       }
       catch (JsonException e)
       {
-         throw new IOException("Can't read from input stream " + e);
+         throw new IOException("Can't read from input stream " + e, e);
       }
    }
 
@@ -205,7 +205,7 @@ public class JsonEntityProvider implements EntityProvider<Object>
       }
       catch (JsonException e)
       {
-         throw new IOException("Can't write to output stream " + e);
+         throw new IOException("Can't write to output stream " + e, e);
       }
 
    }

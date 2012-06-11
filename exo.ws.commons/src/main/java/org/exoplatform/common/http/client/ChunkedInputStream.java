@@ -80,7 +80,7 @@ class ChunkedInputStream extends FilterInputStream
          }
          catch (ParseException pe)
          {
-            throw new IOException(pe.toString());
+            throw new IOException(pe.toString(), pe);
          }
       }
 

@@ -121,7 +121,7 @@ public class MultipartFormDataEntityProvider implements EntityProvider<Iterator<
          Throwable cause = pae.getCause();
          if (cause instanceof FileUploadException)
          {
-            throw new IOException("Can't process multipart data item " + cause);
+            throw new IOException("Can't process multipart data item " + cause, cause);
          }
          else if (cause instanceof RuntimeException)
          {

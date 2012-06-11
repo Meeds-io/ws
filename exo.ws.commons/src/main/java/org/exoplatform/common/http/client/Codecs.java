@@ -161,7 +161,7 @@ public class Codecs
       }
       catch (UnsupportedEncodingException uee)
       {
-         throw new Error(uee.toString());
+         throw new Error(uee.toString(), uee);
       }
    }
 
@@ -223,7 +223,7 @@ public class Codecs
       }
       catch (UnsupportedEncodingException uee)
       {
-         throw new Error(uee.toString());
+         throw new Error(uee.toString(), uee);
       }
    }
 
@@ -1274,7 +1274,7 @@ public class Codecs
          }
          catch (UnsupportedEncodingException uee)
          {
-            throw new Error(uee.toString());
+            throw new Error(uee.toString(), uee);
          }
          r_off += hlen;
          res[r_off++] = (byte)'\r';
@@ -1301,7 +1301,7 @@ public class Codecs
             }
             catch (UnsupportedEncodingException uee)
             {
-               throw new Error(uee.toString());
+               throw new Error(uee.toString(), uee);
             }
             r_off += nlen;
 
@@ -1315,7 +1315,7 @@ public class Codecs
             }
             catch (UnsupportedEncodingException uee)
             {
-               throw new Error(uee.toString());
+               throw new Error(uee.toString(), uee);
             }
             r_off += vlen;
 

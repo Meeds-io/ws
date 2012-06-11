@@ -89,7 +89,7 @@ public class AcceptLanguageHeaderDelegate extends AbstractHeaderDelegate<AcceptL
       }
       catch (ParseException e)
       {
-         throw new IllegalArgumentException("Accept language header malformed");
+         throw new IllegalArgumentException("Accept language header malformed", e);
       }
    }
 

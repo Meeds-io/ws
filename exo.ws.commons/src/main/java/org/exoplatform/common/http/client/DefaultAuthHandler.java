@@ -228,7 +228,7 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
       }
       catch (ParseException pe)
       {
-         throw new IOException(pe.toString());
+         throw new IOException(pe.toString(), pe);
       }
    }
 
@@ -249,7 +249,7 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
       }
       catch (ParseException pe)
       {
-         throw new IOException(pe.toString());
+         throw new IOException(pe.toString(), pe);
       }
    }
 
@@ -1649,7 +1649,7 @@ class SimpleAuthPrompt implements AuthorizationPrompter
          {
             Runtime.getRuntime().exec(cmd).waitFor();
          }
-         catch (Throwable e)
+         catch (Throwable e) //NOSONAR
          {
             if (LOG.isTraceEnabled())
             {

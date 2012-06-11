@@ -384,7 +384,7 @@ public class HttpOutputStream extends OutputStream
          }
          catch (ModuleException me)
          {
-            throw new IOException(me.toString());
+            throw new IOException(me.toString(), me);
          }
          notify();
       }

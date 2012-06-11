@@ -126,7 +126,7 @@ public class HierarchicalPropertyEntityProvider implements EntityProvider<Hierar
       }
       catch (FactoryConfigurationError e)
       {
-         throw new IOException(e.getMessage());
+         throw new IOException(e.getMessage(), e);
       }
       catch (XMLStreamException e)
       {
@@ -183,7 +183,7 @@ public class HierarchicalPropertyEntityProvider implements EntityProvider<Hierar
       }
       catch (TransformerException tre)
       {
-         throw new IOException("Can't write to output stream " + tre);
+         throw new IOException("Can't write to output stream " + tre, tre);
       }
    }
 

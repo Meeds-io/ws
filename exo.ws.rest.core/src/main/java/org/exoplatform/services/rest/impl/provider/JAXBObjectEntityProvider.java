@@ -107,7 +107,7 @@ public class JAXBObjectEntityProvider implements EntityProvider<Object>
          }
          else if (cause instanceof JAXBException)
          {
-            throw new IOException("Can't read from input stream " + cause);
+            throw new IOException("Can't read from input stream " + cause, cause);
          }
          else if (cause instanceof IllegalArgumentException)
          {
@@ -124,7 +124,7 @@ public class JAXBObjectEntityProvider implements EntityProvider<Object>
       }
       catch (JAXBException e)
       {
-         throw new IOException("Can't read from input stream " + e);
+         throw new IOException("Can't read from input stream " + e, e);
       }
    }
 
@@ -163,7 +163,7 @@ public class JAXBObjectEntityProvider implements EntityProvider<Object>
       }
       catch (JAXBException e)
       {
-         throw new IOException("Can't write to output stream " + e);
+         throw new IOException("Can't write to output stream " + e, e);
       }
    }
 

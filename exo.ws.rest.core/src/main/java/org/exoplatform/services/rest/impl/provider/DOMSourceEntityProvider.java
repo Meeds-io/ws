@@ -106,11 +106,11 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
          }
          else if (cause instanceof SAXException)
          {
-            throw new IOException("Can't read from input stream " + cause);
+            throw new IOException("Can't read from input stream " + cause, cause);
          }
          else if (cause instanceof ParserConfigurationException)
          {
-            throw new IOException("Can't read from input stream " + cause);
+            throw new IOException("Can't read from input stream " + cause, cause);
          }
          else if (cause instanceof IOException)
          {
@@ -156,15 +156,15 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
       }
       catch (TransformerConfigurationException e)
       {
-         throw new IOException("Can't write to output stream " + e);
+         throw new IOException("Can't write to output stream " + e, e);
       }
       catch (TransformerException e)
       {
-         throw new IOException("Can't write to output stream " + e);
+         throw new IOException("Can't write to output stream " + e, e);
       }
       catch (TransformerFactoryConfigurationError e)
       {
-         throw new IOException("Can't write to output stream " + e);
+         throw new IOException("Can't write to output stream " + e, e);
       }
    }
 }

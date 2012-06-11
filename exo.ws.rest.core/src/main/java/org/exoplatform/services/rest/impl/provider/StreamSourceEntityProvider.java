@@ -94,15 +94,15 @@ public class StreamSourceEntityProvider implements EntityProvider<StreamSource>
       }
       catch (TransformerConfigurationException e)
       {
-         throw new IOException("Can't write to output stream " + e);
+         throw new IOException("Can't write to output stream " + e, e);
       }
       catch (TransformerException e)
       {
-         throw new IOException("Can't write to output stream " + e);
+         throw new IOException("Can't write to output stream " + e, e);
       }
       catch (TransformerFactoryConfigurationError e)
       {
-         throw new IOException("Can't write to output stream " + e);
+         throw new IOException("Can't write to output stream " + e, e);
       }
    }
 }

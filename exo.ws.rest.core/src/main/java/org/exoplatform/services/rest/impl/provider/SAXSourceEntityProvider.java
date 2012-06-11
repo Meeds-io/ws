@@ -109,15 +109,15 @@ public class SAXSourceEntityProvider implements EntityProvider<SAXSource>
          Throwable cause = pae.getCause();
          if (cause instanceof TransformerConfigurationException)
          {
-            throw new IOException("Can't write to output stream " + cause);
+            throw new IOException("Can't write to output stream " + cause, cause);
          }
          else if (cause instanceof TransformerException)
          {
-            throw new IOException("Can't write to output stream " + cause);
+            throw new IOException("Can't write to output stream " + cause, cause);
          }
          else if (cause instanceof TransformerFactoryConfigurationError)
          {
-            throw new IOException("Can't write to output stream " + cause);
+            throw new IOException("Can't write to output stream " + cause, cause);
          }
          else if (cause instanceof RuntimeException)
          {

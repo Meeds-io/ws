@@ -18,8 +18,8 @@
  */
 package org.exoplatform.services.rest.impl;
 
-import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.commons.utils.ClassLoading;
+import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
@@ -84,7 +84,7 @@ public class DependencySupplier
          catch (PrivilegedActionException pe)
          {
             ClassNotFoundException c = (ClassNotFoundException)pe.getCause();
-            throw new RuntimeException(c.getMessage());
+            throw new RuntimeException(c.getMessage(), c);
          }
       }
       if (injectAnnotationClass == null)
@@ -194,7 +194,7 @@ public class DependencySupplier
       {
          NoSuchMethodException c = (NoSuchMethodException)pe.getCause();
          // Should never happen since class implements javax.inject.Provider.
-         throw new RuntimeException(c.getMessage());
+         throw new RuntimeException(c.getMessage(), c);
       }
 
       if (get != null)
