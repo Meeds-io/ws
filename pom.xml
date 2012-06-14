@@ -56,7 +56,6 @@
       <module>exo.ws.testframework</module>
       <module>exo.ws.rest.core</module>
       <module>exo.ws.rest.ext</module>
-      <module>packaging/module</module>
    </modules>
 
    <dependencyManagement>
