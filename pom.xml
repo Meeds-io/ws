@@ -37,7 +37,7 @@
 
    <scm>
       <connection>scm:git:git://github.com/exoplatform/ws.git</connection>
-      <developerConnection>scm:git:git@github.com/exoplatform/ws.git</developerConnection>
+      <developerConnection>scm:git:git@github.com:exoplatform/ws.git</developerConnection>
       <url>https://fisheye.exoplatform.org/browse/ws-dev</url>
    </scm>
 
