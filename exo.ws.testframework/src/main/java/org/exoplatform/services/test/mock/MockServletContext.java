@@ -331,7 +331,7 @@ public class MockServletContext implements ServletContext
     */
    public String getInitParameter(String name)
    {
-      return (String)initParams.get(name);
+      return initParams.get(name);
    }
 
    /**
@@ -382,6 +382,14 @@ public class MockServletContext implements ServletContext
    public String getServletContextName()
    {
       return name;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public String getContextPath()
+   {
+      return contextPath;
    }
 
 }
