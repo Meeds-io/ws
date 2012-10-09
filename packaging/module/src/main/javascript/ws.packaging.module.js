@@ -43,7 +43,6 @@ function getModule(params) {
   module.soap = {};
   module.soap.jsr181 =
     new Project("org.exoplatform.ws", "exo.ws.soap.xfire.jsr181", "jar", module.version).
-    addDependency(new Project("picocontainer", "picocontainer", "jar", "1.1")).
     addDependency(new Project("org.codehaus.xfire", "xfire-jsr181-api", "jar", "1.0")).
     addDependency(new Project("org.codehaus.xfire", "xfire-all", "jar", "1.2.6")).
     addDependency(new Project("wsdl4j", "wsdl4j", "jar", "1.6.2")).
