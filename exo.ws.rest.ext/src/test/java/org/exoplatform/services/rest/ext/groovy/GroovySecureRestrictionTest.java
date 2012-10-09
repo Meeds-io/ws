@@ -49,7 +49,7 @@ public class GroovySecureRestrictionTest extends BaseTest
       ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
       ContainerResponse resp = launcher.service("GET", "/a/b", "", null, null, writer, null);
       assertEquals(500, resp.getStatus());
-      assertTrue(new String(writer.getBody()).startsWith("access denied"));
+      assertTrue((new String(writer.getBody()).toLowerCase()).startsWith("access denied"));
    }
 
    @Override
