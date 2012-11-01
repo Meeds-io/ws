@@ -79,9 +79,7 @@ public class MockServletContext implements ServletContext
     */
    public MockServletContext(String name)
    {
-      this.name = name;
-      this.initParams = new HashMap<String, String>();
-      this.attributes = new HashMap<String, Object>();
+      this(name, "/" + name);
    }
 
    /**
@@ -92,9 +90,12 @@ public class MockServletContext implements ServletContext
     */
    public MockServletContext(String name, String path)
    {
-      this(name);
-      contextPath = path;
-      attributes.put("javax.servlet.context.tempdir", path);
+      this.name = name;
+      this.contextPath = path;
+
+      this.initParams = new HashMap<String, String>();
+      this.attributes = new HashMap<String, Object>();
+      this.attributes.put("javax.servlet.context.tempdir", path);
    }
 
    /**
