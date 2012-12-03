@@ -108,7 +108,11 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
             }
          }
 
-         jaxbContexts.put(clazz, jaxbctx);
+         JAXBContext currentCtx = jaxbContexts.putIfAbsent(clazz, jaxbctx);
+         if (currentCtx != null)
+         {
+            jaxbctx = currentCtx;
+         }
       }
       return jaxbctx;
    }

@@ -39,9 +39,6 @@ public class MockHttpSession implements HttpSession
    /** The attributes map. */
    private Map<String, Object> attributes = new HashMap<String, Object>();
 
-   /** The servlet context. */
-   private ServletContext servletContext;
-
    /** The is valid. */
    private boolean isValid = true;
 
@@ -74,7 +71,7 @@ public class MockHttpSession implements HttpSession
     */
    public ServletContext getServletContext()
    {
-      return servletContext;
+      return null;
    }
 
    /**

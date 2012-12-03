@@ -238,7 +238,7 @@ public class ParameterHelper
          {
 
             // if primitive type
-            if (parameterClass.isPrimitive() && PrimitiveTypeProducer.PRIMITIVE_TYPES_MAP.get(parameterClass) != null)
+            if (parameterClass.isPrimitive() && PrimitiveTypeProducer.PRIMITIVE_TYPES_MAP.containsValue(parameterClass))
                return true;
 
             if (parameterClass == String.class || getStringValueOfMethod(parameterClass) != null

@@ -2,7 +2,7 @@
  * @(#)DefaultAuthHandler.java             0.3-3 06/05/2001
  *
  *  This file is part of the HTTPClient package
- *  Copyright (C) 1996-2001 Ronald Tschal�r
+ *  Copyright (C) 1996-2001 Ronald Tschal���r
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -74,7 +74,7 @@ import java.util.Vector;
  * (those methods are only public because implementing the
  * <var>AuthorizationHandler</var> interface requires them to be).
  * @version 0.3-3 06/05/2001
- * @author Ronald Tschal�r
+ * @author Ronald Tschal���r
  * @since V0.2
  */
 public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
@@ -155,7 +155,7 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
       // Ask the user for username/password
 
       NVPair answer;
-      synchronized (getClass())
+      synchronized (DefaultAuthHandler.class)
       {
          if (!req.allowUI() || prompterSet && prompter == null)
             return null;
@@ -260,6 +260,10 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
          return;
 
       Vector pai = Util.parseHeader(auth_info);
+      if (pai == null)
+      {
+         throw new IllegalArgumentException("The authentication info parameter cannot be null or empty");
+      }
       HttpHeaderElement elem;
 
       if (handle_nextnonce(prev, req, elem = Util.getElement(pai, "nextnonce")))
@@ -271,7 +275,7 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
       {
          HttpHeaderElement qop = null;
 
-         if (pai != null && (qop = Util.getElement(pai, "qop")) != null && qop.getValue() != null)
+         if ((qop = Util.getElement(pai, "qop")) != null && qop.getValue() != null)
          {
             handle_rspauth(prev, resp, req, pai, hdr_name);
          }
@@ -282,7 +286,7 @@ public class DefaultAuthHandler implements AuthorizationHandler, GlobalConstants
             handle_rspauth(prev, resp, req, null, hdr_name);
          }
 
-         else if ((pai != null && qop == null && pai.contains(new HttpHeaderElement("digest")))
+         else if (qop == null && pai.contains(new HttpHeaderElement("digest"))
             || (Util.hasToken(resp.getHeader("Trailer"), hdr_name) && prev != null && !hasParam(prev.getParams(),
                "qop", null)))
          {
@@ -1330,7 +1334,7 @@ class SimpleAuthPopup implements AuthorizationPrompter
 
    private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.SimpleAuthPopup");
 
-   private static BasicAuthBox inp = null;
+   private static volatile BasicAuthBox inp;
 
    /**
     * the method called by DefaultAuthHandler.
@@ -1353,10 +1357,13 @@ class SimpleAuthPopup implements AuthorizationPrompter
          line3 = "Authentication Scheme: " + challenge.getScheme();
       }
 
-      synchronized (getClass())
+      if (inp == null)
       {
-         if (inp == null)
-            inp = new BasicAuthBox();
+         synchronized (SimpleAuthPopup.class)
+         {
+            if (inp == null)
+               inp = new BasicAuthBox();
+         }
       }
 
       return inp.getInput(line1, line2, line3, challenge.getScheme());
@@ -1366,7 +1373,7 @@ class SimpleAuthPopup implements AuthorizationPrompter
     * This class implements a simple popup that request username and password
     * used for the "basic" and "digest" authentication schemes.
     * @version 0.3-3 06/05/2001
-    * @author Ronald Tschal�r
+    * @author Ronald Tschal���r
     */
    private static class BasicAuthBox extends Frame
    {
@@ -1555,7 +1562,7 @@ class SimpleAuthPopup implements AuthorizationPrompter
  * This class implements a simple command line prompter that request username
  * and password used for the "basic" and "digest" authentication schemes.
  * @version 0.3-3 06/05/2001
- * @author Ronald Tschal�r
+ * @author Ronald Tschal���r
  */
 class SimpleAuthPrompt implements AuthorizationPrompter
 {

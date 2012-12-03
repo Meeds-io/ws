@@ -2,7 +2,7 @@
  * @(#)RedirectionModule.java             0.3-3 06/05/2001
  *
  *  This file is part of the HTTPClient package
- *  Copyright (C) 1996-2001 Ronald Tschal�r
+ *  Copyright (C) 1996-2001 Ronald Tschal���r
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -43,7 +43,7 @@ import java.util.Hashtable;
  * This module handles the redirection status codes 301, 302, 303, 305, 306 and
  * 307.
  * @version 0.3-3 06/05/2001
- * @author Ronald Tschal�r
+ * @author Ronald Tschal���r
  */
 class RedirectionModule implements HTTPClientModule
 {
@@ -491,7 +491,7 @@ class RedirectionModule implements HTTPClientModule
          }
       }
 
-      if (!cur_loc.equals(new_loc))
+      if (cur_loc != null && !cur_loc.equals(new_loc))
       {
          Hashtable perm_redir_list = Util.getList(perm_redir_cntxt_list, con.getContext());
          perm_redir_list.put(cur_loc, new_loc);

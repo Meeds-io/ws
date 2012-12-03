@@ -2,7 +2,7 @@
  * @(#)Util.java             0.3-3 06/05/2001
  *
  *  This file is part of the HTTPClient package
- *  Copyright (C) 1996-2001 Ronald Tschal�r
+ *  Copyright (C) 1996-2001 Ronald Tschal���r
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -37,7 +37,6 @@ import org.exoplatform.services.log.Log;
 
 import java.lang.reflect.Array;
 import java.net.URL;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.BitSet;
 import java.util.Date;
@@ -50,7 +49,7 @@ import java.util.Vector;
 /**
  * This class holds various utility methods.
  * @version 0.3-3 06/05/2001
- * @author Ronald Tschal�r
+ * @author Ronald Tschal���r
  */
 public class Util
 {
@@ -59,18 +58,6 @@ public class Util
    private static final BitSet TokenChar = new BitSet(128);
 
    private static final BitSet UnsafeChar = new BitSet(128);
-
-   private static DateFormat http_format;
-
-   private static DateFormat parse_1123;
-
-   private static DateFormat parse_850;
-
-   private static DateFormat parse_asctime;
-
-   private static final Object http_format_lock = new Object();
-
-   private static final Object http_parse_lock = new Object();
 
    private static final Log LOG = ExoLogger.getLogger("exo.ws.commons.Util");
 
@@ -833,11 +820,10 @@ public class Util
     */
    final static Date parseHttpDate(String dstr)
    {
-      synchronized (http_parse_lock)
-      {
-         if (parse_1123 == null)
-            setupParsers();
-      }
+      
+      SimpleDateFormat parse_1123 = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
+      parse_1123.setTimeZone(new SimpleTimeZone(0, "GMT"));
+      parse_1123.setLenient(true);
 
       try
       {
@@ -850,6 +836,11 @@ public class Util
             LOG.trace("An exception occurred: " + pe.getMessage());
          }
       }
+      
+      SimpleDateFormat parse_850 = new SimpleDateFormat("EEEE, dd-MMM-yy HH:mm:ss 'GMT'", Locale.US);
+      parse_850.setTimeZone(new SimpleTimeZone(0, "GMT"));
+      parse_850.setLenient(true);
+      
       try
       {
          return parse_850.parse(dstr);
@@ -861,6 +852,11 @@ public class Util
             LOG.trace("An exception occurred: " + pe.getMessage());
          }
       }
+
+      SimpleDateFormat parse_asctime = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy", Locale.US);
+      parse_asctime.setTimeZone(new SimpleTimeZone(0, "GMT"));
+      parse_asctime.setLenient(true);
+
       try
       {
          return parse_asctime.parse(dstr);
@@ -869,21 +865,6 @@ public class Util
       {
          throw new IllegalArgumentException(pe.toString(), pe);
       }
-   }
-
-   private static final void setupParsers()
-   {
-      parse_1123 = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
-      parse_850 = new SimpleDateFormat("EEEE, dd-MMM-yy HH:mm:ss 'GMT'", Locale.US);
-      parse_asctime = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy", Locale.US);
-
-      parse_1123.setTimeZone(new SimpleTimeZone(0, "GMT"));
-      parse_850.setTimeZone(new SimpleTimeZone(0, "GMT"));
-      parse_asctime.setTimeZone(new SimpleTimeZone(0, "GMT"));
-
-      parse_1123.setLenient(true);
-      parse_850.setLenient(true);
-      parse_asctime.setLenient(true);
    }
 
    /**
@@ -901,19 +882,14 @@ public class Util
     */
    public static final String httpDate(Date date)
    {
-      synchronized (http_format_lock)
-      {
-         if (http_format == null)
-            setupFormatter();
-      }
+      SimpleDateFormat http_format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
+      http_format.setTimeZone(new SimpleTimeZone(0, "GMT"));
 
       return http_format.format(date);
    }
 
    private static final void setupFormatter()
    {
-      http_format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
-      http_format.setTimeZone(new SimpleTimeZone(0, "GMT"));
    }
 
    /**

@@ -817,6 +817,8 @@ public class ProviderBinder implements ExtendedProviders
                      break;
                }
 
+               if (factory == null)
+                  throw new RuntimeException("No ObjectFactory could be found");
                for (MediaType mime : factory.getObjectModel().produces())
                {
                   if (pm.get(mime) != null)
@@ -864,6 +866,8 @@ public class ProviderBinder implements ExtendedProviders
             factory = new ContainerObjectFactory<ProviderDescriptor>(descriptor);
             break;
       }
+      if (factory == null)
+         throw new RuntimeException("No ObjectFactory could be found");
       // MessageBodyReader is smart component and can determine which type it
       // supports, see method MessageBodyReader.isReadable. So here does not
       // check is reader for the same Java and media type already exists.
@@ -903,6 +907,8 @@ public class ProviderBinder implements ExtendedProviders
             factory = new ContainerObjectFactory<ProviderDescriptor>(descriptor);
             break;
       }
+      if (factory == null)
+         throw new RuntimeException("No ObjectFactory could be found");
       // MessageBodyWriter is smart component and can determine which type it
       // supports, see method MessageBodyWriter.isWriteable. So here does not
       // check is writer for the same Java and media type already exists.

@@ -2,7 +2,7 @@
  * @(#)HTTPConnection.java             0.3-3 06/05/2001
  *
  *  This file is part of the HTTPClient package
- *  Copyright (C) 1996-2001 Ronald Tschal�r
+ *  Copyright (C) 1996-2001 Ronald Tschal���r
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -175,7 +175,7 @@ import javax.xml.stream.XMLStreamWriter;
  * <li>Trace ( file [, headers ] )
  * </ul>
  * @version 0.3-3 06/05/2001
- * @author Ronald Tschal�r
+ * @author Ronald Tschal���r
  */
 public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstants
 {
@@ -1855,7 +1855,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       if (didx < length)
          def_hdrs = Util.resizeArray(def_hdrs, didx);
 
-      synchronized (DefaultHeaders)
+      synchronized (this)
       {
          DefaultHeaders = def_hdrs;
       }
@@ -1867,7 +1867,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     */
    public NVPair[] getDefaultHeaders()
    {
-      synchronized (DefaultHeaders)
+      synchronized (this)
       {
          return DefaultHeaders.clone();
       }
@@ -2853,7 +2853,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       int spec_len = (spec != null ? spec.length : 0), defs_len;
       NVPair[] merged;
 
-      synchronized (DefaultHeaders)
+      synchronized (this)
       {
          defs_len = (DefaultHeaders != null ? DefaultHeaders.length : 0);
          merged = new NVPair[spec_len + defs_len];

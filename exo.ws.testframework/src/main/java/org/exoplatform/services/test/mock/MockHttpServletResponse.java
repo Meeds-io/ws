@@ -88,13 +88,6 @@ public class MockHttpServletResponse implements HttpServletResponse
    /** The encoding. */
    protected String charset = null;
 
-   /** The date format we will use for creating date headers. */
-   protected static final SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
-   static
-   {
-      format.setTimeZone(TimeZone.getTimeZone("GMT"));
-   };
-
    /**
     * Instantiates a new mock http servlet response.
     */
@@ -196,6 +189,10 @@ public class MockHttpServletResponse implements HttpServletResponse
     */
    public void addDateHeader(String name, long value)
    {
+      /** The date format we will use for creating date headers. */
+      SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+      format.setTimeZone(TimeZone.getTimeZone("GMT"));
+
       addHeader(name, format.format(new Date(value)));
    }
 
@@ -211,7 +208,7 @@ public class MockHttpServletResponse implements HttpServletResponse
             if (key.equals(name))
             {
                List<String> values = (ArrayList<String>)headers.get(key);
-               if (values != null)
+               if (values == null)
                {
                   values = new ArrayList<String>();
                   headers.put(name, values);
@@ -313,6 +310,10 @@ public class MockHttpServletResponse implements HttpServletResponse
     */
    public void setDateHeader(String name, long value)
    {
+      /** The date format we will use for creating date headers. */
+      SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+      format.setTimeZone(TimeZone.getTimeZone("GMT"));
+      
       setHeader(name, format.format(new Date(value)));
    }
 
