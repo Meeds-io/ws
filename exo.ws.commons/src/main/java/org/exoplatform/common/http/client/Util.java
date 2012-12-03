@@ -888,10 +888,6 @@ public class Util
       return http_format.format(date);
    }
 
-   private static final void setupFormatter()
-   {
-   }
-
    /**
     * Escape unsafe characters in a path.
     * @param path the original path
