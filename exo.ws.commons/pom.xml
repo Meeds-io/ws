@@ -43,10 +43,7 @@
       <dependency>
          <groupId>org.exoplatform.kernel</groupId>
          <artifactId>exo.kernel.commons.test</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>xpp3</groupId>
-        <artifactId>xpp3</artifactId>
+         <scope>test</scope>
       </dependency>
       <dependency>
          <groupId>junit</groupId>
