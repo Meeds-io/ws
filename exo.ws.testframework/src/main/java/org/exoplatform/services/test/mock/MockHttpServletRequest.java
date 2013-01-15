@@ -25,21 +25,30 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 
 /**
  * The Class MockHttpServletRequest.
@@ -47,7 +56,6 @@ import javax.servlet.http.HttpSession;
  * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>
  * @version $Id: $
  */
-
 @SuppressWarnings("unchecked")
 public class MockHttpServletRequest implements HttpServletRequest
 {
@@ -73,9 +81,6 @@ public class MockHttpServletRequest implements HttpServletRequest
    /** The session. */
    private HttpSession session;
 
-   /** The locale. */
-   private Locale locale;
-
    /** The secure. */
    private boolean secure;
 
@@ -86,6 +91,8 @@ public class MockHttpServletRequest implements HttpServletRequest
    private Map<String, Object> attributes = new HashMap<String, Object>();
 
    private Principal principal;
+
+   private boolean authenticated = true;
 
    /**
     * Instantiates a new mock http servlet request.
@@ -351,7 +358,7 @@ public class MockHttpServletRequest implements HttpServletRequest
 
          String pname = (String)it.next();
          if (pname.equalsIgnoreCase(name))
-            arr.add((String)parameters.get(name).get(0));
+            arr.add(parameters.get(name).get(0));
       }
       return arr.toArray(new String[arr.size()]);
 
@@ -450,7 +457,7 @@ public class MockHttpServletRequest implements HttpServletRequest
     */
    public String getRemoteUser()
    {
-      return "root";
+      return authenticated ? "root" : null;
    }
 
    /**
@@ -546,7 +553,7 @@ public class MockHttpServletRequest implements HttpServletRequest
     */
    public Principal getUserPrincipal()
    {
-      return principal == null ? principal = new MockPrincipal("root") : principal;
+      return authenticated ? (principal == null ? principal = new MockPrincipal("root") : principal) : null;
    }
 
    /**
@@ -677,6 +684,74 @@ public class MockHttpServletRequest implements HttpServletRequest
          p = n + 1;
       }
       return m;
+   }
+
+   // servlet 3.0.1 api
+
+   public ServletContext getServletContext()
+   {
+      return new MockServletContext();
+   }
+
+   public AsyncContext startAsync() throws IllegalStateException
+   {
+      throw new IllegalStateException("Asynchronous request is not supported");
+   }
+
+   public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse)
+      throws IllegalStateException
+   {
+      throw new IllegalStateException("Asynchronous request is not supported");
+   }
+
+   public boolean isAsyncStarted()
+   {
+      return false;
+   }
+
+   public boolean isAsyncSupported()
+   {
+      return false;
+   }
+
+   public AsyncContext getAsyncContext()
+   {
+      throw new IllegalStateException("Request is not in asynchronous mode");
+   }
+
+   public DispatcherType getDispatcherType()
+   {
+      return DispatcherType.REQUEST;
+   }
+
+   public boolean authenticate(HttpServletResponse response) throws IOException, ServletException
+   {
+      return authenticated;
+   }
+
+   public void login(String username, String password) throws ServletException
+   {
+      if (authenticated)
+      {
+         throw new ServletException("Non-null caller identity had already been established");
+      }
+
+      authenticated = true;
+   }
+
+   public void logout() throws ServletException
+   {
+      authenticated = false;
+   }
+
+   public Collection<Part> getParts() throws IOException, ServletException
+   {
+      throw new ServletException("Request is not of type multipart/form-data");
+   }
+
+   public Part getPart(String name) throws IOException, ServletException
+   {
+      throw new ServletException("Request is not of type multipart/form-data");
    }
 }
 
