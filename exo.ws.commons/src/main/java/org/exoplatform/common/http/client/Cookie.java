@@ -84,6 +84,8 @@ public class Cookie implements Serializable
 
    protected boolean secure;
 
+   protected boolean httpOnly;
+
    /**
     * Create a cookie.
     * @param name the cookie name
@@ -244,9 +246,25 @@ public class Cookie implements Serializable
                else if (beg < len && buf[beg] != ',')
                   throw new ProtocolException("Bad Set-Cookie header: " + set_cookie + "\nExpected "
                      + "';' or ',' at position " + beg);
-
-               continue;
             }
+             if ((beg + 8 <= len) && set_cookie.regionMatches(true, beg, "HttpOnly", 0, 8))
+             {
+                 curr.httpOnly = true;
+                 beg += 8;
+
+                 beg = Util.skipSpace(buf, beg);
+                 if (beg < len && buf[beg] == ';') // consume ";"
+                     beg = Util.skipSpace(buf, beg + 1);
+                 else if (beg < len && buf[beg] != ',')
+                     throw new ProtocolException("Bad Set-Cookie header: " + set_cookie + "\nExpected "
+                             + "';' or ',' at position " + beg);
+
+                 continue;
+             }
+             else if (curr.secure)
+             {
+                 continue;
+             }
 
             // alright, must now be of the form x=y
             end = set_cookie.indexOf('=', beg);
@@ -342,7 +360,7 @@ public class Cookie implements Serializable
             LOG.warn("Bad Set-Cookie header: " + set_cookie + ". Invalid date '" + value + "'");
          }
       }
-      else if (name.equals("max-age")) // from rfc-2109
+      else if (name.equalsIgnoreCase("max-age")) // from rfc-2109
       {
          if (cookie.expires != null)
             return true;
@@ -488,6 +506,13 @@ public class Cookie implements Serializable
    {
       return secure;
    }
+   /**
+   * Return true if cookie have httponly activated.
+   */
+    public boolean isHttpOnly()
+    {
+       return httpOnly;
+    }
 
    /**
     * @return true if this cookie has expired
@@ -562,6 +587,8 @@ public class Cookie implements Serializable
          res.append("; domain=").append(domain);
       if (secure)
          res.append("; secure");
+      if (httpOnly)
+         res.append("; httpOnly");
       return res.toString();
    }
 }
