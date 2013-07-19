@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -207,7 +209,7 @@ public class MockHttpServletResponse implements HttpServletResponse
             String key = (String)it.next();
             if (key.equals(name))
             {
-               List<String> values = (ArrayList<String>)headers.get(key);
+               List<String> values = headers.get(key);
                if (values == null)
                {
                   values = new ArrayList<String>();
@@ -365,7 +367,6 @@ public class MockHttpServletResponse implements HttpServletResponse
    {
       this.status = status;
       this.message = message;
-
    }
 
    /**
@@ -467,4 +468,39 @@ public class MockHttpServletResponse implements HttpServletResponse
       }
    }
 
+   /**
+    * {@inheritDoc}
+    */
+   public int getStatus()
+   {
+      return status;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public String getHeader(String name)
+   {
+      List<String> _headers = headers.get(name);
+
+      return _headers == null || _headers.isEmpty() ? null : _headers.get(0);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public Collection<String> getHeaders(String name)
+   {
+      List<String> _headers = headers.get(name);
+
+      return _headers == null ? Collections.EMPTY_LIST : Collections.unmodifiableList(_headers);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   public Collection<String> getHeaderNames()
+   {
+      return Collections.unmodifiableSet(headers.keySet());
+   }
 }
