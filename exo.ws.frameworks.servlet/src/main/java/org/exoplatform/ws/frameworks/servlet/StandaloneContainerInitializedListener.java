@@ -19,6 +19,7 @@
 package org.exoplatform.ws.frameworks.servlet;
 
 import org.exoplatform.container.StandaloneContainer;
+import org.exoplatform.container.context.ContextManagerListener;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
@@ -103,6 +104,9 @@ public class StandaloneContainerInitializedListener implements ServletContextLis
       {
          container = StandaloneContainer.getInstance(Thread.currentThread().getContextClassLoader());
          event.getServletContext().setAttribute("org.exoplatform.frameworks.web.eXoContainer", container);
+
+         // Register the listener if needed
+         ContextManagerListener.registerIfNeeded(container, event.getServletContext());
       }
       catch (Exception e)
       {
@@ -116,6 +120,7 @@ public class StandaloneContainerInitializedListener implements ServletContextLis
     */
    public void contextDestroyed(ServletContextEvent event)
    {
-      container.stop();
+      if (container != null)
+         container.stop();
    }
 }
