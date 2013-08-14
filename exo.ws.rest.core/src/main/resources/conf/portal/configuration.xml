@@ -28,13 +28,7 @@
       <type>org.exoplatform.services.rest.impl.StartableApplication</type>
    </component>
    <component>
-      <type>org.exoplatform.services.rest.impl.ProvidersRegistry</type>
-   </component>
-   <component>
       <type>org.exoplatform.services.rest.impl.RequestHandlerImpl</type>
-   </component>
-   <component>
-      <type>org.exoplatform.services.rest.impl.RequestDispatcher</type>
    </component>
    <component>
       <type>org.exoplatform.services.rest.impl.ResourceBinder</type>

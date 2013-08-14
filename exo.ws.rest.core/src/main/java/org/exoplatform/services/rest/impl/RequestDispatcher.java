@@ -18,6 +18,7 @@
  */
 package org.exoplatform.services.rest.impl;
 
+import org.exoplatform.container.spi.DefinitionByType;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.ApplicationContext;
@@ -72,6 +73,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
+@DefinitionByType
 public class RequestDispatcher
 {
 

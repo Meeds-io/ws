@@ -18,6 +18,8 @@
  */
 package org.exoplatform.services.rest.impl;
 
+import org.exoplatform.container.spi.DefinitionByType;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +27,7 @@ import java.util.Map;
  * @author <a href="andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
+@DefinitionByType
 public class ProvidersRegistry
 {
 
