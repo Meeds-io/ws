@@ -62,10 +62,12 @@
       <dependency>
          <groupId>javax.mail</groupId>
          <artifactId>mail</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>javax.activation</groupId>
-         <artifactId>activation</artifactId>
+         <exclusions>
+            <exclusion>
+               <groupId>javax.activation</groupId>
+               <artifactId>activation</artifactId>
+            </exclusion>
+         </exclusions>
       </dependency>
       <dependency>
          <groupId>javax.ws.rs</groupId>
@@ -74,10 +76,6 @@
       <dependency>
          <groupId>commons-fileupload</groupId>
          <artifactId>commons-fileupload</artifactId>
-      </dependency>
-      <dependency>
-      	<groupId>javax.inject</groupId>
-      	<artifactId>javax.inject</artifactId>
       </dependency>
    </dependencies>
 

@@ -33,14 +33,14 @@
 	<artifactId>exo.ws.rest.ext</artifactId>
 
 	<name>eXo WS :: REST :: Extentions</name>
-    <description>Implementation of REST Extentions for Exoplatform SAS 'Web Services' project.</description>
+	<description>Implementation of REST Extentions for Exoplatform SAS 'Web Services' project.</description>
 
 	<dependencies>
-      <dependency>
-         <groupId>org.exoplatform.kernel</groupId>
-         <artifactId>exo.kernel.commons.test</artifactId>
-         <scope>test</scope>
-      </dependency>
+		<dependency>
+			<groupId>org.exoplatform.kernel</groupId>
+			<artifactId>exo.kernel.commons.test</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.exoplatform.core</groupId>
 			<artifactId>exo.core.component.xml-processing</artifactId>
@@ -69,7 +69,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-         <scope>test</scope>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>
