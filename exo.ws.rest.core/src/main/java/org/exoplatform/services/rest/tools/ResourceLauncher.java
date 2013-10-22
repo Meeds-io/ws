@@ -86,15 +86,7 @@ public class ResourceLauncher
          new SecurityContextRequest(method, new URI(requestURI), new URI(baseURI), in, new InputHeadersMap(headers),
             sctx);
       ContainerResponse response = new ContainerResponse(writer);
-      try
-      {
-         RequestLifeCycle.begin(ExoContainerContext.getCurrentContainer());
-         requestHandler.handleRequest(request, response);
-      }
-      finally
-      {
-         RequestLifeCycle.end();
-      }
+      requestHandler.handleRequest(request, response);
       return response;
    }
 

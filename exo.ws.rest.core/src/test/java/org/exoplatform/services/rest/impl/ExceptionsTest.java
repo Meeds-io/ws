@@ -18,9 +18,13 @@
  */
 package org.exoplatform.services.rest.impl;
 
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.component.ComponentRequestLifecycle;
 import org.exoplatform.services.rest.BaseTest;
 import org.exoplatform.services.rest.ExtHttpHeaders;
 import org.exoplatform.services.rest.tools.ByteArrayContainerResponseWriter;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -76,6 +80,13 @@ public class ExceptionsTest extends BaseTest
       public Response m4() throws Exception
       {
          return Response.status(500).entity(errorMessage).type("text/plain").build();
+      }
+
+      @GET
+      @Path("5")
+      public Response m5() throws Exception
+      {
+         return Response.status(200).entity("My normal result").type("text/plain").build();
       }
 
    }
@@ -146,4 +157,42 @@ public class ExceptionsTest extends BaseTest
       assertNotNull(response.getHttpHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
    }
 
+   public void testErrorOnRequestLifeCycleEnd() throws Exception
+   {
+      ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+      try
+      {
+         FailingComponentRequestLifecycle.FAIL.set(true);
+         ContainerResponse response = launcher.service("GET", "/a/5", "", null, null, writer, null);
+         assertEquals(500, response.getStatus());
+         String entity = new String(writer.getBody());
+         assertEquals(errorMessage, entity);
+         assertNotNull(response.getHttpHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
+      }
+      finally
+      {
+         FailingComponentRequestLifecycle.FAIL.set(false);
+      }
+   }
+
+   public static class FailingComponentRequestLifecycle implements ComponentRequestLifecycle
+   {
+      public static AtomicBoolean FAIL = new AtomicBoolean();
+
+      /**
+       * {@inheritDoc}
+       */
+      public void startRequest(ExoContainer container)
+      {
+      }
+
+      /**
+       * {@inheritDoc}
+       */
+      public void endRequest(ExoContainer container)
+      {
+         if (FAIL.get())
+            throw new RuntimeException(errorMessage);
+      }
+   }
 }

@@ -19,7 +19,6 @@
 package org.exoplatform.services.rest.servlet;
 
 import org.exoplatform.container.ExoContainer;
-import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.container.web.AbstractHttpServlet;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -67,8 +66,6 @@ public class RestServlet extends AbstractHttpServlet implements Connector
       throws IOException, ServletException
    {
 
-      RequestLifeCycle.begin(container);
-
       RequestHandler requestHandler = (RequestHandler)container.getComponentInstanceOfType(RequestHandler.class);
 
       EnvironmentContext env = new EnvironmentContext();
@@ -102,7 +99,6 @@ public class RestServlet extends AbstractHttpServlet implements Connector
       finally
       {
          EnvironmentContext.setCurrent(null);
-         RequestLifeCycle.end();
       }
    }
 
