@@ -21,6 +21,7 @@ package org.exoplatform.services.rest.ext.groovy;
 
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyCodeSource;
+import groovy.lang.GroovySystem;
 
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.exoplatform.commons.utils.SecurityHelper;
@@ -65,6 +66,13 @@ import javax.ws.rs.core.MultivaluedMap;
 public class GroovyJaxrsPublisher
 {
    private static final Log LOG = ExoLogger.getExoLogger(GroovyJaxrsPublisher.class);
+   static
+   {
+      // We get the version of groovy as workaround, to make
+      // sure that it will be able to load the META-INF/dgminfo
+      String version = GroovySystem.getVersion();
+      LOG.debug("The version of groovy used is {}", version);
+   }
 
    @SuppressWarnings("rawtypes")
    private static final Comparator<Constructor> constructorComparator = new Comparator<Constructor>() {
