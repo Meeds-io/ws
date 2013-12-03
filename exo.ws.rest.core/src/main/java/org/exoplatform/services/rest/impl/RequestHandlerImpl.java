@@ -20,9 +20,7 @@ package org.exoplatform.services.rest.impl;
 
 import org.exoplatform.commons.utils.PrivilegedFileHelper;
 import org.exoplatform.commons.utils.PrivilegedSystemHelper;
-import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.component.ComponentPlugin;
-import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
 import org.exoplatform.services.log.ExoLogger;
@@ -82,8 +80,6 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
 
    private final DependencySupplier dependencySupplier;
 
-   private final ExoContainerContext ctx;
-
    public static final String getProperty(String name)
    {
       return properties.get(name);
@@ -97,10 +93,8 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
          properties.put(name, value);
    }
 
-   public RequestHandlerImpl(ExoContainerContext ctx, RequestDispatcher dispatcher,
-      DependencySupplier dependencySupplier, InitParams params)
+   public RequestHandlerImpl(RequestDispatcher dispatcher, DependencySupplier dependencySupplier, InitParams params)
    {
-      this.ctx = ctx;
       this.dispatcher = dispatcher;
       this.dependencySupplier = dependencySupplier;
       if (params != null)
@@ -116,13 +110,12 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
    /**
     * Constructs new instance of {@link RequestHandler}.
     * 
-    * @param ctx the container context
     * @param dispatcher See {@link RequestDispatcher}
     * @param params init parameters
     */
-   public RequestHandlerImpl(ExoContainerContext ctx, RequestDispatcher dispatcher, InitParams params)
+   public RequestHandlerImpl(RequestDispatcher dispatcher, InitParams params)
    {
-      this(ctx, dispatcher, new DependencySupplier(), params);
+      this(dispatcher, new DependencySupplier(), params);
    }
 
    // RequestHandler
@@ -150,8 +143,6 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
 
          try
          {
-            RequestLifeCycle.begin(ctx.getContainer());
-
             dispatcher.dispatch(request, response);
             if (response.getHttpHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED) == null)
             {
@@ -213,18 +204,29 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
          catch (InternalException e)
          {
             Throwable cause = e.getCause();
-            handleException(response, context, cause);
-         }
-         finally
-         {
-            Map<Object, Throwable> results = RequestLifeCycle.end();
-            for (Throwable cause : results.values())
+            Class causeClazz = cause.getClass();
+            ExceptionMapper excmap = context.getProviders().getExceptionMapper(causeClazz);
+            while (causeClazz != null && excmap == null)
             {
-               if (cause != null)
+               excmap = context.getProviders().getExceptionMapper(causeClazz);
+               if (excmap == null)
                {
-                  handleException(response, context, cause);
-                  break;
+                  causeClazz = causeClazz.getSuperclass();
                }
+            }
+            if (excmap != null)
+            {
+               if (LOG.isDebugEnabled())
+               {
+                  // Hide error message if exception mapper exists.
+                  LOG.warn("Internal error occurs.", cause);
+               }
+               response.setResponse(excmap.toResponse(e.getCause()));
+            }
+            else
+            {
+               LOG.error("Internal error occurs.", cause);
+               throw new UnhandledException(e.getCause());
             }
          }
 
@@ -241,38 +243,6 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
       {
          // reset application context
          ApplicationContextImpl.setCurrent(null);
-      }
-   }
-
-   /**
-    * Handles the provided exception according to the exception mappers that can be found.
-    */
-   @SuppressWarnings({"rawtypes", "unchecked"})
-   private void handleException(GenericContainerResponse response, ApplicationContextImpl context, Throwable cause)
-   {
-      Class causeClazz = cause.getClass();
-      ExceptionMapper excmap = context.getProviders().getExceptionMapper(causeClazz);
-      while (causeClazz != null && excmap == null)
-      {
-         excmap = context.getProviders().getExceptionMapper(causeClazz);
-         if (excmap == null)
-         {
-            causeClazz = causeClazz.getSuperclass();
-         }
-      }
-      if (excmap != null)
-      {
-         if (LOG.isDebugEnabled())
-         {
-            // Hide error message if exception mapper exists.
-            LOG.warn("Internal error occurs.", cause);
-         }
-         response.setResponse(excmap.toResponse(cause));
-      }
-      else
-      {
-         LOG.error("Internal error occurs.", cause);
-         throw new UnhandledException(cause);
       }
    }
 
