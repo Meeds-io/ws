@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -102,7 +103,14 @@ public class RestServlet extends AbstractHttpServlet implements Connector
       finally
       {
          EnvironmentContext.setCurrent(null);
-         RequestLifeCycle.end();
+         Map<Object, Throwable> results = RequestLifeCycle.end();
+         for (Entry<Object, Throwable> entry : results.entrySet())
+         {
+            if (entry.getValue() != null)
+            {
+               LOG.error("An error occurred while calling the method endRequest on " + entry.getKey(), entry.getValue());
+            }
+         }
       }
    }
 

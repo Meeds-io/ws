@@ -21,6 +21,8 @@ package org.exoplatform.services.rest.tools;
 
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.component.RequestLifeCycle;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.ContainerResponseWriter;
 import org.exoplatform.services.rest.RequestHandler;
 import org.exoplatform.services.rest.impl.ContainerRequest;
@@ -33,6 +35,7 @@ import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.ws.rs.core.SecurityContext;
 
@@ -44,6 +47,8 @@ import javax.ws.rs.core.SecurityContext;
  */
 public class ResourceLauncher
 {
+   private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.ResourceLauncher");
+
    private final RequestHandler requestHandler;
 
    public ResourceLauncher(RequestHandler requestHandler)
@@ -93,7 +98,14 @@ public class ResourceLauncher
       }
       finally
       {
-         RequestLifeCycle.end();
+         Map<Object, Throwable> results = RequestLifeCycle.end();
+         for (Entry<Object, Throwable> entry : results.entrySet())
+         {
+            if (entry.getValue() != null)
+            {
+               LOG.error("An error occurred while calling the method endRequest on " + entry.getKey(), entry.getValue());
+            }
+         }
       }
       return response;
    }
