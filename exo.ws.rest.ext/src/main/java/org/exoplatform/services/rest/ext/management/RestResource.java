@@ -138,7 +138,7 @@ public class RestResource
    @GET
    @Path("{name}")
    @Produces(MediaType.APPLICATION_JSON)
-   public Object get(@Context UriInfo info, @PathParam("name") String name)
+   public Response get(@Context UriInfo info, @PathParam("name") String name)
    {
       MultivaluedMap<String, String> parameters = info.getQueryParameters();
       
@@ -160,7 +160,7 @@ public class RestResource
    @PUT
    @Path("{name}")
    @Produces(MediaType.APPLICATION_JSON)
-   public Object put(@Context UriInfo info, @PathParam("name") String name)
+   public Response put(@Context UriInfo info, @PathParam("name") String name)
    {
       MultivaluedMap<String, String> parameters = getParameters(info);
       // Try first to get a property
@@ -181,7 +181,7 @@ public class RestResource
    @POST
    @Path("{name}")
    @Produces(MediaType.APPLICATION_JSON)
-   public Object post(@Context UriInfo info, @PathParam("name") String name)
+   public Response post(@Context UriInfo info, @PathParam("name") String name)
    {
       return tryInvoke(name, getParameters(info), ImpactType.WRITE);
    }
@@ -190,11 +190,11 @@ public class RestResource
     * Try to invoke a method with matching parameters from the query string
     *
     * @param methodName the method name to invoke
-    * @param info the uri info
+    * @param parameters the parameters
     * @param impact the expected impact
     * @return a suitable response
     */
-   private Object tryInvoke(String methodName, MultivaluedMap<String, String> parameters, ImpactType impact)
+   private Response tryInvoke(String methodName, MultivaluedMap<String, String> parameters, ImpactType impact)
    {
       //
       RestResourceMethod method = lookupMethod(methodName, parameters.keySet(), impact);
@@ -230,7 +230,7 @@ public class RestResource
     * @param argMap the arguments
     * @return the ok response or an object returned by the method wrapped by {@link ValueWrapper}
     */
-   private Object safeInvoke(MethodInvoker invoker, Map<String, List<String>> argMap)
+   private Response safeInvoke(MethodInvoker invoker, Map<String, List<String>> argMap)
    {
       Object resource = managedResource.getResource();
 
@@ -241,17 +241,18 @@ public class RestResource
       try
       {
          Object ret = invoker.invoke(resource, argMap);
-         return ret == null ? Response.ok() : ValueWrapper.wrap(ret);
+         Response.ResponseBuilder rb = ret == null ? Response.ok() : Response.ok(ValueWrapper.wrap(ret));
+         return rb.build();
       }
       catch (IllegalAccessException e)
       {
-         LOG.error("An exception occured: " + e.getMessage());
-         return Response.serverError();
+         LOG.error("An exception occurred: " + e.getMessage());
+         throw new WebApplicationException(Response.serverError().entity(e.getMessage()).build());
       }
       catch (InvocationTargetException e)
       {
-         LOG.error("An exception occured: " + e.getMessage());
-         return Response.serverError();
+         LOG.error("An exception occurred: " + e.getMessage());
+         throw new WebApplicationException(Response.serverError().entity(e.getMessage()).build());
       }
       finally
       {
