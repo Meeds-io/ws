@@ -35,6 +35,10 @@
    <name>eXo WS :: Framework :: JSON</name>
    <description>Implementation of Java Bean to JSON Transformation for Exoplatform SAS 'Web Services' project.</description>
 
+   <properties>
+      <argLine>${env.MAVEN_OPTS} -Djava.security.manager=org.exoplatform.commons.test.TestSecurityManager -Djava.security.policy=${project.build.directory}/test-classes/test.policy</argLine>
+   </properties>
+
    <dependencies>
       <dependency>
          <groupId>junit</groupId>
@@ -69,13 +73,6 @@
          </testResource>
       </testResources>
       <plugins>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-               <argLine>${env.MAVEN_OPTS} -Djava.security.manager=org.exoplatform.commons.test.TestSecurityManager -Djava.security.policy=${project.build.directory}/test-classes/test.policy</argLine>
-            </configuration>
-         </plugin>
          <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
             <executions>
