@@ -95,6 +95,13 @@
          </dependency>
          <dependency>
             <groupId>org.exoplatform.ws</groupId>
+            <artifactId>ws-parent</artifactId>
+            <version>${project.version}</version>
+            <classifier>source-release</classifier>
+            <type>zip</type>
+         </dependency>
+         <dependency>
+            <groupId>org.exoplatform.ws</groupId>
             <artifactId>exo.ws.frameworks.json</artifactId>
             <version>${project.version}</version>
          </dependency>
