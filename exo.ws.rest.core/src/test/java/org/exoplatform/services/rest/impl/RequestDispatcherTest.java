@@ -427,4 +427,39 @@ public class RequestDispatcherTest extends BaseTest
 
    }
 
+   @Path("/a")
+   public static class Resource7
+   {
+      @GET
+      @Path("b/c/{d:.+}.{e}")
+      public String m1(@PathParam("d") String d)
+      {
+         return d;
+      }
+
+      @GET
+      @Path("b/e/{d:.+}.{e}")
+      public String m2(@PathParam("e") String e)
+      {
+         return e;
+      }
+
+      @GET
+      @Path("b/{d:.+}.{e}.{f}")
+      public String m3(@PathParam("e") String e)
+      {
+         return e;
+      }
+   }
+
+   public void testResource7() throws Exception
+   {
+      registry(Resource7.class);
+      assertEquals("m0.m1", launcher.service("GET", "/a/b/c/m0.m1.m2", "", null, null, null).getEntity());
+      assertEquals("m0", launcher.service("GET", "/a/b/c/m0.m1", "", null, null, null).getEntity());
+      assertEquals("m2", launcher.service("GET", "/a/b/e/m0.m1.m2", "", null, null, null).getEntity());
+      assertEquals("m2", launcher.service("GET", "/a/b/m0.m1.m2.m3", "", null, null, null).getEntity());
+      unregistry(Resource7.class);
+   }
+
 }
