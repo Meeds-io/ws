@@ -38,6 +38,7 @@ import org.exoplatform.services.rest.impl.provider.JAXBContextResolver;
 import org.exoplatform.services.rest.impl.provider.JAXBElementEntityProvider;
 import org.exoplatform.services.rest.impl.provider.JAXBObjectEntityProvider;
 import org.exoplatform.services.rest.impl.provider.JsonEntityProvider;
+import org.exoplatform.services.rest.impl.provider.JsonpEntityProvider;
 import org.exoplatform.services.rest.impl.provider.MultipartFormDataEntityProvider;
 import org.exoplatform.services.rest.impl.provider.MultivaluedMapEntityProvider;
 import org.exoplatform.services.rest.impl.provider.ProviderDescriptorImpl;
@@ -178,6 +179,8 @@ public class ProviderBinder implements ExtendedProviders
       JsonEntityProvider jsep = new JsonEntityProvider();
       addMessageBodyReader(jsep);
       addMessageBodyWriter(jsep);
+
+      addMessageBodyWriter(new JsonpEntityProvider());
 
       // per-request mode , Providers should be injected
       addMessageBodyReader(JAXBElementEntityProvider.class);
