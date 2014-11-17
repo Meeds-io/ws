@@ -778,6 +778,7 @@ public class ResourceDescriptorTest extends BaseTest
       while (iter.hasNext())
       {
          FieldInjector field = iter.next();
+         System.out.println("field.getName()=" + field.getName());
          if (field.getName().equals("$jacocoData"))
          {
             iter.remove();
