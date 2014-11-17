@@ -480,7 +480,7 @@ public class ResourceDescriptorTest extends BaseTest
 
       cleanupSonarRuntimeData(fields);
 
-      assertEquals("The current list of fields is:" + getFieldNames(fields), 1, fields.size());
+      assertEquals(1, fields.size());
       FieldInjector f = fields.get(0);
       assertEquals(String.class, f.getParameterClass());
       assertEquals(String.class, f.getGenericType());
@@ -766,20 +766,7 @@ public class ResourceDescriptorTest extends BaseTest
       List<FieldInjector> fields = resource.getFieldInjectors();
       cleanupSonarRuntimeData(fields);
 
-      assertEquals("The current list of fields is:" + getFieldNames(fields), 6, fields.size());
-   }
-
-   private String getFieldNames(List<FieldInjector> fields)
-   {
-      StringBuilder sb = new StringBuilder();
-      Iterator<FieldInjector> iter = fields.iterator();
-      while (iter.hasNext())
-      {
-         FieldInjector field = iter.next();
-         sb.append(' ');
-         sb.append(field.getName());
-      }
-      return sb.toString();
+      assertEquals(6, fields.size());
    }
 
    /**
