@@ -37,10 +37,12 @@ import org.exoplatform.services.rest.uri.UriPattern;
 import org.exoplatform.services.script.groovy.GroovyScriptInstantiator;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException; //NOSONAR
 import java.security.PrivilegedAction;
@@ -674,19 +676,18 @@ public class GroovyJaxrsPublisher
    }
 
    /**
-    * Create {@link GroovyCodeSource} from given stream and name. Code base
-    * 'file:/groovy/script/jaxrs' will be used.
+    * Create {@link GroovyCodeSource} from given location (URL).
     * 
-    * @param in groovy source code stream
-    * @param name code source name
+    * @param url groovy source url
+    * @exception  java.io.IOException
     * @return GroovyCodeSource
     */
-   protected GroovyCodeSource createCodeSource(final InputStream in, final String name)
+   protected GroovyCodeSource createCodeSource(final URL url) throws IOException
    {
-      GroovyCodeSource gcs = SecurityHelper.doPrivilegedAction(new PrivilegedAction<GroovyCodeSource>() {
-         public GroovyCodeSource run()
+      GroovyCodeSource gcs = SecurityHelper.doPrivilegedIOExceptionAction(new PrivilegedExceptionAction<GroovyCodeSource>() {
+         public GroovyCodeSource run() throws IOException
          {
-            return new GroovyCodeSource(in, name, ExtendedGroovyClassLoader.CODE_BASE);
+            return new GroovyCodeSource(url);
          }
       });
       gcs.setCachable(false);
