@@ -434,7 +434,7 @@ public class AbstractResourceDescriptorImpl extends BaseObjectModel implements A
             }
             else
             {
-               LOG.warn("Method parameter of resource " + toString() + ", method " + method.getName()
+               LOG.debug("Method parameter of resource " + toString() + ", method " + method.getName()
                   + " contains unknown or not valid JAX-RS annotation " + a.toString() + ". It will be ignored.");
             }
          }
