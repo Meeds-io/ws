@@ -91,8 +91,18 @@ function sendRequestStart(){
 		}
 		
 	}
-	
-	function check(){
+
+	function setClientUrl(event)
+	{
+		if(navigator.userAgent.indexOf("Safari") == -1){
+			window.location.replace(event.data);
+		}else{
+			window.location = event.data;
+		}
+	}
+
+
+function check(){
 		//Can't use location.hash because at least Firefox does a decodeURIComponent on it.
 		var urlParts = window.location.href.split("#");
 		if(urlParts.length == 2){
@@ -228,8 +238,10 @@ function sendRequestStart(){
 
 	if(typeof(window.addEventListener) == "undefined"){
 		window.attachEvent("onload", onClientLoad);
+		window.attachEvent("onmessage", setClientUrl);
 	}else{
 		window.addEventListener('load', onClientLoad, false);
+		window.addEventListener("message", setClientUrl, false);
 	}
 
 

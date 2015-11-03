@@ -214,15 +214,11 @@ function xipServerInit(){
 	return req;
 }
 
-	
-    function setClientUrl(cmd, message){
+
+	function setClientUrl(cmd, message)
+	{
 		var clientUrl = makeClientUrl(cmd, message);
-		//Safari won't let us replace across domains.
-		if(navigator.userAgent.indexOf("Safari") == -1){
-			parent.location.replace(clientUrl);
-		}else{
-			parent.location = clientUrl;
-		}
+		window.parent.postMessage(clientUrl, xipClientUrl);
 	}
 
 	function makeClientUrl(cmd, message){
