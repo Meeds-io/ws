@@ -33,7 +33,7 @@
 
    <groupId>org.exoplatform.ws</groupId>
    <artifactId>ws-parent</artifactId>
-   <version>2.4.x-SNAPSHOT</version>
+   <version>2.4.4-GA</version>
    <packaging>pom</packaging>
    <name>eXo WS</name>
    <description>Exoplatform SAS 'Web Services' project.</description>
@@ -42,7 +42,8 @@
       <connection>scm:git:git://github.com/exoplatform/ws.git</connection>
       <developerConnection>scm:git:git@github.com:exoplatform/ws.git</developerConnection>
       <url>https://fisheye.exoplatform.org/browse/ws-dev</url>
-   </scm>
+     <tag>2.4.4-GA</tag>
+  </scm>
 
    <properties>
       <exo.product.name>exo-ws</exo.product.name>
