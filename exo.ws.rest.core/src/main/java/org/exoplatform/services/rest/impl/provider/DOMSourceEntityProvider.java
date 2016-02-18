@@ -59,6 +59,14 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
 {
 
    /**
+    * Document Builder Factory
+    */
+   private static final DocumentBuilderFactory DBF = DocumentBuilderFactory.newInstance();
+   /**
+    * Transformer Factory
+    */
+   private static final TransformerFactory     TRF = TransformerFactory.newInstance();
+   /**
     * Logger.
     */
    private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.DOMSourceEntityProvider");
@@ -66,7 +74,7 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
    /**
     * {@inheritDoc}
     */
-   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   public boolean isReadable(final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType)
    {
       return type == DOMSource.class;
    }
@@ -74,19 +82,18 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
    /**
     * {@inheritDoc}
     */
-   public DOMSource readFrom(Class<DOMSource> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, String> httpHeaders, final InputStream entityStream) throws IOException
+   public DOMSource readFrom(final Class<DOMSource> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType,
+      final MultivaluedMap<String, String> httpHeaders, final InputStream entityStream) throws IOException
    {
       try
       {
-         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-         factory.setNamespaceAware(true);
+         DBF.setNamespaceAware(true);
 
-         Document d = SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Document>()
+         final Document d = SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Document>()
          {
             public Document run() throws Exception
             {
-               return factory.newDocumentBuilder().parse(entityStream);
+               return DBF.newDocumentBuilder().parse(entityStream);
             }
          });
 
@@ -130,7 +137,7 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
    /**
     * {@inheritDoc}
     */
-   public long getSize(DOMSource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   public long getSize(final DOMSource t, final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType)
    {
       return -1;
    }
@@ -138,7 +145,7 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
    /**
     * {@inheritDoc}
     */
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   public boolean isWriteable(final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType)
    {
       return DOMSource.class.isAssignableFrom(type);
    }
@@ -146,13 +153,13 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
    /**
     * {@inheritDoc}
     */
-   public void writeTo(DOMSource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+   public void writeTo(final DOMSource t, final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType,
+      final MultivaluedMap<String, Object> httpHeaders, final OutputStream entityStream) throws IOException
    {
-      StreamResult out = new StreamResult(entityStream);
+      final StreamResult out = new StreamResult(entityStream);
       try
       {
-         TransformerFactory.newInstance().newTransformer().transform(t, out);
+         TRF.newTransformer().transform(t, out);
       }
       catch (TransformerConfigurationException e)
       {
