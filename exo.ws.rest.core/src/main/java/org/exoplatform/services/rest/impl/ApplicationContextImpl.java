@@ -163,9 +163,10 @@ public class ApplicationContextImpl implements ApplicationContext
    /**
     * Constructs new instance of ApplicationContext.
     * 
-    * @param request See {@link GenricContainerRequest}
+    * @param request See GenricContainerRequest
     * @param response See {@link GenericContainerResponse}
-    * @param providerBinder
+    * @param providers
+    * @param dependencySupplier
     */
    public ApplicationContextImpl(GenericContainerRequest request, GenericContainerResponse response,
       ProviderBinder providers, DependencySupplier dependencySupplier)

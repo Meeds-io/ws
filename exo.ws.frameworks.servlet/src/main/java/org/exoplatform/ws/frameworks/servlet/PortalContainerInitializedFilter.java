@@ -34,7 +34,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 /**
- * Created by The eXo Platform SAS .<br/> 
+ * Created by The eXo Platform SAS .<br>
  * Servlet Filter that is used to initialize and remove the portal container from the ThreadLocal
  * of PortalContainer, it relies on PortalContainer.getCurrentInstance to retrieve the right portal container. 
  * 

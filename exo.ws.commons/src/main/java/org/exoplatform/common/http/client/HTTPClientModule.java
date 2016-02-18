@@ -90,13 +90,13 @@ public interface HTTPClientModule extends HTTPClientModuleConstants
     * <P>
     * Return codes for phase 1 (defined in HTTPClientModuleConstants.java)
     * <DL>
-    * <DT>REQ_CONTINUE <DI>continue processing
-    * <DT>REQ_RESTART <DI>restart processing with first module
-    * <DT>REQ_SHORTCIRC <DI>stop processing and send
-    * <DT>REQ_RESPONSE <DI>go to phase 2
-    * <DT>REQ_RETURN <DI>return response immediately (no processing)
-    * <DT>REQ_NEWCON_RST <DI>use a new HTTPConnection, restart processing
-    * <DT>REQ_NEWCON_SND <DI>use a new HTTPConnection, send immediately
+    * <DT>REQ_CONTINUE <DD>continue processing
+    * <DT>REQ_RESTART <DD>restart processing with first module
+    * <DT>REQ_SHORTCIRC <DD>stop processing and send
+    * <DT>REQ_RESPONSE <DD>go to phase 2
+    * <DT>REQ_RETURN <DD>return response immediately (no processing)
+    * <DT>REQ_NEWCON_RST <DD>use a new HTTPConnection, restart processing
+    * <DT>REQ_NEWCON_SND <DD>use a new HTTPConnection, send immediately
     * </DL>
     * @param request the request - may be modified as needed
     * @param response the response if the status is REQ_RESPONSE or REQ_RETURN
@@ -130,13 +130,13 @@ public interface HTTPClientModule extends HTTPClientModuleConstants
     * <P>
     * Return codes for phase 2 (defined in HTTPClientModuleConstants.java)
     * <DL>
-    * <DT>RSP_CONTINUE <DI>continue processing
-    * <DT>RSP_RESTART <DI>restart processing with first module (phase 1)
-    * <DT>RSP_SHORTCIRC <DI>stop processing and return
-    * <DT>RSP_REQUEST <DI>go to phase 1
-    * <DT>RSP_SEND <DI>send request immediately (no processing)
-    * <DT>RSP_NEWCON_REQ <DI>go to phase 1 using a new HTTPConnection
-    * <DT>RSP_NEWCON_SND <DI>send request using a new HTTPConnection
+    * <DT>RSP_CONTINUE <DD>continue processing
+    * <DT>RSP_RESTART <DD>restart processing with first module (phase 1)
+    * <DT>RSP_SHORTCIRC <DD>stop processing and return
+    * <DT>RSP_REQUEST <DD>go to phase 1
+    * <DT>RSP_SEND <DD>send request immediately (no processing)
+    * <DT>RSP_NEWCON_REQ <DD>go to phase 1 using a new HTTPConnection
+    * <DT>RSP_NEWCON_SND <DD>send request using a new HTTPConnection
     * </DL>
     * @param response the response - may be modified
     * @param request the request; if the status is RSP_REQUEST then this must

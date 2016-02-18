@@ -633,7 +633,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection
     * @exception ProtocolException if already connect()'ed, if output is not
     *              enabled or if the request method does not support output.
     * @see java.net.URLConnection#setDoOutput(boolean)
-    * @see HTTPClient.HttpOutputStream
+    * @see HttpOutputStream
     */
    @Override
    public synchronized OutputStream getOutputStream() throws IOException

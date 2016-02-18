@@ -82,7 +82,7 @@ public class Cookie2 extends Cookie
     * @param port_list an array of allowed server ports for this cookie, or null
     *          if the the cookie may be sent to any port
     * @param path the path prefix for which this cookie will be sent
-    * @param epxires the Date this cookie expires, or null if never
+    * @param expires the Date this cookie expires, or null if never
     * @param discard if true then the cookie will be discarded at the end of the
     *          session regardless of expiry
     * @param secure if true this cookie will only be over secure connections
@@ -124,7 +124,7 @@ public class Cookie2 extends Cookie
 
    /**
     * Use <code>parse()</code> to create cookies.
-    * @see #parse(java.lang.String, HTTPClient.RoRequest)
+    * @see #parse(String, RoRequest)
     */
    protected Cookie2(RoRequest req)
    {

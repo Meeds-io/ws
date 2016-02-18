@@ -131,7 +131,7 @@ public class UriPattern
     * Constructs UriPattern.
     *
     * @param template the source template
-    * @see {@link javax.ws.rs.Path}
+    * @see javax.ws.rs.Path
     */
    public UriPattern(String template)
    {

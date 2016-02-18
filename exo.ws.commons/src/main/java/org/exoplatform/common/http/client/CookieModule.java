@@ -94,7 +94,7 @@ import java.util.Vector;
  *      href="http://home.netscape.com/newsref/std/cookie_spec.html">Netscape's
  *      cookie spec</a>
  * @see <a href="http://www.ietf.org/rfc/rfc2965.txt">HTTP State Management *
- *      Mechanism spec< /a>
+ *      Mechanism spec</a>
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal���r
  * @since V0.3

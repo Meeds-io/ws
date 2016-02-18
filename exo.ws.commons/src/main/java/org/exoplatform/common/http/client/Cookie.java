@@ -92,7 +92,7 @@ public class Cookie implements Serializable
     * @param value the cookie value
     * @param domain the host this cookie will be sent to
     * @param path the path prefix for which this cookie will be sent
-    * @param epxires the Date this cookie expires, null if at end of session
+    * @param expires the Date this cookie expires, null if at end of session
     * @param secure if true this cookie will only be over secure connections
     * @exception NullPointerException if <var>name</var>, <var>value</var>,
     *              <var>domain</var>, or <var>path</var> is null
@@ -132,7 +132,7 @@ public class Cookie implements Serializable
 
    /**
     * Use <code>parse()</code> to create cookies.
-    * @see #parse(java.lang.String, HTTPClient.RoRequest)
+    * @see #parse(String, RoRequest)
     */
    protected Cookie(RoRequest req)
    {

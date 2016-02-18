@@ -626,8 +626,7 @@ public class Codecs
     *         or the contents of the part.
     * @exception IOException If any file operation fails.
     * @exception ParseException If an error during parsing occurs.
-    * @see #mpFormDataDecode(byte[], java.lang.String, java.lang.String,
-    *      HTTPClient.FilenameMangler)
+    * @see #mpFormDataDecode(byte[], String, String, FilenameMangler)
     */
    public final static NVPair[] mpFormDataDecode(byte[] data, String cont_type, String dir) throws IOException,
       ParseException
@@ -850,8 +849,7 @@ public class Codecs
     *          for the headers parameter to the Post() or Put() anyway).
     * @return an encoded byte array containing all the opts and files.
     * @exception IOException If any file operation fails.
-    * @see #mpFormDataEncode(HTTPClient.NVPair[], HTTPClient.NVPair[],
-    *      HTTPClient.NVPair[], HTTPClient.FilenameMangler)
+    * @see #mpFormDataEncode(NVPair[], NVPair[], NVPair[], FilenameMangler)
     */
    public final static byte[] mpFormDataEncode(NVPair[] opts, NVPair[] files, NVPair[] ct_hdr) throws IOException
    {
@@ -1142,7 +1140,7 @@ public class Codecs
 
    /**
     * Turns an array of name/value pairs into the string
-    * "name1=value1&name2=value2&name3=value3". The names and values are first
+    * {@code "name1=value1&name2=value2&name3=value3"}. The names and values are first
     * urlencoded. This is the form in which form-data is passed to a cgi script.
     * @param pairs the array of name/value pairs
     * @return a string containg the encoded name/value pairs
@@ -1168,7 +1166,7 @@ public class Codecs
    }
 
    /**
-    * Turns a string of the form "name1=value1&name2=value2&name3=value3" into an
+    * Turns a string of the form {@code "name1=value1&name2=value2&name3=value3"} into an
     * array of name/value pairs. The names and values are urldecoded. The query
     * string is in the form in which form-data is received in a cgi script.
     * @param query the query string containing the encoded name/value pairs

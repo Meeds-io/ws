@@ -449,7 +449,7 @@ public class Util
     * @return a Vector containing all the elements; each entry is an instance of
     *         <var>HttpHeaderElement</var>.
     * @exception ParseException if the above syntax rules are violated.
-    * @see HTTPClient.HttpHeaderElement
+    * @see HttpHeaderElement
     */
    public final static Vector parseHeader(String header, boolean dequote) throws ParseException
    {
@@ -681,7 +681,7 @@ public class Util
    /**
     * Assembles a Vector of HttpHeaderElements into a full header string. The
     * individual header elements are seperated by a ", ".
-    * @param the parsed header
+    * @param pheader the parsed header
     * @return a string containing the assembled header
     */
    public final static String assembleHeader(Vector pheader)
@@ -805,7 +805,7 @@ public class Util
     * @param protocol the protocol
     * @return the port number, or 0 if unknown
     * @deprecated use URI.defaultPort() instead
-    * @see HTTPClient.URI#defaultPort(java.lang.String)
+    * @see URI#defaultPort(java.lang.String)
     */
    public final static int defaultPort(String protocol)
    {
@@ -930,7 +930,7 @@ public class Util
     * <PRE>
     * resource = [ &quot;/&quot; ] [ path ] [ &quot;;&quot; params ] [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
     * </PRE>
-    * @param the resource to split
+    * @param resource the resource to split
     * @return the path, including any leading "/"
     * @see #getParams
     * @see #getQuery
@@ -950,7 +950,7 @@ public class Util
 
    /**
     * Extract the params part from an http resource.
-    * @param the resource to split
+    * @param resource the resource to split
     * @return the params, or null if there are none
     * @see #getPath
     */
@@ -973,7 +973,7 @@ public class Util
 
    /**
     * Extract the query string from an http resource.
-    * @param the resource to split
+    * @param resource the resource to split
     * @return the query, or null if there was none
     * @see #getPath
     */
@@ -992,7 +992,7 @@ public class Util
 
    /**
     * Extract the fragment part from an http resource.
-    * @param the resource to split
+    * @param resource the resource to split
     * @return the fragment, or null if there was none
     * @see #getPath
     */

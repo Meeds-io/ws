@@ -54,7 +54,6 @@ import javax.ws.rs.ext.RuntimeDelegate;
  * register/unregister resources via specified methods.
  *
  * @see AbstractResourceDescriptor
- * @see SingletonResourceFactory
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
@@ -253,7 +252,7 @@ public class ResourceBinder implements Startable
     * @throws ResourcePublicationException if resource can't be published
     *         because to:
     *         <ul>
-    *         <li>&#64javax.ws.rs.Path annotation is missing</li>
+    *         <li>@javax.ws.rs.Path annotation is missing</li>
     *         <li>resource has not any method with JAX-RS annotations</li>
     *         <li>JAX-RS annotations are ambiguous or invalid</li>
     *         <li>resource with the sane {@link UriPattern} already registered</li>
@@ -300,7 +299,7 @@ public class ResourceBinder implements Startable
     * @throws ResourcePublicationException if resource can't be published
     *         because to:
     *         <ul>
-    *         <li>&#64javax.ws.rs.Path annotation is missing</li>
+    *         <li>@javax.ws.rs.Path annotation is missing</li>
     *         <li>resource has not any method with JAX-RS annotations</li>
     *         <li>JAX-RS annotations are ambiguous or invalid</li>
     *         <li>resource with the sane {@link UriPattern} already registered</li>
@@ -635,14 +634,14 @@ public class ResourceBinder implements Startable
     * below resource will be expired in one minute. By default resources check
     * one time per minute so live time less than one minute is not guaranteed.
     *
-    * <pre>
+    * {@code
     * ResourceBinder binder = ...
     * Class<?> resource = ...
     * MultivaluedMap<String, String> properties = new MultivaluedMapImpl();
     * properties.putSingle("resource.expiration.date",
     *    Long.toString(System.currentTimeMillis() + 60000L));
     * binder.addResource(resource, properties);
-    * </pre>
+    * }
     */
    protected void startResourceCleaner()
    {

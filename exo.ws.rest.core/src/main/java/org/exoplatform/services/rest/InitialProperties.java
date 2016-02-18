@@ -21,7 +21,7 @@ package org.exoplatform.services.rest;
 import java.util.Map;
 
 /**
- * Container for properties, that may be injected in resource by &#64Context annotation.
+ * Container for properties, that may be injected in resource by @Context annotation.
  *   
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$

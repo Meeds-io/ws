@@ -32,7 +32,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 /**
- * Created by The eXo Platform SAS. <br/>
+ * Created by The eXo Platform SAS. <br>
  * Date: 24 Dec 2009
  *
  * @author <a href="mailto:max.shaposhnik@exoplatform.com">Max Shaposhnik</a>

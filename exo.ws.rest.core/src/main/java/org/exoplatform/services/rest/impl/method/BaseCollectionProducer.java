@@ -67,10 +67,12 @@ public abstract class BaseCollectionProducer implements TypeProducer
    /**
     * Create Object (it is Collection) and add in it elements. Elements must
     * either:
+    * <ul>
     * <li>To be a Sting</li>
     * <li>Have a constructor that accepts a single String argument.</li>
     * <li>Have a static method named <code>valueOf</code> that accepts a single
-    * String argument</li>.
+    * String argument.</li>
+    * </ul>
     * If values map does not contains any value for parameter <i>param</i>
     * then <i>defaultValue</i> will be used, in this case Collection will 
     * contains single element. {@inheritDoc}

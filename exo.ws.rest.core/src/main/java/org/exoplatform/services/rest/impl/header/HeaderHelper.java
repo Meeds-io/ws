@@ -472,8 +472,7 @@ public final class HeaderHelper
    /**
     * Parse date header. Will try to found appropriated format for given date
     * header. Format can be one of see
-    * {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1" >HTTP/1.1 documentation</a>}
-    * .
+    * <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1" >HTTP/1.1 documentation</a>
     *
     * @param header source date header
     * @return parsed Date

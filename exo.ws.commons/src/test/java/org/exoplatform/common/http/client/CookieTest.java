@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 import java.util.Date;
 
 /**
- * Created by The eXo Platform SAS .<br/> DOM - like (but lighter) property
+ * Created by The eXo Platform SAS .<br> DOM - like (but lighter) property
  * representation
  *
  * @author Aymen Boughzela

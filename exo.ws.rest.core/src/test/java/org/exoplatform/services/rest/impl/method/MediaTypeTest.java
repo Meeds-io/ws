@@ -33,7 +33,7 @@ import javax.ws.rs.core.MultivaluedMap;
 /**
  * Created by The eXo Platform SAS.
  *
- * <br/>Date: 22 Jan 2009
+ * <br>Date: 22 Jan 2009
  *
  * @author <a href="mailto:dmitry.kataev@exoplatform.com.ua">Dmytro Katayev</a>
  * @version $Id: MediaTypeTest.java

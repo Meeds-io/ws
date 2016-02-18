@@ -52,14 +52,14 @@ public interface WadlGenerator
 
    /**
     * @param rd See {@link AbstractResourceDescriptor}
-    * @return {@link org.exoplatform.services.rest.wadl.research.Resource.Resource}
+    * @return {@link org.exoplatform.services.rest.wadl.research.Resource}
     *         describes application resource, each resource identified by a URI
     */
    org.exoplatform.services.rest.wadl.research.Resource createResource(AbstractResourceDescriptor rd);
 
    /**
     * @param path resource relative path
-    * @return {@link org.exoplatform.services.rest.wadl.research.Resource.Resource}
+    * @return {@link org.exoplatform.services.rest.wadl.research.Resource}
     *         describes application resource, each resource identified by a URI
     */
    org.exoplatform.services.rest.wadl.research.Resource createResource(String path);
@@ -76,7 +76,7 @@ public interface WadlGenerator
     * @return {@link org.exoplatform.services.rest.wadl.research.Request}
     *         describes the input to be included when applying an HTTP method to
     *         a resource
-    * @see {@link org.exoplatform.services.rest.wadl.research.Method}
+    * @see org.exoplatform.services.rest.wadl.research.Method
     */
    org.exoplatform.services.rest.wadl.research.Request createRequest();
 
@@ -84,7 +84,7 @@ public interface WadlGenerator
     * @return {@link org.exoplatform.services.rest.wadl.research.Response}
     *         describes the output that result from performing an HTTP method on
     *         a resource
-    * @see {@link org.exoplatform.services.rest.wadl.research.Method}
+    * @see org.exoplatform.services.rest.wadl.research.Method
     */
    org.exoplatform.services.rest.wadl.research.Response createResponse();
 

@@ -999,7 +999,7 @@ public class AuthorizationInfo implements Cloneable
    /**
     * Set the authentication parameters.
     *
-    * @param an array of name/value pairs.
+    * @param params array of name/value pairs.
     */
    public final void setParams(NVPair[] params)
    {

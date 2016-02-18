@@ -66,7 +66,7 @@ import java.util.Hashtable;
  * exist.
  * <P>
  * Ideally, java.net.URL should subclass URI.
- * @see <A HREF="http://www.ics.uci.edu/pub/ietf/uri/rfc2396.txt">rfc-2396< /A>
+ * @see <A HREF="http://www.ics.uci.edu/pub/ietf/uri/rfc2396.txt">rfc-2396</A>
  * @version 0.3-3 06/05/2001
  * @author Ronald Tschal�r
  * @since V0.3-1
@@ -793,7 +793,7 @@ public class URI
 
    /**
     * @return true if the scheme should be parsed according to a semi-generic-URI
-    *         syntax &lt;scheme&tgt;://&lt;hostport&gt;/&lt;opaque&gt;
+    *         syntax &lt;scheme&gt;://&lt;hostport&gt;/&lt;opaque&gt;
     */
    public static boolean usesSemiGenericSyntax(String scheme)
    {
@@ -906,8 +906,7 @@ public class URI
     * Whether a given scheme is parsed according to the generic-URI syntax or
     * wether it is treated as opaque is determined by an internal table of URI
     * schemes.
-    * @see <A HREF="http://www.ics.uci.edu/pub/ietf/uri/rfc2396.txt">rfc-2396<
-    *      /A>
+    * @see <A HREF="http://www.ics.uci.edu/pub/ietf/uri/rfc2396.txt">rfc-2396</A>
     */
    public boolean isGenericURI()
    {

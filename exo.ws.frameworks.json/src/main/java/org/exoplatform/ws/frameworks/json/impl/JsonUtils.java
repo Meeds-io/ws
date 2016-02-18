@@ -240,7 +240,7 @@ public final class JsonUtils
     * <li>Primitive type</li>
     * <li>Primitive type wrapper</li>
     * <li>String</li>
-    * <li>Array of T where T satisfies 2 or 3 or 4</>
+    * <li>Array of T where T satisfies 2 or 3 or 4</li>
     * </ol>
     *
     * @param o Object
@@ -258,7 +258,7 @@ public final class JsonUtils
     * <li>Primitive type</li>
     * <li>Primitive type wrapper</li>
     * <li>String</li>
-    * <li>Array of T where T satisfies 1 or 2 or 3</>
+    * <li>Array of T where T satisfies 1 or 2 or 3</li>
     * </ol>
     *
     * @param clazz class.
@@ -278,11 +278,11 @@ public final class JsonUtils
     * <li>Collection&lt;?&gt;</li>
     * <li>Map&lt;String, ?&gt;</li>
     * </ol>
-    * then <code>null</null> will be returned
+    * then <code>null</code> will be returned
     *
     * @param o Object.
     * @return {@link Types} or <code>null</code> (see above)
-    * @see {@link KNOWN_TYPES}.
+    * @see #KNOWN_TYPES
     */
    public static Types getType(Object o)
    {
@@ -310,11 +310,11 @@ public final class JsonUtils
     * <li>Collection</li>
     * <li>Map</li>
     * </ol>
-    * then <code>null</null> will be returned
+    * then <code>null</code> will be returned
     *
-    * @param o Object.
+    * @param clazz Object.
     * @return {@link Types} or <code>null</code> (see above)
-    * @see {@link KNOWN_TYPES}.
+    * @see #KNOWN_TYPES
     */
    public static Types getType(Class<?> clazz)
    {

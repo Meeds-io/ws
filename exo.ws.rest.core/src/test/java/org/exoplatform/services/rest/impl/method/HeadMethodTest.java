@@ -25,7 +25,7 @@ import javax.ws.rs.HEAD;
 import javax.ws.rs.Path;
 
 /**
- * Created by The eXo Platform SAS. <br/>
+ * Created by The eXo Platform SAS. <br>
  * Date: 21 Jan 2009
  *
  * @author <a href="mailto:dmitry.kataev@exoplatform.com.ua">Dmytro Katayev</a>

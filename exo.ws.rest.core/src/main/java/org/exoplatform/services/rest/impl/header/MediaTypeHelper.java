@@ -47,9 +47,11 @@ public final class MediaTypeHelper
    /**
     * Compare two mimetypes. The main rule for sorting media types is :
     * <p>
+    * <ul>
     * <li>n / m</li>
     * <li>n / *</li>
     * <li>* / *</li>
+    * </ul>
     * <p>
     * Method that explicitly list of media types is sorted before a method that
     * list * / *.

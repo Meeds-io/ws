@@ -45,6 +45,7 @@ import javax.ws.rs.core.MultivaluedMap;
  * {@link ResourceDescriptor#accept(ResourceDescriptorVisitor)}.
  * <p>
  * Validation Goals:
+ * <ul>
  * <li>check number of method parameters without annotation, should be not more
  * then one at resource method or sub-resource method and no one at sub-resource
  * locator</li>
@@ -56,14 +57,17 @@ import javax.ws.rs.core.MultivaluedMap;
  * annotation &#64;Path("")</li>
  * <li>Resource class must contains at least one resource method, sub-resource
  * method or sub-resource locator</li>
+ * </ul>
  * <p>
  * Non-Goals:
+ * <ul>
  * <li>Check does any two resource methods has the same consume and produce
  * media type. This will be done later in binding cycle</li>
  * <li>Check does any two sub-resource methods has the same consume and produce
  * media type and HTTP request method designation. This will be done later in
  * binding cycle</li>
  * <li>Check does two sub-resource locators has the same UriPattern</li>
+ * </ul>
  * <p>
  * 
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>

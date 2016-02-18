@@ -72,7 +72,7 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
     * Return JAXBContext according to supplied type. If no one context found then
     * try create new context and save it in cache.
     *
-    * @param classes classes to be bound
+    * @param clazz classes to be bound
     * @return JAXBContext
     * @throws JAXBException if JAXBContext creation failed
     */
@@ -120,7 +120,7 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
    /**
     * Create and add in cache JAXBContext for supplied set of classes.
     *
-    * @param classes set of java classes to be bound
+    * @param clazz set of java classes to be bound
     * @return JAXBContext
     * @throws JAXBException if JAXBContext for supplied classes can't be created
     *           in any reasons
@@ -165,7 +165,7 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
     * this class works as cache for JAXBContexts.
     *
     * @param jaxbctx JAXBContext
-    * @param classes set of java classes to be bound
+    * @param clazz set of java classes to be bound
     */
    public void addJAXBContext(JAXBContext jaxbctx, Class<?> clazz)
    {
