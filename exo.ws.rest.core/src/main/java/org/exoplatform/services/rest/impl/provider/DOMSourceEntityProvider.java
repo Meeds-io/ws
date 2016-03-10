@@ -59,14 +59,6 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
 {
 
    /**
-    * Document Builder Factory
-    */
-   private static final DocumentBuilderFactory DBF = DocumentBuilderFactory.newInstance();
-   /**
-    * Transformer Factory
-    */
-   private static final TransformerFactory     TRF = TransformerFactory.newInstance();
-   /**
     * Logger.
     */
    private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.DOMSourceEntityProvider");
@@ -74,6 +66,22 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
    /**
     * {@inheritDoc}
     */
+    
+    /**
+    * Document Builder Factory
+    */
+   private static final DocumentBuilderFactory DBF;
+   /**
+    * Transformer Factory
+    */
+   private static final TransformerFactory     TRF;
+   
+   static {
+      DBF = DocumentBuilderFactory.newInstance();
+      DBF.setNamespaceAware(true);
+      TRF = TransformerFactory.newInstance();
+   }
+   
    public boolean isReadable(final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType)
    {
       return type == DOMSource.class;
@@ -87,8 +95,6 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
    {
       try
       {
-         DBF.setNamespaceAware(true);
-
          final Document d = SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Document>()
          {
             public Document run() throws Exception
