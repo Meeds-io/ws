@@ -91,7 +91,7 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
     * {@inheritDoc}
     */
    public DOMSource readFrom(Class<DOMSource> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+      MultivaluedMap<String, String> httpHeaders, final InputStream entityStream) throws IOException
    {
       try
       {
