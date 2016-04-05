@@ -82,7 +82,7 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
       TRF = TransformerFactory.newInstance();
    }
    
-   public boolean isReadable(final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType)
+   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return type == DOMSource.class;
    }
@@ -90,8 +90,8 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
    /**
     * {@inheritDoc}
     */
-   public DOMSource readFrom(final Class<DOMSource> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType,
-      final MultivaluedMap<String, String> httpHeaders, final InputStream entityStream) throws IOException
+   public DOMSource readFrom(Class<DOMSource> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+      MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
       try
       {
@@ -143,7 +143,7 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
    /**
     * {@inheritDoc}
     */
-   public long getSize(final DOMSource t, final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType)
+   public long getSize(DOMSource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
@@ -151,7 +151,7 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
    /**
     * {@inheritDoc}
     */
-   public boolean isWriteable(final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType)
+   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return DOMSource.class.isAssignableFrom(type);
    }
@@ -159,10 +159,10 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
    /**
     * {@inheritDoc}
     */
-   public void writeTo(final DOMSource t, final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType,
-      final MultivaluedMap<String, Object> httpHeaders, final OutputStream entityStream) throws IOException
+   public void writeTo(DOMSource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+      MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
-      final StreamResult out = new StreamResult(entityStream);
+      StreamResult out = new StreamResult(entityStream);
       try
       {
          TRF.newTransformer().transform(t, out);
