@@ -32,7 +32,7 @@
 
 	<artifactId>exo.ws.rest.ext</artifactId>
 
-	<name>eXo WS :: REST :: Extentions</name>
+	<name>eXo PLF:: WS :: REST :: Extentions</name>
 	<description>Implementation of REST Extentions for Exoplatform SAS 'Web Services' project.</description>
 
 	<properties>

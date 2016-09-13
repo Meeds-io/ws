@@ -32,7 +32,7 @@
 
    <artifactId>exo.ws.commons</artifactId>
 
-   <name>eXo WS :: Commons Utils</name>
+   <name>eXo PLF:: WS :: Commons Utils</name>
    <description>Implementation of Commons Utils for Exoplatform SAS 'Web Services' project.</description>
 
    <properties>
