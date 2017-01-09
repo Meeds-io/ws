@@ -47,6 +47,8 @@ public class DefaultGroovyResourceLoaderTest extends BaseTest
       assertNull(url);
       File f = new File(new URL(root, "MyClass.groovy").toURI());
       f.createNewFile();
+      // Clean up data so that Unit Test can be executed several time
+      f.deleteOnExit();
       url = groovyResourceLoader.loadGroovySource("MyClass");
       assertNotNull(url);
    }
