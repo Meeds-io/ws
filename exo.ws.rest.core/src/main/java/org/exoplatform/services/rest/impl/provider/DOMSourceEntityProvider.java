@@ -18,14 +18,6 @@
  */
 package org.exoplatform.services.rest.impl.provider;
 
-import org.exoplatform.commons.utils.SecurityHelper;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
-import org.exoplatform.services.rest.provider.EntityProvider;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,6 +31,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
@@ -47,6 +40,15 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+
+import org.exoplatform.commons.utils.SecurityHelper;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import org.exoplatform.services.rest.provider.EntityProvider;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -62,6 +64,19 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
     * Logger.
     */
    private static final Log LOG = ExoLogger.getLogger("exo.ws.rest.core.DOMSourceEntityProvider");
+
+   private static DocumentBuilder          DB;
+   static {
+       try {
+         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+         dbf.setNamespaceAware(true);
+         DB = dbf.newDocumentBuilder();
+       } catch (ParserConfigurationException pExp) {
+         LOG.error("Error while getting DocumentBuilderFactory", pExp);
+       }
+   }
+
+   private ThreadLocal<TransformerFactory> trf = new ThreadLocal<TransformerFactory>();
 
    /**
     * {@inheritDoc}
@@ -79,14 +94,11 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
    {
       try
       {
-         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-         factory.setNamespaceAware(true);
-
          Document d = SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Document>()
          {
             public Document run() throws Exception
             {
-               return factory.newDocumentBuilder().parse(entityStream);
+               return DB.parse(entityStream);
             }
          });
 
@@ -152,7 +164,13 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
       StreamResult out = new StreamResult(entityStream);
       try
       {
-         TransformerFactory.newInstance().newTransformer().transform(t, out);
+         TransformerFactory factory = trf.get();
+         if (factory == null)
+         {
+            factory = TransformerFactory.newInstance();
+            trf.set(factory);
+         }
+         factory.newTransformer().transform(t, out);
       }
       catch (TransformerConfigurationException e)
       {
