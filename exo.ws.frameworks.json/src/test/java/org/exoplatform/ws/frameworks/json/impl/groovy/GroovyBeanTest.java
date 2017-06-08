@@ -18,10 +18,11 @@
  */
 package org.exoplatform.ws.frameworks.json.impl.groovy;
 
-import groovy.lang.GroovyClassLoader;
-import groovy.lang.GroovyObject;
-import junit.framework.TestCase;
+import java.io.InputStreamReader;
+import java.util.Iterator;
+import java.util.List;
 
+import org.exoplatform.commons.utils.IOUtil;
 import org.exoplatform.ws.frameworks.json.JsonHandler;
 import org.exoplatform.ws.frameworks.json.impl.JsonDefaultHandler;
 import org.exoplatform.ws.frameworks.json.impl.JsonGeneratorImpl;
@@ -31,9 +32,10 @@ import org.exoplatform.ws.frameworks.json.value.JsonValue;
 import org.exoplatform.ws.frameworks.json.value.impl.ObjectValue;
 import org.exoplatform.ws.frameworks.json.value.impl.StringValue;
 
-import java.io.InputStreamReader;
-import java.util.Iterator;
-import java.util.List;
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyCodeSource;
+import groovy.lang.GroovyObject;
+import junit.framework.TestCase;
 
 public class GroovyBeanTest extends TestCase
 {
@@ -42,7 +44,7 @@ public class GroovyBeanTest extends TestCase
    public void testRestoreGroovyBean() throws Exception
    {
       GroovyClassLoader cl = new GroovyClassLoader();
-      Class c = cl.parseClass(Thread.currentThread().getContextClassLoader().getResourceAsStream("SimpleBean.groovy"));
+      Class c = cl.parseClass(new GroovyCodeSource(IOUtil.getStreamContentAsString(Thread.currentThread().getContextClassLoader().getResourceAsStream("SimpleBean.groovy")), "myscript", "/groovy/shell"));
       JsonValue ov = new ObjectValue();
       StringValue sv = new StringValue("test restore groovy bean");
       ov.addElement("value", sv);
@@ -53,7 +55,7 @@ public class GroovyBeanTest extends TestCase
    public void testSerializeGroovyBean() throws Exception
    {
       GroovyClassLoader cl = new GroovyClassLoader();
-      Class c = cl.parseClass(Thread.currentThread().getContextClassLoader().getResourceAsStream("SimpleBean.groovy"));
+      Class c = cl.parseClass(new GroovyCodeSource(IOUtil.getStreamContentAsString(Thread.currentThread().getContextClassLoader().getResourceAsStream("SimpleBean.groovy")), "myscript", "/groovy/shell"));
       GroovyObject groovyObject = (GroovyObject)c.newInstance();
       groovyObject.invokeMethod("setValue", new Object[]{"test serialize groovy bean"});
       assertEquals("{\"value\":\"test serialize groovy bean\"}", new JsonGeneratorImpl().createJsonObject(groovyObject)
@@ -64,7 +66,7 @@ public class GroovyBeanTest extends TestCase
    public void testSerializeGroovyBean1() throws Exception
    {
       GroovyClassLoader cl = new GroovyClassLoader();
-      Class c = cl.parseClass(Thread.currentThread().getContextClassLoader().getResourceAsStream("BookStorage.groovy"));
+      Class c = cl.parseClass(new GroovyCodeSource(IOUtil.getStreamContentAsString(Thread.currentThread().getContextClassLoader().getResourceAsStream("BookStorage.groovy")), "myscript", "/groovy/shell"));
       GroovyObject groovyObject = (GroovyObject)c.newInstance();
       groovyObject.invokeMethod("initStorage", new Object[]{});
 
@@ -83,7 +85,7 @@ public class GroovyBeanTest extends TestCase
    public void testRestoreGroovyBean1() throws Exception
    {
       GroovyClassLoader cl = new GroovyClassLoader();
-      Class c = cl.parseClass(Thread.currentThread().getContextClassLoader().getResourceAsStream("BookStorage.groovy"));
+      Class c = cl.parseClass(new GroovyCodeSource(IOUtil.getStreamContentAsString(Thread.currentThread().getContextClassLoader().getResourceAsStream("BookStorage.groovy")), "myscript", "/groovy/shell"));
       JsonParserImpl jsonParser = new JsonParserImpl();
       JsonHandler jsonHandler = new JsonDefaultHandler();
       jsonParser.parse(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(
@@ -97,5 +99,4 @@ public class GroovyBeanTest extends TestCase
       assertEquals(books.get(1).getProperty("title"), "Beginning C# 2008 from novice to professional");
       assertEquals(books.get(2).getProperty("title"), "Advanced JavaScript. Third Edition");
    }
-
 }
