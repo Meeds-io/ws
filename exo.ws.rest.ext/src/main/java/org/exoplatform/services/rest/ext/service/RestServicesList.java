@@ -26,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -107,6 +108,7 @@ public class RestServicesList
 
    @GET
    @Produces({MediaType.TEXT_HTML})
+   @RolesAllowed("administrators")
    public byte[] listHTML()
    {
       XMLOutputFactory factory = XMLOutputFactory.newInstance();
@@ -180,6 +182,7 @@ public class RestServicesList
 
    @GET
    @Produces({MediaType.APPLICATION_JSON})
+   @RolesAllowed("administrators")
    public RootResourcesList listJSON()
    {
       return rootResources();
