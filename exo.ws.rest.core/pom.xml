@@ -34,9 +34,10 @@
 
    <name>eXo PLF:: WS :: REST :: Core</name>
    <description>Implementation of REST Core for Exoplatform SAS 'Web Services' project.</description>
-   
+
    <properties>
       <argLine>${env.MAVEN_OPTS} -Djava.security.manager=org.exoplatform.commons.test.TestSecurityManager -Djava.security.policy=${project.build.directory}/test-classes/test.policy</argLine>
+      <exo.test.coverage.ratio>0.71</exo.test.coverage.ratio>
    </properties>
 
    <dependencies>

@@ -35,6 +35,10 @@
    <name>eXo PLF:: WS :: Framework :: JSON</name>
    <description>Implementation of Java Bean to JSON Transformation for Exoplatform SAS 'Web Services' project.</description>
 
+   <properties>
+      <exo.test.coverage.ratio>0.63</exo.test.coverage.ratio>
+   </properties>
+
    <dependencies>
       <dependency>
          <groupId>junit</groupId>
