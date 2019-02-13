@@ -22,6 +22,8 @@ import org.exoplatform.services.rest.method.MethodInvokerFilter;
 import org.exoplatform.services.rest.resource.GenericMethodResource;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.lang.annotation.Annotation;
 import org.exoplatform.commons.api.security.ExoCSRFProtection;
 
