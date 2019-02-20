@@ -18,14 +18,19 @@
  */
 package org.exoplatform.services.rest.ext.method.filter;
 
+import org.exoplatform.services.rest.impl.ApplicationContextImpl;
 import org.exoplatform.services.rest.method.MethodInvokerFilter;
 import org.exoplatform.services.rest.resource.GenericMethodResource;
+import org.exoplatform.services.rest.servlet.ServletContainerRequest;
+import org.exoplatform.web.security.csrf.CSRFTokenUtil;
+import org.exoplatform.web.security.csrf.ExoCSRFProtection;
 
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.lang.annotation.Annotation;
-import org.exoplatform.commons.api.security.ExoCSRFProtection;
+
 
 
 /**
@@ -55,15 +60,15 @@ public class CsrfAccessFilter implements MethodInvokerFilter
          if (ac == ExoCSRFProtection.class)
          {
 
-            //Check CSRF token
+            //get token in context
+            ServletContainerRequest request = (ServletContainerRequest) ApplicationContextImpl.getCurrent().getContainerRequest();
+            HttpSession session = request.getServletRequest().getSession();
 
-            //if ok => let continue
-
-            //if not =>
-            throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity(
-                    "You do not have access rights to this resource, please contact your administrator. ").type(
-                    MediaType.TEXT_PLAIN).build());
-
+            if (!CSRFTokenUtil.check(request.getServletRequest())) {
+               throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity(
+                       "You do not have access rights to this resource, please contact your administrator. ").type(
+                       MediaType.TEXT_PLAIN).build());
+            }
 
          }
       }
