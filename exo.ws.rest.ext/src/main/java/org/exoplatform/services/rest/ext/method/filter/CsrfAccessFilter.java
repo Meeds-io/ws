@@ -38,7 +38,6 @@ import java.lang.annotation.Annotation;
  * use JSR-250 security common annotations. See also https://jsr250.dev.java.net
  * .
  *
- * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
 public class CsrfAccessFilter implements MethodInvokerFilter
