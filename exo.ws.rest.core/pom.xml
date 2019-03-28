@@ -67,12 +67,6 @@
       <dependency>
          <groupId>javax.mail</groupId>
          <artifactId>mail</artifactId>
-         <exclusions>
-            <exclusion>
-               <groupId>javax.activation</groupId>
-               <artifactId>activation</artifactId>
-            </exclusion>
-         </exclusions>
       </dependency>
       <dependency>
          <groupId>javax.ws.rs</groupId>
