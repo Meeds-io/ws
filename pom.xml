@@ -95,30 +95,35 @@
             <version>${org.exoplatform.core.version}</version>
          </dependency>
          <dependency>
-            <groupId>org.exoplatform.ws</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>ws-parent</artifactId>
             <version>${project.version}</version>
             <classifier>source-release</classifier>
             <type>zip</type>
          </dependency>
          <dependency>
-            <groupId>org.exoplatform.ws</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>exo.ws.frameworks.json</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>org.exoplatform.ws</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>exo.ws.testframework</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>org.exoplatform.ws</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>exo.ws.commons</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>org.exoplatform.ws</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>exo.ws.rest.core</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>exo.ws.frameworks.servlet</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
