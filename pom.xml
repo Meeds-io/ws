@@ -33,7 +33,7 @@
 
    <groupId>org.exoplatform.ws</groupId>
    <artifactId>ws-parent</artifactId>
-   <version>6.0.x-SNAPSHOT</version>
+   <version>6.0.0-M26</version>
    <packaging>pom</packaging>
    <name>eXo PLF:: WS</name>
    <description>Exoplatform SAS 'Web Services' project.</description>
@@ -42,7 +42,7 @@
       <connection>scm:git:git://github.com/exoplatform/ws.git</connection>
       <developerConnection>scm:git:git@github.com:exoplatform/ws.git</developerConnection>
       <url>https://fisheye.exoplatform.org/browse/ws-dev</url>
-     <tag>HEAD</tag>
+     <tag>6.0.0-M26</tag>
   </scm>
 
    <properties>
