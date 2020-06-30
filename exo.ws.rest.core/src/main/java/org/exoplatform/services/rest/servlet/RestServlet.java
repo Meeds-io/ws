@@ -19,6 +19,8 @@
 package org.exoplatform.services.rest.servlet;
 
 import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.container.component.ComponentRequestLifecycle;
 import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.container.context.ContextManagerListener;
 import org.exoplatform.container.web.AbstractHttpServlet;
@@ -61,6 +63,8 @@ public class RestServlet extends AbstractHttpServlet implements Connector
     */
    private static final long serialVersionUID = 2152962763071591181L;
 
+  private List<ComponentRequestLifecycle> transactionalServices = null;
+
    /**
     * {@inheritDoc}
     */
@@ -79,7 +83,8 @@ public class RestServlet extends AbstractHttpServlet implements Connector
       throws IOException, ServletException
    {
 
-      RequestLifeCycle.begin(container);
+      ExoContainerContext.setCurrentContainer(getContainer());
+      RequestLifeCycle.begin(getContainer());
 
       RequestHandler requestHandler = (RequestHandler)container.getComponentInstanceOfType(RequestHandler.class);
 
@@ -96,24 +101,19 @@ public class RestServlet extends AbstractHttpServlet implements Connector
          ContainerResponse response = new ContainerResponse(new ServletContainerResponseWriter(httpResponse));
          requestHandler.handleRequest(request, response);
       }
-      catch (IOException ioe)
-      {
-         if (ioe.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException"))
-         {
-            LOG.debug("Write socket error!", ioe);
-         }
-         else
-         {
-            throw ioe;
-         }
-      }
       catch (Exception e)
       {
-         throw new ServletException(e);
+        if (e.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
+          LOG.debug("Write socket error!", e);
+        } else {
+          LOG.warn("An error occurred while calling REST endpoint {}, method: {}",
+                   httpRequest.getRequestURI(),
+                   httpRequest.getMethod(),
+                   e);
+        }
       }
       finally
       {
-         EnvironmentContext.setCurrent(null);
          Map<Object, Throwable> results = RequestLifeCycle.end();
          for (Entry<Object, Throwable> entry : results.entrySet())
          {
@@ -121,6 +121,24 @@ public class RestServlet extends AbstractHttpServlet implements Connector
             {
                LOG.error("An error occurred while calling the method endRequest on " + entry.getKey(), entry.getValue());
             }
+         }
+         EnvironmentContext.setCurrent(null);
+         for (ComponentRequestLifecycle service : getTransactionalServices()) {
+           if (service.isStarted(getContainer())) {
+             if (LOG.isDebugEnabled()) {
+               LOG.debug("The service {} didn't called endRequest, uri = {}, http method = {}. Commit transaction anyway.",
+                         service.getClass().getName(),
+                         httpRequest.getRequestURI(),
+                         httpRequest.getMethod());
+             }
+             service.endRequest(getContainer());
+             if (service.isStarted(getContainer())) {
+               LOG.error("The service {} didn't ended properly even after calling endRequest",
+                         service.getClass().getName(),
+                         httpRequest.getRequestURI(),
+                         httpRequest.getMethod());
+             }
+           }
          }
       }
    }
@@ -190,4 +208,11 @@ public class RestServlet extends AbstractHttpServlet implements Connector
          }
       }
    }
+
+  public List<ComponentRequestLifecycle> getTransactionalServices() {
+    if (transactionalServices == null) {
+      transactionalServices = getContainer().getComponentInstancesOfType(ComponentRequestLifecycle.class);
+    }
+    return transactionalServices;
+  }
 }
