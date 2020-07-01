@@ -33,7 +33,7 @@
 
    <groupId>org.exoplatform.ws</groupId>
    <artifactId>ws-parent</artifactId>
-   <version>6.0.x-SNAPSHOT</version>
+   <version>6.1.x-SNAPSHOT</version>
    <packaging>pom</packaging>
    <name>eXo PLF:: WS</name>
    <description>Exoplatform SAS 'Web Services' project.</description>
@@ -49,8 +49,8 @@
       <exo.product.name>exo-ws</exo.product.name>
       <exo.product.specification>2.4</exo.product.specification>
 
-      <org.exoplatform.kernel.version>6.0.x-SNAPSHOT</org.exoplatform.kernel.version>
-      <org.exoplatform.core.version>6.0.x-SNAPSHOT</org.exoplatform.core.version>
+      <org.exoplatform.kernel.version>6.1.x-SNAPSHOT</org.exoplatform.kernel.version>
+      <org.exoplatform.core.version>6.1.x-SNAPSHOT</org.exoplatform.core.version>
    </properties>
 
    <modules>
