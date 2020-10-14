@@ -116,7 +116,7 @@ public class ResourceBinder implements Startable
             }
             catch (InterruptedException e)
             {
-               ;
+               Thread.currentThread().interrupt();
             }
             if (!cleanerStop)
             {
