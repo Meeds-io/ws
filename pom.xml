@@ -24,13 +24,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
    <parent>
       <groupId>org.exoplatform</groupId>
       <artifactId>foundation-parent</artifactId>
-      <version>20-M01</version>
+      <version>21-M01</version>
       <relativePath />
    </parent>
 
    <groupId>org.exoplatform.ws</groupId>
    <artifactId>ws-parent</artifactId>
-   <version>6.0.x-SNAPSHOT</version>
+   <version>6.1.x-SNAPSHOT</version>
    <packaging>pom</packaging>
    <name>eXo PLF:: WS</name>
    <description>Exoplatform SAS 'Web Services' project.</description>
@@ -46,8 +46,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <exo.product.name>exo-ws</exo.product.name>
       <exo.product.specification>2.4</exo.product.specification>
 
-      <org.exoplatform.kernel.version>6.0.x-SNAPSHOT</org.exoplatform.kernel.version>
-      <org.exoplatform.core.version>6.0.x-SNAPSHOT</org.exoplatform.core.version>
+      <org.exoplatform.kernel.version>6.1.x-SNAPSHOT</org.exoplatform.kernel.version>
+      <org.exoplatform.core.version>6.1.x-SNAPSHOT</org.exoplatform.core.version>
    </properties>
 
    <modules>
