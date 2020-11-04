@@ -128,35 +128,32 @@ public class ResourceBinder implements Startable
          if (LOG.isDebugEnabled())
             LOG.debug("Start resource cleaner");
 
-         synchronized (rootResources)
-         {
-            for (Iterator<ObjectFactory<AbstractResourceDescriptor>> iter = rootResources.iterator(); iter.hasNext();)
-            {
-               ObjectFactory<AbstractResourceDescriptor> next = iter.next();
-               List<String> str = next.getObjectModel().getProperty(RESOURCE_EXPIRED);
-               long expirationDate = -1;
-               if (str != null && str.size() > 0)
-               {
-                  try
-                  {
-                     expirationDate = Long.parseLong(str.get(0));
-                  }
-                  catch (NumberFormatException e)
-                  {
-                     ;
-                  }
-               }
-               if (expirationDate > 0 && expirationDate < System.currentTimeMillis())
-               {
-                  iter.remove();
-                  for (ResourceListener listener : resourceListeners)
-                  {
-                     listener.resourceRemoved(next.getObjectModel());
-                  }
-                  if (LOG.isDebugEnabled())
-                     LOG.debug("Remove expired resource: " + next.getObjectModel());
-               }
-            }
+          for (Iterator<ObjectFactory<AbstractResourceDescriptor>> iter = rootResources.iterator(); iter.hasNext();)
+          {
+             ObjectFactory<AbstractResourceDescriptor> next = iter.next();
+             List<String> str = next.getObjectModel().getProperty(RESOURCE_EXPIRED);
+             long expirationDate = -1;
+             if (str != null && str.size() > 0)
+             {
+                try
+                {
+                   expirationDate = Long.parseLong(str.get(0));
+                }
+                catch (NumberFormatException e)
+                {
+                   ;
+                }
+             }
+             if (expirationDate > 0 && expirationDate < System.currentTimeMillis())
+             {
+                iter.remove();
+                for (ResourceListener listener : resourceListeners)
+                {
+                   listener.resourceRemoved(next.getObjectModel());
+                }
+                if (LOG.isDebugEnabled())
+                   LOG.debug("Remove expired resource: " + next.getObjectModel());
+             }
          }
       }
    }
@@ -176,7 +173,7 @@ public class ResourceBinder implements Startable
 
    /** List of all available root resources. */
    protected final List<ObjectFactory<AbstractResourceDescriptor>> rootResources =
-      new ArrayList<ObjectFactory<AbstractResourceDescriptor>>();
+      Collections.synchronizedList(new ArrayList<ObjectFactory<AbstractResourceDescriptor>>());
 
    /** Resource listeners. */
    protected final List<ResourceListener> resourceListeners = new ArrayList<ResourceListener>();
@@ -342,27 +339,24 @@ public class ResourceBinder implements Startable
    public void addResource(final ObjectFactory<AbstractResourceDescriptor> resourceFactory)
    {
       UriPattern pattern = resourceFactory.getObjectModel().getUriPattern();
-      synchronized (rootResources)
-      {
-         for (ObjectFactory<AbstractResourceDescriptor> resource : rootResources)
-         {
-            if (resource.getObjectModel().getUriPattern().equals(resourceFactory.getObjectModel().getUriPattern()))
-            {
-               throw new ResourcePublicationException("Resource class "
-                  + resourceFactory.getObjectModel().getObjectClass().getName()
-                  + " can't be registered. Resource class " + resource.getObjectModel().getObjectClass().getName()
-                  + " with the same pattern " + pattern + " already registered.");
-            }
-         }
-         rootResources.add(resourceFactory);
-         Collections.sort(rootResources, RESOURCE_COMPARATOR);
-         for (ResourceListener listener : resourceListeners)
-         {
-            listener.resourceAdded(resourceFactory.getObjectModel());
-         }
-         if (LOG.isDebugEnabled())
-            LOG.debug("Add resource: " + resourceFactory.getObjectModel());
-      }
+       for (ObjectFactory<AbstractResourceDescriptor> resource : rootResources)
+       {
+          if (resource.getObjectModel().getUriPattern().equals(resourceFactory.getObjectModel().getUriPattern()))
+          {
+             throw new ResourcePublicationException("Resource class "
+                + resourceFactory.getObjectModel().getObjectClass().getName()
+                + " can't be registered. Resource class " + resource.getObjectModel().getObjectClass().getName()
+                + " with the same pattern " + pattern + " already registered.");
+          }
+       }
+       rootResources.add(resourceFactory);
+       Collections.sort(rootResources, RESOURCE_COMPARATOR);
+       for (ResourceListener listener : resourceListeners)
+       {
+          listener.resourceAdded(resourceFactory.getObjectModel());
+       }
+       if (LOG.isDebugEnabled())
+          LOG.debug("Add resource: " + resourceFactory.getObjectModel());
    }
 
    /**
@@ -429,10 +423,7 @@ public class ResourceBinder implements Startable
     */
    public void clear()
    {
-      synchronized (rootResources)
-      {
-         rootResources.clear();
-      }
+     rootResources.clear();
    }
 
    /**
@@ -443,37 +434,29 @@ public class ResourceBinder implements Startable
     * @return root resource matched to <code>requestPath</code> or
     *         <code>null</code>
     */
-   public ObjectFactory<AbstractResourceDescriptor> getMatchedResource(String requestPath, List<String> parameterValues)
-   {
-      ObjectFactory<AbstractResourceDescriptor> resourceFactory = null;
-      synchronized (rootResources)
-      {
-         for (ObjectFactory<AbstractResourceDescriptor> resource : rootResources)
-         {
-            if (resource.getObjectModel().getUriPattern().match(requestPath, parameterValues))
-            {
-               // all times will at least 1
-               int len = parameterValues.size();
-               // If capturing group contains last element and this element is
-               // neither null nor '/' then ResourceClass must contains at least one
-               // sub-resource method or sub-resource locator.
-               if (parameterValues.get(len - 1) != null && !parameterValues.get(len - 1).equals("/"))
-               {
-                  int subresnum =
-                     resource.getObjectModel().getSubResourceMethods().size()
-                        + resource.getObjectModel().getSubResourceLocators().size();
-                  if (subresnum == 0)
-                  {
-                     continue;
-                  }
-               }
-               resourceFactory = resource;
-               break;
-            }
-         }
+   public ObjectFactory<AbstractResourceDescriptor> getMatchedResource(String requestPath, List<String> parameterValues) {
+    ObjectFactory<AbstractResourceDescriptor> resourceFactory = null;
+    for (ObjectFactory<AbstractResourceDescriptor> resource : rootResources) {
+      if (resource.getObjectModel().getUriPattern().match(requestPath, parameterValues)) {
+        // all times will at least 1
+        int len = parameterValues.size();
+        // If capturing group contains last element and this element is
+        // neither null nor '/' then ResourceClass must contains at least one
+        // sub-resource method or sub-resource locator.
+        if (parameterValues.get(len - 1) != null && !parameterValues.get(len - 1).equals("/")) {
+          int subresnum =
+                        resource.getObjectModel().getSubResourceMethods().size()
+                            + resource.getObjectModel().getSubResourceLocators().size();
+          if (subresnum == 0) {
+            continue;
+          }
+        }
+        resourceFactory = resource;
+        break;
       }
-      return resourceFactory;
-   }
+    }
+    return resourceFactory;
+  }
 
    /**
     * @return all registered root resources
@@ -490,13 +473,10 @@ public class ResourceBinder implements Startable
    public List<AbstractResourceDescriptor> getRootResources()
    {
       List<AbstractResourceDescriptor> l = new ArrayList<AbstractResourceDescriptor>(rootResources.size());
-      synchronized (rootResources)
-      {
-         for (ObjectFactory<AbstractResourceDescriptor> f : rootResources)
-         {
-            l.add(f.getObjectModel());
-         }
-      }
+       for (ObjectFactory<AbstractResourceDescriptor> f : rootResources)
+       {
+          l.add(f.getObjectModel());
+       }
       return l;
    }
 
@@ -519,29 +499,26 @@ public class ResourceBinder implements Startable
    public ObjectFactory<AbstractResourceDescriptor> removeResource(Class clazz)
    {
       ObjectFactory<AbstractResourceDescriptor> resource = null;
-      synchronized (rootResources)
-      {
-         for (Iterator<ObjectFactory<AbstractResourceDescriptor>> iter = rootResources.iterator(); iter.hasNext()
-            && resource == null;)
-         {
-            ObjectFactory<AbstractResourceDescriptor> next = iter.next();
-            Class<?> resourceClass = next.getObjectModel().getObjectClass();
-            if (clazz.equals(resourceClass))
-            {
-               iter.remove();
-               resource = next;
-            }
-         }
-         if (resource != null)
-         {
-            for (ResourceListener listener : resourceListeners)
-            {
-               listener.resourceRemoved(resource.getObjectModel());
-            }
-            if (LOG.isDebugEnabled())
-               LOG.debug("Remove resource: " + resource.getObjectModel());
-         }
-      }
+       for (Iterator<ObjectFactory<AbstractResourceDescriptor>> iter = rootResources.iterator(); iter.hasNext()
+          && resource == null;)
+       {
+          ObjectFactory<AbstractResourceDescriptor> next = iter.next();
+          Class<?> resourceClass = next.getObjectModel().getObjectClass();
+          if (clazz.equals(resourceClass))
+          {
+             iter.remove();
+             resource = next;
+          }
+       }
+       if (resource != null)
+       {
+          for (ResourceListener listener : resourceListeners)
+          {
+             listener.resourceRemoved(resource.getObjectModel());
+          }
+          if (LOG.isDebugEnabled())
+             LOG.debug("Remove resource: " + resource.getObjectModel());
+       }
       return resource;
    }
 
@@ -557,29 +534,26 @@ public class ResourceBinder implements Startable
    {
       ObjectFactory<AbstractResourceDescriptor> resource = null;
       UriPattern pattern = new UriPattern(path);
-      synchronized (rootResources)
-      {
-         for (Iterator<ObjectFactory<AbstractResourceDescriptor>> iter = rootResources.iterator(); iter.hasNext()
-            && resource == null;)
-         {
-            ObjectFactory<AbstractResourceDescriptor> next = iter.next();
-            UriPattern resourcePattern = next.getObjectModel().getUriPattern();
-            if (pattern.equals(resourcePattern))
-            {
-               iter.remove();
-               resource = next;
-            }
-         }
-         if (resource != null)
-         {
-            for (ResourceListener listener : resourceListeners)
-            {
-               listener.resourceRemoved(resource.getObjectModel());
-            }
-            if (LOG.isDebugEnabled())
-               LOG.debug("Remove resource: " + resource.getObjectModel());
-         }
-      }
+       for (Iterator<ObjectFactory<AbstractResourceDescriptor>> iter = rootResources.iterator(); iter.hasNext()
+          && resource == null;)
+       {
+          ObjectFactory<AbstractResourceDescriptor> next = iter.next();
+          UriPattern resourcePattern = next.getObjectModel().getUriPattern();
+          if (pattern.equals(resourcePattern))
+          {
+             iter.remove();
+             resource = next;
+          }
+       }
+       if (resource != null)
+       {
+          for (ResourceListener listener : resourceListeners)
+          {
+             listener.resourceRemoved(resource.getObjectModel());
+          }
+          if (LOG.isDebugEnabled())
+             LOG.debug("Remove resource: " + resource.getObjectModel());
+       }
       return resource;
    }
 
