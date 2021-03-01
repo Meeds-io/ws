@@ -17,12 +17,17 @@
 package org.exoplatform.services.rest.impl.method;
 
 import org.exoplatform.services.rest.ApplicationContext;
+import org.exoplatform.services.rest.impl.EnvironmentContext;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 import org.exoplatform.services.rest.method.TypeProducer;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Enumeration;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -71,11 +76,29 @@ public class FormParameterResolver extends ParameterResolver<FormParam>
       if (reader == null)
          throw new IllegalStateException("Can't find appropriate entity reader for entity type "
             + MultivaluedMap.class.getName() + " and content-type " + conetentType);
-
+   
+      InputStream entityStream = context.getContainerRequest().getEntityStream();
+      if (entityStream.available()==0 && EnvironmentContext.getCurrent()!=null &&
+          EnvironmentContext.getCurrent().get(HttpServletRequest.class)!=null) {
+         //the stream have already been read
+         //get parameters in request
+         HttpServletRequest httpServletRequest =
+             (HttpServletRequest) EnvironmentContext.getCurrent().get(HttpServletRequest.class);
+         String requestContent = "";
+         for (Enumeration<String> e = httpServletRequest.getParameterNames(); e.hasMoreElements();) {
+            String key = e.nextElement();
+            if (!requestContent.equals("")) {
+               requestContent=requestContent+"&";
+            }
+            requestContent=requestContent+key+"="+httpServletRequest.getParameter(key);
+         }
+         entityStream = new ByteArrayInputStream(requestContent.getBytes());
+      }
       MultivaluedMap<String, String> form =
          (MultivaluedMap<String, String>)reader.readFrom(MultivaluedMap.class, FORM_TYPE, null, conetentType, context
-            .getHttpHeaders().getRequestHeaders(), context.getContainerRequest().getEntityStream());
+            .getHttpHeaders().getRequestHeaders(), entityStream);
       return typeProducer.createValue(param, form, parameter.getDefaultValue());
    }
 
+   
 }
