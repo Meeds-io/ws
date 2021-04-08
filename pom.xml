@@ -46,8 +46,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <exo.product.name>exo-ws</exo.product.name>
       <exo.product.specification>2.4</exo.product.specification>
 
-      <org.exoplatform.kernel.version>6.2.x-SNAPSHOT</org.exoplatform.kernel.version>
-      <org.exoplatform.core.version>6.2.x-SNAPSHOT</org.exoplatform.core.version>
+      <org.exoplatform.kernel.version>6.2.0-M15</org.exoplatform.kernel.version>
+      <org.exoplatform.core.version>6.2.0-M15</org.exoplatform.core.version>
    </properties>
 
    <modules>
