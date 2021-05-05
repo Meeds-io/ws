@@ -30,7 +30,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
    <groupId>org.exoplatform.ws</groupId>
    <artifactId>ws-parent</artifactId>
-   <version>6.2.x-SNAPSHOT</version>
+   <version>6.2.x-rewards-SNAPSHOT</version>
    <packaging>pom</packaging>
    <name>eXo PLF:: WS</name>
    <description>Exoplatform SAS 'Web Services' project.</description>
