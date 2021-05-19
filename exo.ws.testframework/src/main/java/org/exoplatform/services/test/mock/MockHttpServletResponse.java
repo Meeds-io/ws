@@ -34,6 +34,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
@@ -83,7 +84,7 @@ public class MockHttpServletResponse implements HttpServletResponse
    private String contentType = null;
 
    /** The content length. */
-   protected int contentLength = -1;
+   protected long contentLength = -1;
 
    /** The encoding. */
    protected String charset = null;
@@ -464,6 +465,16 @@ public class MockHttpServletResponse implements HttpServletResponse
       {
          baos.write(i);
       }
+
+      @Override
+      public boolean isReady() {
+        return true;
+      }
+
+      @Override
+      public void setWriteListener(WriteListener writeListener) {
+        // Nothing to change
+      }
    }
 
    /**
@@ -501,4 +512,9 @@ public class MockHttpServletResponse implements HttpServletResponse
    {
       return Collections.unmodifiableSet(headers.keySet());
    }
+
+  @Override
+  public void setContentLengthLong(long len) {
+    this.contentLength = len;
+  }
 }

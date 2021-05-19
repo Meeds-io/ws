@@ -22,9 +22,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
    <modelVersion>4.0.0</modelVersion>
 
    <parent>
+      <artifactId>maven-parent-pom</artifactId>
       <groupId>org.exoplatform</groupId>
-      <artifactId>foundation-parent</artifactId>
-      <version>22-M02</version>
+      <version>23-M06</version>
       <relativePath />
    </parent>
 
@@ -36,17 +36,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
    <description>Exoplatform SAS 'Web Services' project.</description>
 
    <scm>
-      <connection>scm:git:git://github.com/exoplatform/ws.git</connection>
-      <developerConnection>scm:git:git@github.com:exoplatform/ws.git</developerConnection>
-      <url>https://fisheye.exoplatform.org/browse/ws-dev</url>
-     <tag>HEAD</tag>
-  </scm>
+      <connection>scm:git:git://github.com/meeds-io/ws.git</connection>
+      <developerConnection>scm:git:git@github.com:meeds-io/ws.git</developerConnection>
+      <url>https://github.com/meeds-io/ws</url>
+      <tag>HEAD</tag>
+   </scm>
 
    <properties>
-      <exo.product.name>exo-ws</exo.product.name>
-      <exo.product.specification>2.4</exo.product.specification>
-
-      <org.exoplatform.kernel.version>6.2.x-SNAPSHOT</org.exoplatform.kernel.version>
       <org.exoplatform.core.version>6.2.x-SNAPSHOT</org.exoplatform.core.version>
    </properties>
 
@@ -62,35 +58,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
    <dependencyManagement>
       <dependencies>
          <dependency>
-            <groupId>org.exoplatform.kernel</groupId>
-            <artifactId>exo.kernel.commons</artifactId>
-            <version>${org.exoplatform.kernel.version}</version>
+           <groupId>org.exoplatform.core</groupId>
+           <artifactId>core-parent</artifactId>
+           <version>${org.exoplatform.core.version}</version>
+           <type>pom</type>
+           <scope>import</scope>
          </dependency>
-         <dependency>
-            <groupId>org.exoplatform.kernel</groupId>
-            <artifactId>exo.kernel.container</artifactId>
-            <version>${org.exoplatform.kernel.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.exoplatform.kernel</groupId>
-            <artifactId>exo.kernel.component.common</artifactId>
-            <version>${org.exoplatform.kernel.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.exoplatform.kernel</groupId>
-            <artifactId>exo.kernel.commons.test</artifactId>
-            <version>${org.exoplatform.kernel.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.exoplatform.core</groupId>
-            <artifactId>exo.core.component.xml-processing</artifactId>
-            <version>${org.exoplatform.core.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.exoplatform.core</groupId>
-            <artifactId>exo.core.component.script.groovy</artifactId>
-            <version>${org.exoplatform.core.version}</version>
-         </dependency>
+
          <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ws-parent</artifactId>
@@ -127,41 +101,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <groupId>${project.groupId}</groupId>
             <artifactId>exo.ws.frameworks.servlet</artifactId>
             <version>${project.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
-         </dependency>
-         <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>1.4.7</version>
-         </dependency>
-         <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>1.3.1</version>
-         </dependency>
-         <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
-            <version>1.0</version>
-         </dependency>
-         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
-            <version>1.0</version>
-         </dependency>
-         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.5</version>
-         </dependency>
-         <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>2.4.11</version>
          </dependency>
       </dependencies>
    </dependencyManagement>
