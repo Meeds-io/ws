@@ -34,19 +34,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.Part;
+import javax.servlet.*;
+import javax.servlet.http.*;
 
 /**
  * The Class MockHttpServletRequest.
@@ -62,7 +51,7 @@ public class MockHttpServletRequest implements HttpServletRequest
    private String method;
 
    /** Length. */
-   private int length;
+   private long length;
 
    /** Request url. */
    private String requestURL;
@@ -169,7 +158,7 @@ public class MockHttpServletRequest implements HttpServletRequest
     */
    public int getContentLength()
    {
-      return length;
+      return (int) length;
    }
 
    /**
@@ -751,6 +740,21 @@ public class MockHttpServletRequest implements HttpServletRequest
    {
       throw new ServletException("Request is not of type multipart/form-data");
    }
+
+  @Override
+  public long getContentLengthLong() {
+    return length;
+  }
+
+  @Override
+  public String changeSessionId() {
+    return session == null ? null : session.getId();
+  }
+
+  @Override
+  public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
+    return null;
+  }
 }
 
 @SuppressWarnings("unchecked")
@@ -790,4 +794,19 @@ class MockServletInputStream extends ServletInputStream
    {
       return data.read();
    }
+
+  @Override
+  public boolean isFinished() {
+    return true;
+  }
+
+  @Override
+  public boolean isReady() {
+    return true;
+  }
+
+  @Override
+  public void setReadListener(ReadListener readListener) {
+    // Nothing to do
+  }
 }

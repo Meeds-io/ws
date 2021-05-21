@@ -36,13 +36,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.ws.rs.HttpMethod;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Variant;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -611,6 +606,19 @@ public class ContainerRequest implements GenericContainerRequest
          }
       }
 
+      return null;
+   }
+  
+   @Override
+   public ResponseBuilder evaluatePreconditions() {
+      List<String> ifMatch = getRequestHeaders().get(HttpHeaders.IF_MATCH);
+      if (ifMatch != null) {
+          for (String value : ifMatch) {
+              if (!"*".equals(value)) {
+                  return Response.status(Response.Status.PRECONDITION_FAILED).tag(EntityTag.valueOf(value));
+              }
+          }
+      }
       return null;
    }
 
