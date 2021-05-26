@@ -214,11 +214,6 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
             }
             if (excmap != null)
             {
-               if (LOG.isDebugEnabled())
-               {
-                  // Hide error message if exception mapper exists.
-                  LOG.warn("Internal error occurs.", cause);
-               }
                response.setResponse(excmap.toResponse(e.getCause()));
             }
             else
