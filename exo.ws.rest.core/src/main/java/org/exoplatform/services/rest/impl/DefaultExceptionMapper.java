@@ -17,8 +17,11 @@
 
 package org.exoplatform.services.rest.impl;
 
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.ExtHttpHeaders;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -33,10 +36,19 @@ public class DefaultExceptionMapper implements ExceptionMapper<Exception>
 {
 
    /**
+    * Logger.
+    */
+   private static final Log LOG = ExoLogger.getLogger(DefaultExceptionMapper.class);
+
+   /**
     * {@inheritDoc}
     */
    public Response toResponse(Exception exception)
    {
+      if (!(exception instanceof WebApplicationException || exception.getCause() instanceof WebApplicationException)) {
+        LOG.warn("Uncaught REST Service Exception", exception);
+      }
+
       String message = exception.getMessage();
       return Response.status(500).entity(message == null ? exception.getClass().getName() : message).type(
          MediaType.TEXT_PLAIN).header(ExtHttpHeaders.JAXRS_BODY_PROVIDED, "Error-Message").build();
