@@ -33,7 +33,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
    <description>Implementation of REST Core for Exoplatform SAS 'Web Services' project.</description>
 
    <properties>
-      <argLine>${env.MAVEN_OPTS} -Djava.security.manager=org.exoplatform.commons.test.TestSecurityManager -Djava.security.policy=${project.build.directory}/test-classes/test.policy</argLine>
       <exo.test.coverage.ratio>0.70</exo.test.coverage.ratio>
    </properties>
 
@@ -85,6 +84,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
    <build>
       <plugins>
+         <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <argLine>${env.MAVEN_OPTS} -Djava.security.manager=org.exoplatform.commons.test.TestSecurityManager -Djava.security.policy=${project.build.directory}/test-classes/test.policy</argLine>
+            </configuration>
+         </plugin>
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>build-helper-maven-plugin</artifactId>
