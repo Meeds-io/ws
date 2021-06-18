@@ -33,7 +33,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	<description>Implementation of REST Extentions for Exoplatform SAS 'Web Services' project.</description>
 
 	<properties>
-		<argLine>${env.MAVEN_OPTS} -Djava.security.manager=org.exoplatform.commons.test.TestSecurityManager -Djava.security.policy=${project.build.directory}/test-classes/test.policy</argLine>
 		<exo.test.coverage.ratio>0.31</exo.test.coverage.ratio>
 	</properties>
 
@@ -77,6 +76,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	<build>
 		<plugins>
          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <argLine>${env.MAVEN_OPTS} -Djava.security.manager=org.exoplatform.commons.test.TestSecurityManager -Djava.security.policy=${project.build.directory}/test-classes/test.policy</argLine>
+            </configuration>
+         </plugin>
+         <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
             <executions>
                <execution>
@@ -105,13 +110,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   </goals>
                </execution>
             </executions>
-            <dependencies>
-               <dependency>
-                  <groupId>ant</groupId>
-                  <artifactId>ant-optional</artifactId>
-                  <version>1.5.3-1</version>
-               </dependency>
-            </dependencies>
          </plugin>
 		</plugins>
 	</build>
