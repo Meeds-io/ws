@@ -27,12 +27,7 @@ import org.exoplatform.ws.frameworks.json.impl.JsonWriterImpl;
 import org.exoplatform.ws.frameworks.json.impl.ObjectBuilder;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -71,6 +66,12 @@ public class JsonEntityProvider implements EntityProvider<Object>
    private static final Class<?>[] IGNORED = new Class<?>[]{byte[].class, char[].class, DataSource.class,
       DOMSource.class, File.class, InputStream.class, OutputStream.class, JAXBElement.class, MultivaluedMap.class,
       Reader.class, Writer.class, SAXSource.class, StreamingOutput.class, StreamSource.class, String.class};
+
+   private static final int       BUFFER_SIZE;
+   static {
+     String bufferSize = System.getProperty("exo.ws.json.writer.bufferSize", "1048576");
+     BUFFER_SIZE = Integer.parseInt(bufferSize);
+   }
 
    private static boolean isIgnored(Class<?> type)
    {
@@ -197,10 +198,15 @@ public class JsonEntityProvider implements EntityProvider<Object>
                jsonValue = generator.createJsonObject(t);
             }
          }
-         JsonWriterImpl jsonWriter = new JsonWriterImpl(entityStream);
+         // Use a buffered writer to not trigger write on HTTP connector for
+         // each written character. On a high usage of REST endpoint with
+         // multiple connected users, the NioEndpoint will be blocked (buffer
+         // size = 1MB)
+         BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(entityStream, BUFFER_SIZE);
+         JsonWriterImpl jsonWriter = new JsonWriterImpl(bufferedOutputStream);
          jsonValue.writeTo(jsonWriter);
          jsonWriter.flush();
-      }
+       }
       catch (JsonException e)
       {
          throw new IOException("Can't write to output stream " + e, e);
