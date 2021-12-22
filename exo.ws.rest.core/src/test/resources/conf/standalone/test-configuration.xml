@@ -24,27 +24,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <init-params>
          <value-param>
             <name>logger</name>
-            <value>org.slf4j.Logger</value>
+            <value>org.exoplatform.services.log.impl.BufferedLog4JLogger</value>
          </value-param>
          <value-param>
             <name>configurator</name>
             <value>org.exoplatform.services.log.impl.SimpleExoLogConfigurator</value>
          </value-param>
-         <properties-param>
-            <name>properties</name>
-            <description>Log4J properties</description>
-            <property name="log4j.rootLogger" value="INFO, stdout" />
-
-            <property name="log4j.appender.stdout" value="org.apache.log4j.ConsoleAppender" />
-            <property name="log4j.appender.stdout.threshold" value="DEBUG" />
-            <property name="log4j.appender.stdout.layout" value="org.apache.log4j.PatternLayout" />
-            <property name="log4j.appender.stdout.layout.ConversionPattern" value="%d{dd.MM.yyyy HH:mm:ss} *%-5p* [%t] %c{1}: %m (%F, line %L) %n" />
-            <property name="log4j.appender.file" value="org.apache.log4j.FileAppender" />
-            <property name="log4j.appender.file.File" value="target/container.log" />
-            <property name="log4j.appender.file.layout" value="org.apache.log4j.PatternLayout" />
-            <property name="log4j.appender.file.layout.ConversionPattern" value="%d{dd.MM.yyyy HH:mm:ss} *%-5p* [%t] %c{1}: %m (%F, line %L) %n" />
-
-         </properties-param>
       </init-params>
    </component>
 
