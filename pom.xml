@@ -107,13 +107,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
          </dependency>
       </dependencies>
    </dependencyManagement>
-   <dependencies>
-      <dependency>
-         <groupId>org.slf4j</groupId>
-         <artifactId>slf4j-log4j12</artifactId>
-         <scope>test</scope>
-      </dependency>
-   </dependencies>
    
    <!-- This profile is used to allow github action to build branches. The github action is used for sonar analysis -->
    <profiles>
