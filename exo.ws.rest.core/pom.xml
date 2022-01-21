@@ -62,7 +62,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       </dependency>
       <dependency>
          <groupId>javax.mail</groupId>
-         <artifactId>mail</artifactId>
+         <artifactId>javax.mail-api</artifactId>
       </dependency>
       <dependency>
          <groupId>javax.ws.rs</groupId>
