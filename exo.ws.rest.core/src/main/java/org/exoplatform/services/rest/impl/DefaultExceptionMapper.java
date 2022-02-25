@@ -51,7 +51,8 @@ public class DefaultExceptionMapper implements ExceptionMapper<Exception>
 
       String message = exception.getMessage();
       return Response.status(500).entity(message == null ? exception.getClass().getName() : message).type(
-         MediaType.TEXT_PLAIN).header(ExtHttpHeaders.JAXRS_BODY_PROVIDED, "Error-Message").build();
+                                                                                                          MediaType.TEXT_PLAIN)
+                     .build();
    }
 
 }
