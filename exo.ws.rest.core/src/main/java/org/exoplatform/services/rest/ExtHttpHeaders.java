@@ -118,13 +118,6 @@ public interface ExtHttpHeaders extends HttpHeaders
     * Headers for Distributed Authoring</a> section 9 for more information.
     */
    public static final String IF = "If";
-   
-   /**
-    * This header indicates that body is provided via JAXR framework.
-    * Value of header MAY contain additional information about the nature
-    * of body's content, for example: 'Error-Message'. 
-    */
-   public static final String JAXRS_BODY_PROVIDED = "JAXRS-Body-Provided";
 
    /**
     * WebDav "Timeout" header. See <a href='http://www.ietf.org/rfc/rfc2518.txt'>
