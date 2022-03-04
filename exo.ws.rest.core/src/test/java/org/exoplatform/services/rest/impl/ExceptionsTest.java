@@ -112,6 +112,7 @@ public class ExceptionsTest extends BaseTest
       assertEquals(500, response.getStatus());
       String entity = new String(writer.getBody());
       assertEquals(errorMessage, entity);
+      assertNotNull(response.getHttpHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
    }
 
    public void testUncheckedException() throws Exception
@@ -121,6 +122,7 @@ public class ExceptionsTest extends BaseTest
       assertEquals(500, response.getStatus());
       String entity = new String(writer.getBody());
       assertEquals(errorMessage, entity);
+      assertNotNull(response.getHttpHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
    }
 
    public void testWebApplicationExceptionWithCause() throws Exception
@@ -130,6 +132,7 @@ public class ExceptionsTest extends BaseTest
       assertEquals(500, response.getStatus());
       String entity = new String(writer.getBody());
       assertEquals(new Exception(errorMessage).toString(), entity);
+      assertNotNull(response.getHttpHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
    }
 
    public void testWebApplicationExceptionWithoutCause() throws Exception
@@ -138,6 +141,7 @@ public class ExceptionsTest extends BaseTest
       ContainerResponse response = launcher.service("GET", "/a/2", "", null, null, writer, null);
       assertEquals(500, response.getStatus());
       assertNull(response.getEntity());
+      assertNull(response.getHttpHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
    }
 
    public void testWebApplicationExceptionWithResponse() throws Exception
@@ -147,6 +151,7 @@ public class ExceptionsTest extends BaseTest
       assertEquals(500, response.getStatus());
       String entity = new String(writer.getBody());
       assertEquals(errorMessage, entity);
+      assertNotNull(response.getHttpHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED));
    }
 
    public void testErrorOnRequestLifeCycleEnd() throws Exception
