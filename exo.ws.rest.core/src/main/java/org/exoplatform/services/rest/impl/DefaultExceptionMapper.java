@@ -19,6 +19,7 @@ package org.exoplatform.services.rest.impl;
 
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.rest.ExtHttpHeaders;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;

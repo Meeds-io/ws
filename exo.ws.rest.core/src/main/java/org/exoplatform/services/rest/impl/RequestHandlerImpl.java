@@ -23,6 +23,7 @@ import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.rest.ExtHttpHeaders;
 import org.exoplatform.services.rest.FilterDescriptor;
 import org.exoplatform.services.rest.GenericContainerRequest;
 import org.exoplatform.services.rest.GenericContainerResponse;
@@ -233,6 +234,24 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
       responseBuilder.entity(message).type(MediaType.TEXT_PLAIN);
       return responseBuilder.build();
    }
+
+   /**
+    * Get JAXR header for response status.
+    * 
+    * @param status response status
+    * @return JAXRS header or null.
+    */
+   private String getJaxrsHeader(int status)
+   {
+      if (status >= 400)
+      {
+         return "Error-Message";
+      }
+      // Add required behavior here.
+      return null;
+   }
+
+   //
 
    /**
     * For writing error message.
