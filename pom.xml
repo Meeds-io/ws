@@ -43,7 +43,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
    </scm>
 
    <properties>
-      <org.exoplatform.core.version>6.3.x-SNAPSHOT</org.exoplatform.core.version>
+      <org.exoplatform.core.version>6.3.0-M28</org.exoplatform.core.version>
       
       <!-- Sonar properties -->
       <sonar.organization>meeds-io</sonar.organization>
