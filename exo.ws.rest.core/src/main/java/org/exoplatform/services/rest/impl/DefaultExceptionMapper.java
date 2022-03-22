@@ -19,7 +19,6 @@ package org.exoplatform.services.rest.impl;
 
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.rest.ExtHttpHeaders;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -51,7 +50,8 @@ public class DefaultExceptionMapper implements ExceptionMapper<Exception>
 
       String message = exception.getMessage();
       return Response.status(500).entity(message == null ? exception.getClass().getName() : message).type(
-         MediaType.TEXT_PLAIN).header(ExtHttpHeaders.JAXRS_BODY_PROVIDED, "Error-Message").build();
+                                                                                                          MediaType.TEXT_PLAIN)
+                     .build();
    }
 
 }

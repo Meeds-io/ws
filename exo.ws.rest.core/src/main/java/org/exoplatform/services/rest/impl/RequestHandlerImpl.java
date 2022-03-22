@@ -23,7 +23,6 @@ import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.rest.ExtHttpHeaders;
 import org.exoplatform.services.rest.FilterDescriptor;
 import org.exoplatform.services.rest.GenericContainerRequest;
 import org.exoplatform.services.rest.GenericContainerResponse;
@@ -142,14 +141,6 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
          try
          {
             dispatcher.dispatch(request, response);
-            if (response.getHttpHeaders().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED) == null)
-            {
-               String jaxrsHeader = getJaxrsHeader(response.getStatus());
-               if (jaxrsHeader != null)
-               {
-                  response.getHttpHeaders().putSingle(ExtHttpHeaders.JAXRS_BODY_PROVIDED, jaxrsHeader);
-               }
-            }
          }
          catch (WebApplicationException e)
          {
@@ -183,17 +174,6 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
                   if (e.getMessage() != null)
                   {
                      errorResponse = createErrorResponse(errorStatus, e.getMessage());
-                  }
-               }
-            }
-            else
-            {
-               if (errorResponse.getMetadata().getFirst(ExtHttpHeaders.JAXRS_BODY_PROVIDED) == null)
-               {
-                  String jaxrsHeader = getJaxrsHeader(errorStatus);
-                  if (jaxrsHeader != null)
-                  {
-                     errorResponse.getMetadata().putSingle(ExtHttpHeaders.JAXRS_BODY_PROVIDED, jaxrsHeader);
                   }
                }
             }
@@ -251,30 +231,8 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
 
       ResponseBuilder responseBuilder = Response.status(status);
       responseBuilder.entity(message).type(MediaType.TEXT_PLAIN);
-      String jaxrsHeader = getJaxrsHeader(status);
-      if (jaxrsHeader != null)
-         responseBuilder.header(ExtHttpHeaders.JAXRS_BODY_PROVIDED, jaxrsHeader);
-
       return responseBuilder.build();
    }
-
-   /**
-    * Get JAXR header for response status.
-    * 
-    * @param status response status
-    * @return JAXRS header or null.
-    */
-   private String getJaxrsHeader(int status)
-   {
-      if (status >= 400)
-      {
-         return "Error-Message";
-      }
-      // Add required behavior here.
-      return null;
-   }
-
-   //
 
    /**
     * For writing error message.
