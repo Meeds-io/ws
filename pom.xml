@@ -24,13 +24,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
    <parent>
       <artifactId>maven-parent-pom</artifactId>
       <groupId>org.exoplatform</groupId>
-      <version>26</version>
+      <version>27-meed-M02</version>
       <relativePath />
    </parent>
 
    <groupId>org.exoplatform.ws</groupId>
    <artifactId>ws-parent</artifactId>
-   <version>6.6.x-SNAPSHOT</version>
+   <version>6.6.x-meed-SNAPSHOT</version>
    <packaging>pom</packaging>
    <name>eXo PLF:: WS</name>
    <description>Exoplatform SAS 'Web Services' project.</description>
@@ -43,7 +43,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
    </scm>
 
    <properties>
-      <org.exoplatform.core.version>6.6.x-SNAPSHOT</org.exoplatform.core.version>
+      <org.exoplatform.core.version>6.6.x-meed-SNAPSHOT</org.exoplatform.core.version>
       
       <!-- Sonar properties -->
       <sonar.organization>meeds-io</sonar.organization>
