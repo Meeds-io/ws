@@ -1,4 +1,4 @@
-package org.exoplatform.services.rest.ext.http;
+package org.exoplatform.services.rest.http;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
