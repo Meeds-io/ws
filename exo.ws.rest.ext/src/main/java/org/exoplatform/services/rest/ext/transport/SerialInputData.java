@@ -178,7 +178,7 @@ public class SerialInputData implements Serializable
           * {@inheritDoc}
           */
          @Override
-         protected void finalize() throws IOException
+         protected void finalize() throws Throwable
          {
             try
             {
