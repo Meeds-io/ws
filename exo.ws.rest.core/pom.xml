@@ -152,6 +152,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   </configuration>
                </execution>
             </executions>
+            <dependencies>
+               <dependency>
+                  <groupId>org.glassfish.jaxb</groupId>
+                  <artifactId>jaxb-runtime</artifactId>
+                  <version>2.3.3</version>
+               </dependency>
+            </dependencies>
          </plugin>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
