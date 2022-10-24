@@ -76,7 +76,7 @@ public class FieldInjectorImpl implements FieldInjector
    private final Method setter;
 
    /**
-    * @param resourceClass class that contains field <tt>jfield</tt>
+    * @param resourceClass class that contains field <code>jfield</code>
     * @param jfield java.lang.reflect.Field
     */
    public FieldInjectorImpl(Class<?> resourceClass, java.lang.reflect.Field jfield)

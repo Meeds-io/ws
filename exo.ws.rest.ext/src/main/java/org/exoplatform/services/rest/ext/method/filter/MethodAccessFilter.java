@@ -42,7 +42,7 @@ public class MethodAccessFilter implements MethodInvokerFilter
 {
 
    /**
-    * Check does <tt>method</tt> contains one on of security annotations
+    * Check does <code>method</code> contains one on of security annotations
     * PermitAll, DenyAll, RolesAllowed.
     *
     * @see PermitAll

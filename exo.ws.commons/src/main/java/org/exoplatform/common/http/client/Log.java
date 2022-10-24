@@ -54,7 +54,7 @@ import java.util.TimeZone;
  * All log entries are preceded by the name of the currently executing thread,
  * enclosed in {}'s, and the current time in hours, minutes, seconds, and
  * milliseconds, enclosed in []'s. Example:
- * <tt>{Thread-5} [20:14:03.244] Conn:  Sending Request</tt>
+ * <code>{Thread-5} [20:14:03.244] Conn:  Sending Request</code>
  * <P>
  * When the class is loaded, two java system properties are read:
  * <var>HTTPClient.log.file</var> and <var>HTTPClient.log.mask</var>. The
