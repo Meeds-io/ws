@@ -173,25 +173,6 @@ public class SerialInputData implements Serializable
                removed = file.delete();
             }
          }
-
-         /**
-          * {@inheritDoc}
-          */
-         @Override
-         protected void finalize() throws IOException
-         {
-            try
-            {
-               // if file was not removed
-               if (!removed)
-                  file.delete();
-
-            }
-            finally
-            {
-               super.finalize();
-            }
-         }
       };
    }
 

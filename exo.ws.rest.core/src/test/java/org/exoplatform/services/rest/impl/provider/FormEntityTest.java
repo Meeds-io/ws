@@ -139,7 +139,7 @@ public class FormEntityTest extends BaseTest
       private Iterator<FileItemTester> pattern;
 
       /**
-       * Initialize <tt>pattern</tt>.
+       * Initialize <code>pattern</code>.
        */
       public Resource2()
       {
