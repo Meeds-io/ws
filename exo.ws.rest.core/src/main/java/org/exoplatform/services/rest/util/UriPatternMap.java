@@ -37,7 +37,7 @@ public class UriPatternMap<V> extends HashMap<UriPattern, List<V>> implements Ex
 
    /**
     * @param uriPattern the key
-    * @return List of Object mapped to specified <tt>uriPattern</tt>. Method
+    * @return List of Object mapped to specified <code>uriPattern</code>. Method
     *         never return null, empty List instead.
     */
    public List<V> getList(UriPattern uriPattern)

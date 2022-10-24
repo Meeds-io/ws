@@ -236,11 +236,11 @@ public class HeaderParameterParser
    }
 
    /**
-    * Check does char array <tt>chs</tt> contains char <tt>c</tt>.
+    * Check does char array <code>chs</code> contains char <code>c</code>.
     * 
     * @param c char
     * @param chs char array
-    * @return true if char array contains character <tt>c</tt>, false otherwise
+    * @return true if char array contains character <code>c</code>, false otherwise
     */
    private boolean checkChar(char c, char[] chs)
    {
