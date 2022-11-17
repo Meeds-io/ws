@@ -100,7 +100,7 @@ public class DataSourceEntityProvider implements EntityProvider<DataSource>
 
    /**
     * Create DataSource instance dependent entity size. If entity has size less
-    * then <tt>MAX_BUFFER_SIZE</tt> then {@link ByteArrayDataSource} will be
+    * then <code>MAX_BUFFER_SIZE</code> then {@link ByteArrayDataSource} will be
     * created otherwise {@link MimeFileDataSource} will be created.
     * 
     * @param entityStream the {@link InputStream} of the HTTP entity
