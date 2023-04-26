@@ -46,6 +46,7 @@ import javax.ws.rs.core.MultivaluedMap;
  */
 public class JsonpEntityTest extends BaseTest
 {
+   private static final String JS_FILE_CONTENT = "console.log('Test JS File')";
 
    @Path("/")
    public static class ResourceBook
@@ -79,6 +80,17 @@ public class JsonpEntityTest extends BaseTest
          book2.setSendByPost(true);
          return new Book[]{book1, book2};
       }
+   }
+
+   @Path("/")
+   public static class TextJavascript {
+
+     @GET
+     @Produces("text/javascript")
+     public String m1() {
+       return JS_FILE_CONTENT;
+     }
+
    }
 
    @Path("/")
@@ -149,7 +161,7 @@ public class JsonpEntityTest extends BaseTest
          response = launcher.service("GET", "/", "", h, null, writer, null);
          fail("An IOException is expected as the parameter jsonp has not been set");
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          // expected
       }
@@ -158,7 +170,7 @@ public class JsonpEntityTest extends BaseTest
          response = launcher.service("GET", "/?param=foo", "", h, null, writer, null);
          fail("An IOException is expected as the parameter jsonp has not been set");
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          // expected
       }
@@ -230,6 +242,23 @@ public class JsonpEntityTest extends BaseTest
       assertTrue(book[1].isSendByPost());
 
       unregistry(r2);
+   }
+
+   public void testTextJavascriptReturnText() throws Exception {
+     TextJavascript r2 = new TextJavascript();
+     registry(r2);
+     MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+     h.putSingle("accept", "text/javascript");
+     ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+
+     ContainerResponse response = launcher.service("GET", "/", "", h, null, writer, null);
+     assertEquals(200, response.getStatus());
+     assertEquals("text/javascript", response.getContentType().toString());
+
+     String js = (String) response.getEntity();
+     assertEquals(JS_FILE_CONTENT, js);
+
+     unregistry(r2);
    }
 
    @SuppressWarnings({"unchecked", "serial"})
