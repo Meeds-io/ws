@@ -33,7 +33,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
    <description>Implementation of REST Core for Exoplatform SAS 'Web Services' project.</description>
 
    <properties>
-      <exo.test.coverage.ratio>0.70</exo.test.coverage.ratio>
+      <exo.test.coverage.ratio>0.73</exo.test.coverage.ratio>
    </properties>
 
    <dependencies>
