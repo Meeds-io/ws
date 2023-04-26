@@ -102,7 +102,12 @@ public class JsonpEntityProvider extends JsonEntityProvider
    @Override
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return super.isWriteable(type, genericType, annotations, mediaType) || String.class.isAssignableFrom(type);
+     ApplicationContext context = ApplicationContextImpl.getCurrent();
+     if (context == null) {
+       return false;
+     }
+     String callback = context.getQueryParameters().getFirst(JSONP_PARAMETER);
+     return callback != null && (super.isWriteable(type, genericType, annotations, mediaType) || String.class.isAssignableFrom(type));
    }
 
 }
