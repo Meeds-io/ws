@@ -101,7 +101,7 @@ public class RestServlet extends AbstractHttpServlet implements Connector
       }
       catch (Exception e)
       {
-        if (e.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
+        if (isBrokenPipeError(e)) {
           LOG.debug("Write socket error!", e);
         } else {
           LOG.warn("An error occurred while calling REST endpoint {}, method: {}",
@@ -213,4 +213,15 @@ public class RestServlet extends AbstractHttpServlet implements Connector
     }
     return transactionalServices;
   }
+
+  private boolean isBrokenPipeError(Throwable e) {
+    if ("org.apache.catalina.connector.ClientAbortException".equals(e.getClass().getName())) { // NOSONAR
+      return true;
+    } else if (e.getCause() != null && e.getCause() != e) {
+      return isBrokenPipeError(e.getCause());
+    } else {
+      return false;
+    }
+  }
+
 }
