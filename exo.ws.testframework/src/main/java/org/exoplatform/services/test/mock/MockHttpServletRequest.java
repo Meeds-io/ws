@@ -34,8 +34,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 
 /**
  * The Class MockHttpServletRequest.
@@ -733,7 +733,7 @@ public class MockHttpServletRequest implements HttpServletRequest
 
    public Collection<Part> getParts() throws IOException, ServletException
    {
-      throw new ServletException("Request is not of type multipart/form-data");
+     return Collections.emptyList();
    }
 
    public Part getPart(String name) throws IOException, ServletException
@@ -753,6 +753,21 @@ public class MockHttpServletRequest implements HttpServletRequest
 
   @Override
   public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
+    return null;
+  }
+
+  @Override
+  public String getRequestId() {
+    return "";
+  }
+
+  @Override
+  public String getProtocolRequestId() {
+    return "";
+  }
+
+  @Override
+  public ServletConnection getServletConnection() {
     return null;
   }
 }

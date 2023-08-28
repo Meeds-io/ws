@@ -26,10 +26,10 @@ import org.exoplatform.services.log.Log;
 
 import java.io.IOException;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 
 /**
  * Created by The eXo Platform SAS .<br>
@@ -47,8 +47,8 @@ public class PortalContainerInitializedFilter extends AbstractFilter
    /**
     * initializes PortalContainer instance.
     * 
-    * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
-    *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
+    * @see jakarta.servlet.Filter#doFilter(jakarta.servlet.ServletRequest,
+    *      jakarta.servlet.ServletResponse, jakarta.servlet.FilterChain)
     */
    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
       ServletException

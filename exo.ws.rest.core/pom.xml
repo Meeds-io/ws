@@ -50,6 +50,30 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
          <groupId>org.exoplatform.ws</groupId>
          <artifactId>exo.ws.frameworks.json</artifactId>
       </dependency>
+
+      <!-- Third party libs -->
+      <dependency>
+         <groupId>javax.mail</groupId>
+         <artifactId>javax.mail-api</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-fileupload2-jakarta</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>javax.ws.rs</groupId>
+         <artifactId>jsr311-api</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.xml.bind</groupId>
+        <artifactId>jaxb-impl</artifactId>
+      </dependency>
+
+      <!-- Test scope -->
       <dependency>
          <groupId>org.exoplatform.ws</groupId>
          <artifactId>exo.ws.testframework</artifactId>
@@ -60,36 +84,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
          <artifactId>junit</artifactId>
          <scope>test</scope>
       </dependency>
-      <dependency>
-         <groupId>javax.mail</groupId>
-         <artifactId>javax.mail-api</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>javax.ws.rs</groupId>
-         <artifactId>jsr311-api</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>commons-fileupload</groupId>
-         <artifactId>commons-fileupload</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-impl</artifactId>
-      </dependency>
    </dependencies>
 
    <build>
       <plugins>
-         <plugin>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <argLine>@{argLine} ${env.MAVEN_OPTS} --add-opens=java.base/java.lang=ALL-UNNAMED -Djava.security.manager=org.exoplatform.commons.test.TestSecurityManager -Djava.security.policy=${project.build.directory}/test-classes/test.policy</argLine>
-            </configuration>
-         </plugin>
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>build-helper-maven-plugin</artifactId>
@@ -159,37 +157,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   <version>2.3.3</version>
                </dependency>
             </dependencies>
-         </plugin>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-               <execution>
-                  <id>prepare-test-policy</id>
-                  <phase>process-test-resources</phase>
-                  <configuration>
-                     <target>
-                        <echo>Creating Access Policy for tests</echo>
-                        <makeurl file="${settings.localRepository}" property="localRepositoryURL" />
-                        <makeurl file="${project.build.outputDirectory}" property="outputDirectoryURL" />
-                        <makeurl file="${project.build.testOutputDirectory}" property="testOutputDirectoryURL" />
-                        <copy todir="${project.build.testOutputDirectory}" overwrite="true">
-                           <fileset dir="${project.basedir}/src/test/resources/">
-                              <include name="test.policy" />
-                           </fileset>
-                           <filterset>
-                              <filter token="MAVEN_REPO" value="${localRepositoryURL}" />
-                              <filter token="MAIN_CLASSES" value="${outputDirectoryURL}" />
-                              <filter token="TEST_CLASSES" value="${testOutputDirectoryURL}" />
-                           </filterset>
-                        </copy>
-                     </target>
-                  </configuration>
-                  <goals>
-                     <goal>run</goal>
-                  </goals>
-               </execution>
-            </executions>
          </plugin>
       </plugins>
    </build>

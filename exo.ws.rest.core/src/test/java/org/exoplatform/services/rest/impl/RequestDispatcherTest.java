@@ -21,7 +21,7 @@ import org.exoplatform.services.rest.GenericContainerResponse;
 import org.exoplatform.services.rest.Property;
 import org.exoplatform.services.test.mock.MockHttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
