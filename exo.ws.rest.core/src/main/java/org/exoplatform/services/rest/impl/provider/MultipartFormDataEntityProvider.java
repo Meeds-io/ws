@@ -16,16 +16,6 @@
  */
 package org.exoplatform.services.rest.impl.provider;
 
-import org.apache.commons.fileupload.DefaultFileItemFactory;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUpload;
-import org.apache.commons.fileupload.FileUploadException;
-import org.exoplatform.commons.utils.SecurityHelper;
-import org.exoplatform.services.rest.ApplicationContext;
-import org.exoplatform.services.rest.RequestHandler;
-import org.exoplatform.services.rest.impl.ApplicationContextImpl;
-import org.exoplatform.services.rest.provider.EntityProvider;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,16 +23,29 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
+
+import org.apache.commons.fileupload2.core.DiskFileItem;
+import org.apache.commons.fileupload2.core.DiskFileItemFactory;
+import org.apache.commons.fileupload2.core.FileItem;
+import org.apache.commons.fileupload2.core.FileUploadException;
+import org.apache.commons.fileupload2.jakarta.JakartaServletDiskFileUpload;
+
+import org.exoplatform.services.rest.ApplicationContext;
+import org.exoplatform.services.rest.RequestHandler;
+import org.exoplatform.services.rest.impl.ApplicationContextImpl;
+import org.exoplatform.services.rest.provider.EntityProvider;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Processing multipart data based on apache fileupload.
@@ -50,113 +53,81 @@ import javax.ws.rs.ext.Provider;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
+@SuppressWarnings("rawtypes")
 @Provider
-@Consumes({"multipart/*"})
-public class MultipartFormDataEntityProvider implements EntityProvider<Iterator<FileItem>>
-{
+@Consumes({ "multipart/*" })
+public class MultipartFormDataEntityProvider implements EntityProvider<Iterator<? extends FileItem>> {
 
-   /**
-    * @see HttpServletRequest
-    */
-   @Context
-   private HttpServletRequest httpRequest;
+  @Context
+  private HttpServletRequest httpRequest;
 
-   /**
-    * {@inheritDoc}
-    */
-   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-   {
-      if (type == Iterator.class)
-      {
-         try
-         {
-            ParameterizedType t = (ParameterizedType)genericType;
-            Type[] ta = t.getActualTypeArguments();
-            if (ta.length == 1 && ta[0] == FileItem.class)
-            {
-               return true;
-            }
-            return false;
-         }
-         catch (ClassCastException e)
-         {
-            return false;
-         }
-      }
+  @Override
+  public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    if (type == Iterator.class && genericType instanceof ParameterizedType t) {
+      Type[] ta = t.getActualTypeArguments();
+      return ta.length == 1 && ta[0] == FileItem.class;
+    }
+    return false;
+  }
 
-      return false;
-   }
+  @Override
+  public Iterator<? extends FileItem> readFrom(Class<Iterator<? extends FileItem>> type,
+                                               Type genericType,
+                                               Annotation[] annotations,
+                                               MediaType mediaType,
+                                               MultivaluedMap<String, String> httpHeaders,
+                                               InputStream entityStream) throws IOException {
+    try {
+      ApplicationContext context = ApplicationContextImpl.getCurrent();
+      int bufferSize =
+                     context.getProperties().get(RequestHandler.WS_RS_BUFFER_SIZE)
+                         == null ? RequestHandler.WS_RS_BUFFER_SIZE_VALUE :
+                                 Integer.parseInt(context.getProperties()
+                                                         .get(
+                                                              RequestHandler.WS_RS_BUFFER_SIZE));
+      File repo = new File(context.getProperties().get(RequestHandler.WS_RS_TMP_DIR));
+      DiskFileItemFactory factory = DiskFileItemFactory.builder()
+                                                       .setBufferSize(bufferSize)
+                                                       .setFile(repo)
+                                                       .setCharset(StandardCharsets.UTF_8)
+                                                       .get();
+      JakartaServletDiskFileUpload servletUpload = new JakartaServletDiskFileUpload(factory);
+      servletUpload.setHeaderCharset(StandardCharsets.UTF_8);
+      List<DiskFileItem> fileItems = servletUpload.parseRequest(httpRequest);
+      return fileItems == null ? Collections.emptyIterator() : fileItems.iterator();
+    } catch (FileUploadException e) {
+      throw new IOException("Can't process multipart data item ", e);
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new IllegalStateException("Can't process multipart data item ", e);
+    }
+  }
 
-   /**
-    * {@inheritDoc}
-    */
-   @SuppressWarnings("unchecked")
-   public Iterator<FileItem> readFrom(Class<Iterator<FileItem>> type, Type genericType, Annotation[] annotations,
-      MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
-   {
-      try
-      {
-         ApplicationContext context = ApplicationContextImpl.getCurrent();
-         int bufferSize =
-            context.getProperties().get(RequestHandler.WS_RS_BUFFER_SIZE) == null
-               ? RequestHandler.WS_RS_BUFFER_SIZE_VALUE : Integer.parseInt(context.getProperties().get(
-                  RequestHandler.WS_RS_BUFFER_SIZE));
-         File repo = new File(context.getProperties().get(RequestHandler.WS_RS_TMP_DIR));
+  @Override
+  public long getSize(Iterator<? extends FileItem> t,
+                      Class<?> type,
+                      Type genericType,
+                      Annotation[] annotations,
+                      MediaType mediaType) {
+    return -1;
+  }
 
-         DefaultFileItemFactory factory = new DefaultFileItemFactory(bufferSize, repo);
-         final FileUpload upload = new FileUpload(factory);
+  @Override
+  public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    // output is not supported
+    return false;
+  }
 
-         return SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Iterator<FileItem>>()
-         {
-            public Iterator<FileItem> run() throws Exception
-            {
-               return upload.parseRequest(httpRequest).iterator();
-            }
-         });
-      }
-      catch (PrivilegedActionException pae)
-      {
-         Throwable cause = pae.getCause();
-         if (cause instanceof FileUploadException)
-         {
-            throw new IOException("Can't process multipart data item " + cause, cause);
-         }
-         else if (cause instanceof RuntimeException)
-         {
-            throw (RuntimeException)cause;
-         }
-         else
-         {
-            throw new RuntimeException(cause);
-         }
-      }
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public long getSize(Iterator<FileItem> t, Class<?> type, Type genericType, Annotation[] annotations,
-      MediaType mediaType)
-   {
-      return -1;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
-   {
-      // output is not supported
-      return false;
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   public void writeTo(Iterator<FileItem> t, Class<?> type, Type genericType, Annotation[] annotations,
-      MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
-   {
-      throw new UnsupportedOperationException();
-   }
+  @Override
+  public void writeTo(Iterator<? extends FileItem> t,
+                      Class<?> type,
+                      Type genericType,
+                      Annotation[] annotations,
+                      MediaType mediaType,
+                      MultivaluedMap<String, Object> httpHeaders,
+                      OutputStream entityStream) throws IOException {
+    throw new UnsupportedOperationException();
+  }
 
 }

@@ -73,44 +73,4 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-         <plugin>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <argLine>@{argLine} ${env.MAVEN_OPTS} -Djava.security.manager=org.exoplatform.commons.test.TestSecurityManager -Djava.security.policy=${project.build.directory}/test-classes/test.policy</argLine>
-            </configuration>
-         </plugin>
-         <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-               <execution>
-                  <id>prepare-test-policy</id>
-                  <phase>process-test-resources</phase>
-                  <configuration>
-                     <target>
-                        <echo>Creating Access Policy for tests</echo>
-                        <makeurl file="${settings.localRepository}" property="localRepositoryURL" />
-                        <makeurl file="${project.build.outputDirectory}" property="outputDirectoryURL" />
-                        <makeurl file="${project.build.testOutputDirectory}" property="testOutputDirectoryURL" />
-                        <copy todir="${project.build.testOutputDirectory}" overwrite="true">
-                           <fileset dir="${project.basedir}/src/test/resources/">
-                              <include name="test.policy" />
-                           </fileset>
-                           <filterset>
-                              <filter token="MAVEN_REPO" value="${localRepositoryURL}" />
-                              <filter token="MAIN_CLASSES" value="${outputDirectoryURL}" />
-                              <filter token="TEST_CLASSES" value="${testOutputDirectoryURL}" />
-                           </filterset>
-                        </copy>
-                     </target>
-                  </configuration>
-                  <goals>
-                     <goal>run</goal>
-                  </goals>
-               </execution>
-            </executions>
-         </plugin>
-		</plugins>
-	</build>
 </project>

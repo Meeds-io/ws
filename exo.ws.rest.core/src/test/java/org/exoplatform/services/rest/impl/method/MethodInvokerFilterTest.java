@@ -25,7 +25,7 @@ import org.exoplatform.services.rest.resource.GenericMethodResource;
 import org.exoplatform.services.rest.resource.SubResourceMethodDescriptor;
 import org.exoplatform.services.test.mock.MockHttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;

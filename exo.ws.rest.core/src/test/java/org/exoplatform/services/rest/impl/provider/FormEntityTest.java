@@ -16,12 +16,6 @@
  */
 package org.exoplatform.services.rest.impl.provider;
 
-import org.apache.commons.fileupload.FileItem;
-import org.exoplatform.services.rest.BaseTest;
-import org.exoplatform.services.rest.impl.EnvironmentContext;
-import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
-import org.exoplatform.services.test.mock.MockHttpServletRequest;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
@@ -29,12 +23,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MultivaluedMap;
+
+import org.apache.commons.fileupload2.core.FileItem;
+
+import org.exoplatform.services.rest.BaseTest;
+import org.exoplatform.services.rest.impl.EnvironmentContext;
+import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
+import org.exoplatform.services.test.mock.MockHttpServletRequest;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>

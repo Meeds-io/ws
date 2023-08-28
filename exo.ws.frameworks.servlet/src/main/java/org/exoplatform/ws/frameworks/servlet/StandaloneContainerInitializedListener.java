@@ -22,8 +22,8 @@ import org.exoplatform.services.log.Log;
 
 import java.net.MalformedURLException;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 
 /**
  * Created by The eXo Platform SAS .<br> Servlet context initializer that
