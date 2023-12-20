@@ -22,14 +22,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 
 /**
  * Created by The eXo Platform SAS.
@@ -61,7 +61,7 @@ public class AliasedURLRequestRedirector implements Filter
     *
     * @param conf filter configuration
     * @throws ServletException exception
-    * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
+    * @see jakarta.servlet.Filter#init(jakarta.servlet.FilterConfig)
     */
    @SuppressWarnings("unchecked")
    public void init(FilterConfig conf) throws ServletException
@@ -80,7 +80,7 @@ public class AliasedURLRequestRedirector implements Filter
    /**
     * Filter finalization method.
     *
-    * @see javax.servlet.Filter#destroy()
+    * @see jakarta.servlet.Filter#destroy()
     */
    public void destroy()
    {
@@ -94,7 +94,7 @@ public class AliasedURLRequestRedirector implements Filter
     * @param chain filter chain
     * @throws IOException exception
     * @throws ServletException exception
-    * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
+    * @see jakarta.servlet.Filter#doFilter(jakarta.servlet.ServletRequest, jakarta.servlet.ServletResponse, jakarta.servlet.FilterChain)
     */
    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException,
       ServletException
@@ -196,7 +196,7 @@ public class AliasedURLRequestRedirector implements Filter
        * Overridden method.
        *
        * @return actual path info
-       * @see javax.servlet.http.HttpServletRequestWrapper#getPathInfo()
+       * @see jakarta.servlet.http.HttpServletRequestWrapper#getPathInfo()
        */
       public String getPathInfo()
       {
@@ -207,7 +207,7 @@ public class AliasedURLRequestRedirector implements Filter
        * Overridden method.
        *
        * @return actual URI
-       * @see javax.servlet.http.HttpServletRequestWrapper#getRequestURI()
+       * @see jakarta.servlet.http.HttpServletRequestWrapper#getRequestURI()
        */
       public String getRequestURI()
       {
@@ -218,7 +218,7 @@ public class AliasedURLRequestRedirector implements Filter
        * Overridden method.
        *
        * @return actual URL
-       * @see javax.servlet.http.HttpServletRequestWrapper#getRequestURL()
+       * @see jakarta.servlet.http.HttpServletRequestWrapper#getRequestURL()
        */
       public StringBuffer getRequestURL()
       {
