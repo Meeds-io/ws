@@ -30,7 +30,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
    <groupId>org.exoplatform.ws</groupId>
    <artifactId>ws-parent</artifactId>
-   <version>6.5.0-exo-20240103</version>
+   <version>6.5.x-exo-SNAPSHOT</version>
    <packaging>pom</packaging>
    <name>eXo PLF:: WS</name>
    <description>Exoplatform SAS 'Web Services' project.</description>
@@ -39,11 +39,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <connection>scm:git:git://github.com/meeds-io/ws.git</connection>
       <developerConnection>scm:git:git@github.com:meeds-io/ws.git</developerConnection>
       <url>https://github.com/meeds-io/ws</url>
-      <tag>6.5.0-exo-20240103</tag>
+      <tag>HEAD</tag>
    </scm>
 
    <properties>
-      <org.exoplatform.core.version>6.5.0-exo-20240103</org.exoplatform.core.version>
+      <org.exoplatform.core.version>6.5.x-exo-SNAPSHOT</org.exoplatform.core.version>
       
       <!-- Sonar properties -->
       <sonar.organization>meeds-io</sonar.organization>
