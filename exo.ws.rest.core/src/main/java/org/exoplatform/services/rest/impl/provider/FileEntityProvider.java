@@ -16,10 +16,11 @@
  */
 package org.exoplatform.services.rest.impl.provider;
 
-import org.exoplatform.commons.utils.PrivilegedFileHelper;
 import org.exoplatform.services.rest.provider.EntityProvider;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -52,8 +53,8 @@ public class FileEntityProvider implements EntityProvider<File>
    public File readFrom(Class<File> type, Type genericType, Annotation[] annotations, MediaType mediaType,
       MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
-      File f = PrivilegedFileHelper.createTempFile("ws_rs", "tmp");
-      OutputStream out = PrivilegedFileHelper.fileOutputStream(f);
+      File f = File.createTempFile("ws_rs", "tmp");
+      OutputStream out = new FileOutputStream(f);
       try
       {
          IOHelper.write(entityStream, out);
@@ -87,7 +88,7 @@ public class FileEntityProvider implements EntityProvider<File>
    public void writeTo(File t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
       MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
-      InputStream in = PrivilegedFileHelper.fileInputStream(t);
+      InputStream in = new FileInputStream(t);
       try
       {
          IOHelper.write(in, entityStream);

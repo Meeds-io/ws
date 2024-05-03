@@ -33,7 +33,6 @@
 package org.exoplatform.common.http.client;
 
 import org.exoplatform.commons.utils.ClassLoading;
-import org.exoplatform.commons.utils.PrivilegedSystemHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
@@ -179,7 +178,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection
       // Set the User-Agent if the http.agent property is set
       try
       {
-         String agent = PrivilegedSystemHelper.getProperty("http.agent");
+         String agent = System.getProperty("http.agent");
          if (agent != null)
             setDefaultRequestProperty("User-Agent", agent);
       }
@@ -214,7 +213,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection
       // first read proxy properties and set
       try
       {
-         String hosts = PrivilegedSystemHelper.getProperty("http.nonProxyHosts", "");
+         String hosts = System.getProperty("http.nonProxyHosts", "");
          if (!hosts.equalsIgnoreCase(non_proxy_hosts))
          {
             connections.clear();
@@ -238,7 +237,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection
 
       try
       {
-         String host = PrivilegedSystemHelper.getProperty("http.proxyHost", "");
+         String host = System.getProperty("http.proxyHost", "");
          int port = Integer.getInteger("http.proxyPort", -1).intValue();
          if (!host.equalsIgnoreCase(proxy_host) || port != proxy_port)
          {

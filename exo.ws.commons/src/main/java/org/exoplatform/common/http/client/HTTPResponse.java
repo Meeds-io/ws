@@ -32,7 +32,6 @@
 
 package org.exoplatform.common.http.client;
 
-import org.exoplatform.commons.utils.PrivilegedSystemHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
@@ -662,7 +661,7 @@ public class HTTPResponse implements HTTPClientModuleConstants
          }
       }
 
-      String nl = PrivilegedSystemHelper.getProperty("line.separator", "\n");
+      String nl = System.getProperty("line.separator", "\n");
 
       StringBuffer str = new StringBuffer(Version);
       str.append(' ');

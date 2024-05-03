@@ -31,8 +31,6 @@
  */
 
 package org.exoplatform.common.http.client;
-
-import org.exoplatform.commons.utils.PrivilegedSystemHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
@@ -293,7 +291,7 @@ class SocksClient
          String user_str;
          try
          {
-            user_str = PrivilegedSystemHelper.getProperty("user.name", "");
+            user_str = System.getProperty("user.name", "");
          }
          catch (SecurityException se)
          {

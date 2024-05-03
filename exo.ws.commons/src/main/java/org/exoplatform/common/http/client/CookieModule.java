@@ -32,7 +32,6 @@
 
 package org.exoplatform.common.http.client;
 
-import org.exoplatform.commons.utils.PrivilegedSystemHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
@@ -213,7 +212,7 @@ public class CookieModule implements HTTPClientModule
 
       try
       {
-         file = PrivilegedSystemHelper.getProperty("HTTPClient.cookies.jar");
+         file = System.getProperty("HTTPClient.cookies.jar");
       }
       catch (Exception e)
       {
@@ -227,19 +226,19 @@ public class CookieModule implements HTTPClientModule
       {
          // default to something reasonable
 
-         String os = PrivilegedSystemHelper.getProperty("os.name");
+         String os = System.getProperty("os.name");
          if (os.equalsIgnoreCase("Windows 95") || os.equalsIgnoreCase("16-bit Windows")
             || os.equalsIgnoreCase("Windows"))
          {
-            file = PrivilegedSystemHelper.getProperty("java.home") + File.separator + ".httpclient_cookies";
+            file = System.getProperty("java.home") + File.separator + ".httpclient_cookies";
          }
          else if (os.equalsIgnoreCase("Windows NT"))
          {
-            file = PrivilegedSystemHelper.getProperty("user.home") + File.separator + ".httpclient_cookies";
+            file = System.getProperty("user.home") + File.separator + ".httpclient_cookies";
          }
          else if (os.equalsIgnoreCase("OS/2"))
          {
-            file = PrivilegedSystemHelper.getProperty("user.home") + File.separator + ".httpclient_cookies";
+            file = System.getProperty("user.home") + File.separator + ".httpclient_cookies";
          }
          else if (os.equalsIgnoreCase("Mac OS") || os.equalsIgnoreCase("MacOS"))
          {
@@ -248,7 +247,7 @@ public class CookieModule implements HTTPClientModule
          else
          // it's probably U*IX or VMS
          {
-            file = PrivilegedSystemHelper.getProperty("user.home") + File.separator + ".httpclient_cookies";
+            file = System.getProperty("user.home") + File.separator + ".httpclient_cookies";
          }
       }
 
@@ -671,7 +670,7 @@ class DefaultCookiePolicyHandler implements CookiePolicyHandler
 
       try
       {
-         list = PrivilegedSystemHelper.getProperty("HTTPClient.cookies.hosts.accept");
+         list = System.getProperty("HTTPClient.cookies.hosts.accept");
       }
       catch (Exception e)
       {
@@ -683,7 +682,7 @@ class DefaultCookiePolicyHandler implements CookiePolicyHandler
 
       try
       {
-         list = PrivilegedSystemHelper.getProperty("HTTPClient.cookies.hosts.reject");
+         list = System.getProperty("HTTPClient.cookies.hosts.reject");
       }
       catch (Exception e)
       {

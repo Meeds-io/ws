@@ -18,11 +18,9 @@ package org.exoplatform.services.rest.ext.groovy;
 
 import groovy.lang.GroovyClassLoader;
 
-import org.exoplatform.commons.utils.SecurityHelper;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.PrivilegedAction;
 
 /**
  * Factory of Groovy class loader. It can provide preset GroovyClassLoader
@@ -40,13 +38,7 @@ public class GroovyClassLoaderProvider
 
    public GroovyClassLoaderProvider()
    {
-      this(SecurityHelper.doPrivilegedAction(new PrivilegedAction<ExtendedGroovyClassLoader>()
-      {
-         public ExtendedGroovyClassLoader run()
-         {
-            return new ExtendedGroovyClassLoader(GroovyClassLoaderProvider.class.getClassLoader());
-         }
-      }));
+      this(new ExtendedGroovyClassLoader(GroovyClassLoaderProvider.class.getClassLoader()));
    }
 
    protected GroovyClassLoaderProvider(ExtendedGroovyClassLoader defaultClassLoader)
@@ -83,14 +75,7 @@ public class GroovyClassLoaderProvider
          roots[i] = sources[i].getPath();
 
       final GroovyClassLoader parent = getGroovyClassLoader();
-      ExtendedGroovyClassLoader classLoader =
-         SecurityHelper.doPrivilegedAction(new PrivilegedAction<ExtendedGroovyClassLoader>()
-         {
-            public ExtendedGroovyClassLoader run()
-            {
-               return new ExtendedGroovyClassLoader(parent);
-            }
-         });
+      ExtendedGroovyClassLoader classLoader = new ExtendedGroovyClassLoader(parent);
       classLoader.setResourceLoader(new DefaultGroovyResourceLoader(roots));
       return classLoader;
    }

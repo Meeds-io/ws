@@ -32,7 +32,6 @@
 
 package org.exoplatform.common.http.client;
 
-import org.exoplatform.commons.utils.PrivilegedSystemHelper;
 import org.exoplatform.services.log.ExoLogger;
 
 import java.io.ByteArrayOutputStream;
@@ -106,7 +105,7 @@ public class Log
    /** All the facilities - for use in <code>setLogging</code> (-1) */
    public static final int ALL = ~0;
 
-   private static final String NL = PrivilegedSystemHelper.getProperty("line.separator");
+   private static final String NL = System.getProperty("line.separator");
 
    private static final long TZ_OFF;
 
@@ -125,7 +124,7 @@ public class Log
 
       try
       {
-         String file = PrivilegedSystemHelper.getProperty("HTTPClient.log.file");
+         String file = System.getProperty("HTTPClient.log.file");
          if (file != null)
          {
             try

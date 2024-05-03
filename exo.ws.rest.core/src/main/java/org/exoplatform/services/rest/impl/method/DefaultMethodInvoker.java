@@ -16,7 +16,6 @@
  */
 package org.exoplatform.services.rest.impl.method;
 
-import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.ApplicationContext;
@@ -30,8 +29,6 @@ import org.exoplatform.services.rest.resource.GenericMethodResource;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.List;
 
 import javax.ws.rs.MatrixParam;
@@ -185,17 +182,10 @@ public class DefaultMethodInvoker implements MethodInvoker
    {
       try
       {
-         return SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Object>()
-         {
-            public Object run() throws Exception
-            {
-               return methodResource.getMethod().invoke(resource, p);
-            }
-         });
+         return methodResource.getMethod().invoke(resource, p);
       }
-      catch (PrivilegedActionException pae)
+      catch (Exception cause)
       {
-         Throwable cause = pae.getCause();
          if (cause instanceof IllegalArgumentException)
          {
             // should not be thrown
