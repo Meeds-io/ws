@@ -25,13 +25,11 @@ import org.codehaus.groovy.control.CompilationUnit;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.Phases;
 import org.codehaus.groovy.control.SourceUnit;
-import org.exoplatform.commons.utils.SecurityHelper;
 
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.CodeSource;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -272,23 +270,13 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader
 
    protected SingleClassCollector createSingleCollector(CompilationUnit unit, SourceUnit sunit)
    {
-      ExtendedInnerLoader loader = SecurityHelper.doPrivilegedAction(new PrivilegedAction<ExtendedInnerLoader>() {
-         public ExtendedInnerLoader run()
-         {
-            return new ExtendedInnerLoader(ExtendedGroovyClassLoader.this);
-         }
-      });
+      ExtendedInnerLoader loader = new ExtendedInnerLoader(ExtendedGroovyClassLoader.this);
       return new SingleClassCollector(loader, unit, sunit);
    }
 
    protected MultipleClassCollector createMultipleCollector(CompilationUnit unit, Set<SourceUnit> setSunit)
    {
-      ExtendedInnerLoader loader = SecurityHelper.doPrivilegedAction(new PrivilegedAction<ExtendedInnerLoader>() {
-         public ExtendedInnerLoader run()
-         {
-            return new ExtendedInnerLoader(ExtendedGroovyClassLoader.this);
-         }
-      });
+      ExtendedInnerLoader loader = new ExtendedInnerLoader(ExtendedGroovyClassLoader.this);
       return new MultipleClassCollector(loader, unit, setSunit);
    }
 

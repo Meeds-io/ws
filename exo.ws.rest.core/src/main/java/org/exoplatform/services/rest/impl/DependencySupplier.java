@@ -17,7 +17,6 @@
 package org.exoplatform.services.rest.impl;
 
 import org.exoplatform.commons.utils.ClassLoading;
-import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
@@ -29,8 +28,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.Iterator;
 import java.util.List;
 
@@ -71,18 +68,12 @@ public class DependencySupplier
          final ValueParam injectAnnotationParameter = params.getValueParam("inject.annotation.class");
          try
          {
-            injectAnnotationClass = SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Class>()
-            {
-               public Class run() throws ClassNotFoundException
-               {
-                  return ClassLoading.loadClass(injectAnnotationParameter.getValue(), DependencySupplier.class);
-               }
-            });
+            injectAnnotationClass =
+                (Class<? extends Annotation>) ClassLoading.loadClass(injectAnnotationParameter.getValue(), DependencySupplier.class);
          }
-         catch (PrivilegedActionException pe)
+         catch (ClassNotFoundException e)
          {
-            ClassNotFoundException c = (ClassNotFoundException)pe.getCause();
-            throw new RuntimeException(c.getMessage(), c);
+            throw new RuntimeException(e.getMessage(), e);
          }
       }
       if (injectAnnotationClass == null)
@@ -180,19 +171,12 @@ public class DependencySupplier
       Type injectedType = null;
       try
       {
-         get = SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Method>()
-         {
-            public Method run() throws NoSuchMethodException
-            {
-               return providerClass.getMethod("get");
-            }
-         });
+         get = providerClass.getMethod("get");
       }
-      catch (PrivilegedActionException pe)
+      catch (NoSuchMethodException e)
       {
-         NoSuchMethodException c = (NoSuchMethodException)pe.getCause();
          // Should never happen since class implements javax.inject.Provider.
-         throw new RuntimeException(c.getMessage(), c);
+         throw new RuntimeException(e.getMessage(), e);
       }
 
       if (get != null)

@@ -16,7 +16,6 @@
  */
 package org.exoplatform.services.rest.impl.provider;
 
-import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.provider.EntityProvider;
@@ -27,8 +26,6 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -87,15 +84,9 @@ public class JAXBElementEntityProvider implements EntityProvider<JAXBElement<?>>
       {
          final JAXBContext jaxbctx = getJAXBContext(c, mediaType);
 
-         return SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<JAXBElement<?>>()
-         {
-            public JAXBElement<?> run() throws Exception
-            {
-               return jaxbctx.createUnmarshaller().unmarshal(new StreamSource(entityStream), c);
-            }
-         });
+         return jaxbctx.createUnmarshaller().unmarshal(new StreamSource(entityStream), c);
       }
-      catch (PrivilegedActionException pae)
+      catch (JAXBException pae)
       {
          Throwable cause = pae.getCause();
          if (cause instanceof UnmarshalException)
@@ -123,10 +114,6 @@ public class JAXBElementEntityProvider implements EntityProvider<JAXBElement<?>>
          {
             throw new RuntimeException(cause);
          }
-      }
-      catch (JAXBException e)
-      {
-         throw new IOException("Can't read from input stream " + e, e);
       }
    }
 

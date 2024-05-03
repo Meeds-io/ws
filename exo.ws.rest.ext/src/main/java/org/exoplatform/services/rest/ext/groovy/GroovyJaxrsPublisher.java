@@ -22,7 +22,6 @@ import groovy.lang.GroovyCodeSource;
 import groovy.lang.GroovySystem;
 
 import org.codehaus.groovy.control.CompilationFailedException;
-import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.log.ExoLogger;
@@ -44,9 +43,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException; //NOSONAR
-import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -218,22 +214,18 @@ public class GroovyJaxrsPublisher
    public void publishPerRequest(final InputStream in, final ResourceId resourceId,
       final MultivaluedMap<String, String> properties, final SourceFolder[] src, final SourceFile[] files)
    {
-      Class<?> rc = SecurityHelper.doPrivilegedAction(new PrivilegedAction<Class<?>>() {
-         public Class<?> run()
-         {
-            try
-            {
-               ExtendedGroovyClassLoader cl =
-                  (src == null) ? classLoaderProvider.getGroovyClassLoader() : classLoaderProvider
-                     .getGroovyClassLoader(src);
-               return cl.parseClass(in, resourceId.getId(), files);
-            }
-            catch (MalformedURLException e)
-            {
-               throw new IllegalArgumentException(e.getMessage(), e);
-            }
-         }
-      });
+      Class<?> rc;
+      try
+      {
+         ExtendedGroovyClassLoader cl =
+             (src == null) ? classLoaderProvider.getGroovyClassLoader() : classLoaderProvider
+                 .getGroovyClassLoader(src);
+         rc = cl.parseClass(in, resourceId.getId(), files);
+      }
+      catch (MalformedURLException e)
+      {
+         throw new IllegalArgumentException(e.getMessage(), e);
+      }
 
       binder.addResource(rc, properties);
       resources.put(resourceId, rc.getAnnotation(Path.class).value());
@@ -517,25 +509,17 @@ public class GroovyJaxrsPublisher
    public void validateResource(final InputStream in, final String name, final SourceFolder[] src,
       final SourceFile[] files) throws MalformedScriptException
    {
-      //Class<?> rc;
       try
       {
-         //rc = 
-         SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Class<?>>() {
-            public Class<?> run() throws MalformedURLException
-            {
-               ExtendedGroovyClassLoader cl =
-                  (src == null) ? classLoaderProvider.getGroovyClassLoader() : classLoaderProvider
-                     .getGroovyClassLoader(src);
-               return cl.parseClass(in, (name != null && name.length() > 0) ? name : cl.generateScriptName(), files);
-            }
-         });
+         ExtendedGroovyClassLoader cl =
+             (src == null) ? classLoaderProvider.getGroovyClassLoader() : classLoaderProvider
+                 .getGroovyClassLoader(src);
+         cl.parseClass(in, (name != null && name.length() > 0) ? name : cl.generateScriptName(), files);
       }
-      catch (PrivilegedActionException e)
+      catch (MalformedURLException e)
       {
-         Throwable cause = e.getCause();
          // MalformedURLException
-         throw new IllegalArgumentException(cause.getMessage(), e);
+         throw new IllegalArgumentException(e.getMessage(), e);
       }
       catch (CompilationFailedException e)
       {
@@ -690,12 +674,7 @@ public class GroovyJaxrsPublisher
     */
    protected GroovyCodeSource createCodeSource(final URL url) throws IOException
    {
-      GroovyCodeSource gcs = SecurityHelper.doPrivilegedIOExceptionAction(new PrivilegedExceptionAction<GroovyCodeSource>() {
-         public GroovyCodeSource run() throws IOException
-         {
-            return new GroovyCodeSource(url);
-         }
-      });
+      GroovyCodeSource gcs = new GroovyCodeSource(url);
       gcs.setCachable(false);
       return gcs;
    }

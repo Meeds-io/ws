@@ -24,6 +24,7 @@ import java.lang.reflect.Type;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 
+import javax.security.sasl.SaslException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -43,7 +44,6 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.provider.EntityProvider;
@@ -92,17 +92,11 @@ public class DOMSourceEntityProvider implements EntityProvider<DOMSource>
    {
       try
       {
-         Document d = SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Document>()
-         {
-            public Document run() throws Exception
-            {
-               return DB.parse(entityStream);
-            }
-         });
+         Document d = DB.parse(entityStream);
 
          return new DOMSource(d);
       }
-      catch (PrivilegedActionException pae)
+      catch (SAXException pae)
       {
          Throwable cause = pae.getCause();
          if (cause instanceof SAXParseException)

@@ -19,15 +19,12 @@ package org.exoplatform.services.rest.ext.groovy;
 
 import groovy.lang.GroovyResourceLoader;
 
-import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -92,23 +89,7 @@ public class DefaultGroovyResourceLoader implements GroovyResourceLoader
    {
       URL resource = null;
       final String ffilename = filename.replace('.', '/') + getSourceFileExtension();
-      try
-      {
-         resource = SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<URL>()
-         {
-            public URL run() throws MalformedURLException
-            {
-               return getResource(ffilename);
-            }
-         });
-      }
-      catch (PrivilegedActionException e)
-      {
-         Throwable cause = e.getCause();
-         // MalformedURLException
-         throw (MalformedURLException)cause;
-      }
-      return resource;
+      return getResource(ffilename);
    }
 
    protected URL getResource(final String filename) throws MalformedURLException

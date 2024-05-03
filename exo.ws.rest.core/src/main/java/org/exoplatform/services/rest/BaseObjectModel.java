@@ -16,14 +16,12 @@
  */
 package org.exoplatform.services.rest;
 
-import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.services.rest.impl.ConstructorDescriptorImpl;
 import org.exoplatform.services.rest.impl.FieldInjectorImpl;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,13 +49,7 @@ public abstract class BaseObjectModel implements ObjectModel
       this.fields = new ArrayList<FieldInjector>();
       if (scope == ComponentLifecycleScope.PER_REQUEST)
       {
-         Constructor<?>[] jConstructors = 
-            SecurityHelper.doPrivilegedAction(new PrivilegedAction<Constructor<?>[]>() {
-               public Constructor<?>[] run()
-               {
-                  return BaseObjectModel.this.clazz.getConstructors();
-               }
-            });
+         Constructor<?>[] jConstructors = BaseObjectModel.this.clazz.getConstructors();
          for (Constructor<?> constructor : jConstructors)
          {
             constructors.add(new ConstructorDescriptorImpl(clazz, constructor));
@@ -73,13 +65,7 @@ public abstract class BaseObjectModel implements ObjectModel
             Collections.sort(constructors, ConstructorDescriptorImpl.CONSTRUCTOR_COMPARATOR);
          }
          // process field
-         java.lang.reflect.Field[] jfields =
-            SecurityHelper.doPrivilegedAction(new PrivilegedAction<java.lang.reflect.Field[]>() {
-               public java.lang.reflect.Field[] run()
-               {
-                  return BaseObjectModel.this.clazz.getDeclaredFields();
-               }
-            });
+         java.lang.reflect.Field[] jfields = BaseObjectModel.this.clazz.getDeclaredFields();
          for (java.lang.reflect.Field jfield : jfields)
          {
             fields.add(new FieldInjectorImpl(clazz, jfield));

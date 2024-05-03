@@ -16,7 +16,6 @@
  */
 package org.exoplatform.ws.frameworks.json.impl;
 
-import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.ws.frameworks.json.JsonGenerator;
 import org.exoplatform.ws.frameworks.json.impl.JsonUtils.Types;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
@@ -34,7 +33,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -386,13 +384,7 @@ public class JsonGeneratorImpl implements JsonGenerator
    {
       Set<String> set = new HashSet<String>();
       
-      Field[] fields = SecurityHelper.doPrivilegedAction(new PrivilegedAction<Field[]>()
-      {
-         public Field[] run()
-         {
-            return clazz.getDeclaredFields();
-         }
-      });
+      Field[] fields = clazz.getDeclaredFields();
 
       for (Field f : fields)
       {

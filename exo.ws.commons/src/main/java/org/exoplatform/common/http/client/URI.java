@@ -32,8 +32,6 @@
 
 package org.exoplatform.common.http.client;
 
-import org.exoplatform.commons.utils.PrivilegedSystemHelper;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.BitSet;
@@ -1783,7 +1781,7 @@ public class URI
       System.err.println("*** Tests finished successfuly"); //NOSONAR
    }
 
-   private static final String nl = PrivilegedSystemHelper.getProperty("line.separator");
+   private static final String nl = System.getProperty("line.separator");
 
    private static void testParser(URI base, String relURI, String result) throws Exception
    {
