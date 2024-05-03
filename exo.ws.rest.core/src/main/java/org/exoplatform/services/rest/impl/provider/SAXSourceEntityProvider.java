@@ -16,7 +16,6 @@
  */
 package org.exoplatform.services.rest.impl.provider;
 
-import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.services.rest.provider.EntityProvider;
 import org.xml.sax.InputSource;
 
@@ -25,8 +24,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -93,16 +90,9 @@ public class SAXSourceEntityProvider implements EntityProvider<SAXSource>
       final StreamResult out = new StreamResult(entityStream);
       try
       {
-         SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Void>()
-         {
-            public Void run() throws Exception
-            {
-               TransformerFactory.newInstance().newTransformer().transform(t, out);
-               return null;
-            }
-         });
+         TransformerFactory.newInstance().newTransformer().transform(t, out);
       }
-      catch (PrivilegedActionException pae)
+      catch (Exception pae)
       {
          Throwable cause = pae.getCause();
          if (cause instanceof TransformerConfigurationException)

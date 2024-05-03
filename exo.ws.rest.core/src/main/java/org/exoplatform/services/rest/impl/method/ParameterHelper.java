@@ -16,7 +16,6 @@
  */
 package org.exoplatform.services.rest.impl.method;
 
-import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.services.rest.Property;
 import org.exoplatform.services.rest.method.TypeProducer;
 
@@ -26,8 +25,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -262,17 +259,11 @@ public class ParameterHelper
    {
       try
       {
-         Method method = SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Method>()
-         {
-            public Method run() throws Exception
-            {
-               return clazz.getDeclaredMethod("valueOf", String.class);
-            }
-         });
+         Method method = clazz.getDeclaredMethod("valueOf", String.class);
 
          return Modifier.isStatic(method.getModifiers()) ? method : null;
       }
-      catch (PrivilegedActionException e)
+      catch (NoSuchMethodException e)
       {
          return null;
       }

@@ -16,14 +16,11 @@
  */
 package org.exoplatform.services.rest.impl.provider;
 
-import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.container.component.ComponentPlugin;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.impl.header.MediaTypeHelper;
 
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -81,15 +78,9 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
       {
          try
          {
-            jaxbctx = SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<JAXBContext>()
-            {
-               public JAXBContext run() throws Exception
-               {
-                  return JAXBContext.newInstance(clazz);
-               }
-            });
+            jaxbctx = JAXBContext.newInstance(clazz);
          }
-         catch (PrivilegedActionException pae)
+         catch (JAXBException pae)
          {
             Throwable cause = pae.getCause();
             if (cause instanceof JAXBException)
@@ -129,15 +120,9 @@ public class JAXBContextResolver implements ContextResolver<JAXBContextResolver>
 
       try
       {
-         jaxbctx = SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<JAXBContext>()
-         {
-            public JAXBContext run() throws Exception
-            {
-               return JAXBContext.newInstance(clazz);
-            }
-         });
+         jaxbctx = JAXBContext.newInstance(clazz);
       }
-      catch (PrivilegedActionException pae)
+      catch (JAXBException pae)
       {
          Throwable cause = pae.getCause();
          if (cause instanceof JAXBException)

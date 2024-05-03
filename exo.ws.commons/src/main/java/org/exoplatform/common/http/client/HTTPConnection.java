@@ -33,11 +33,9 @@
 package org.exoplatform.common.http.client;
 
 import org.exoplatform.commons.utils.ClassLoading;
-import org.exoplatform.commons.utils.PrivilegedSystemHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
-import java.applet.Applet;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.FilterOutputStream;
@@ -317,7 +315,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       try
       // JDK 1.1 naming
       {
-         String host = PrivilegedSystemHelper.getProperty("http.proxyHost");
+         String host = System.getProperty("http.proxyHost");
          if (host == null)
             throw new Exception(); // try JDK 1.0.x naming
          int port = Integer.getInteger("http.proxyPort", -1).intValue();
@@ -336,7 +334,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
          {
             if (Boolean.getBoolean("proxySet"))
             {
-               String host = PrivilegedSystemHelper.getProperty("proxyHost");
+               String host = System.getProperty("proxyHost");
                int port = Integer.getInteger("proxyPort", -1).intValue();
 
                if (LOG.isDebugEnabled())
@@ -358,10 +356,10 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
        */
       try
       {
-         String hosts = PrivilegedSystemHelper.getProperty("HTTPClient.nonProxyHosts");
+         String hosts = System.getProperty("HTTPClient.nonProxyHosts");
          if (hosts == null)
          {
-            hosts = PrivilegedSystemHelper.getProperty("http.nonProxyHosts");
+            hosts = System.getProperty("http.nonProxyHosts");
          }
 
          String[] list = Util.splitProperty(hosts);
@@ -383,7 +381,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
        */
       try
       {
-         String host = PrivilegedSystemHelper.getProperty("HTTPClient.socksHost");
+         String host = System.getProperty("HTTPClient.socksHost");
          if (host != null && host.length() > 0)
          {
             int port = Integer.getInteger("HTTPClient.socksPort", -1).intValue();
@@ -432,7 +430,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
       boolean in_applet = false;
       try
       {
-         modules = PrivilegedSystemHelper.getProperty("HTTPClient.Modules", modules);
+         modules = System.getProperty("HTTPClient.Modules", modules);
       }
       catch (SecurityException se)
       {
@@ -562,8 +560,8 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
        */
       try
       {
-         if (PrivilegedSystemHelper.getProperty("os.name").indexOf("Windows") >= 0
-            && PrivilegedSystemHelper.getProperty("java.version").startsWith("1.1"))
+         if (System.getProperty("os.name").indexOf("Windows") >= 0
+            && System.getProperty("java.version").startsWith("1.1"))
          {
             haveMSLargeWritesBug = true;
          }
@@ -611,15 +609,6 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
    // Constructors
 
-   /**
-    * Constructs a connection to the host from where the applet was loaded. Note
-    * that current security policies only let applets connect home.
-    * @param applet the current applet
-    */
-   public HTTPConnection(Applet applet) throws ProtocolNotSuppException
-   {
-      this(applet.getCodeBase().getProtocol(), applet.getCodeBase().getHost(), applet.getCodeBase().getPort());
-   }
 
    /**
     * Constructs a connection to the specified host on port 80

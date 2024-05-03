@@ -16,7 +16,6 @@
  */
 package org.exoplatform.services.rest.impl;
 
-import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.ApplicationContext;
@@ -31,9 +30,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.List;
 
 import javax.ws.rs.DefaultValue;
@@ -142,16 +138,11 @@ public class FieldInjectorImpl implements FieldInjector
       Method setter = null;
       try
       {
-         setter = SecurityHelper.doPrivilegedExceptionAction(new PrivilegedExceptionAction<Method>() {
-            public Method run() throws NoSuchMethodException
-            {
-               String name = jfield.getName();
-               String setterName = "set" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
-               return clazz.getMethod(setterName, jfield.getType());
-            }
-         });
+         String name = jfield.getName();
+         String setterName = "set" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
+         setter = clazz.getMethod(setterName, jfield.getType());
       }
-      catch (PrivilegedActionException e)
+      catch (NoSuchMethodException e)
       {
          if (LOG.isTraceEnabled())
          {
@@ -235,13 +226,7 @@ public class FieldInjectorImpl implements FieldInjector
             {
                if (!Modifier.isPublic(jfield.getModifiers()))
                {
-                  SecurityHelper.doPrivilegedAction(new PrivilegedAction<Void>() {
-                     public Void run()
-                     {
-                        jfield.setAccessible(true);
-                        return null;
-                     }
-                  });
+                  jfield.setAccessible(true);
                }
                jfield.set(resource, pr.resolve(this, context));
             }
@@ -271,13 +256,7 @@ public class FieldInjectorImpl implements FieldInjector
                {
                   if (!Modifier.isPublic(jfield.getModifiers()))
                   {
-                     SecurityHelper.doPrivilegedAction(new PrivilegedAction<Void>() {
-                        public Void run()
-                        {
-                           jfield.setAccessible(true);
-                           return null;
-                        }
-                     });
+                     jfield.setAccessible(true);
                   }
                   jfield.set(resource, tmp);
                }

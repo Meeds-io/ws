@@ -32,8 +32,6 @@
 
 package org.exoplatform.common.http.client;
 
-import org.exoplatform.commons.utils.PrivilegedSystemHelper;
-
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
@@ -285,7 +283,7 @@ public class Codecs
       int line_len = 45; // line length, in octets
 
       int sidx, didx;
-      char nl[] = PrivilegedSystemHelper.getProperty("line.separator", "\n").toCharArray(), dest[] =
+      char nl[] = System.getProperty("line.separator", "\n").toCharArray(), dest[] =
          new char[(data.length + 2) / 3 * 4 + ((data.length + line_len - 1) / line_len) * (nl.length + 1)];
 
       // split into lines, adding line-length and line terminator
@@ -416,7 +414,7 @@ public class Codecs
          return null;
 
       char map[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'}, nl[] =
-         PrivilegedSystemHelper.getProperty("line.separator", "\n").toCharArray(), res[] =
+         System.getProperty("line.separator", "\n").toCharArray(), res[] =
          new char[(int)(str.length() * 1.5)], src[] =
          str.toCharArray();
       char ch;
@@ -501,7 +499,7 @@ public class Codecs
          return null;
 
       char res[] = new char[(int)(str.length() * 1.1)], src[] = str.toCharArray(), nl[] =
-         PrivilegedSystemHelper.getProperty("line.separator", "\n").toCharArray();
+          System.getProperty("line.separator", "\n").toCharArray();
       int last = 0, didx = 0, slen = str.length();
 
       for (int sidx = 0; sidx < slen;)

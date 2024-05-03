@@ -16,8 +16,6 @@
  */
 package org.exoplatform.services.rest.impl;
 
-import org.exoplatform.commons.utils.PrivilegedFileHelper;
-import org.exoplatform.commons.utils.PrivilegedSystemHelper;
 import org.exoplatform.container.component.ComponentPlugin;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
@@ -199,7 +197,7 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
             else
             {
                LOG.error("Internal error occurs.", cause);
-               throw new UnhandledException(e.getCause());
+               throw new UnhandledException(cause.getCause());
             }
          }
 
@@ -282,16 +280,16 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
    {
       String tmpDirName = properties.get(WS_RS_TMP_DIR);
       File tmpDir = new File(tmpDirName);
-      if (!PrivilegedFileHelper.exists(tmpDir))
+      if (!tmpDir.exists())
       {
          return;
       }
-      File[] files = PrivilegedFileHelper.listFiles(tmpDir);
+      File[] files = tmpDir.listFiles();
       for (File file : files)
       {
-         if (PrivilegedFileHelper.exists(file))
+         if (file.exists())
          {
-            PrivilegedFileHelper.delete(file);
+            file.delete();
          }
       }
    }
@@ -308,7 +306,7 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
       String tmpDirName = properties.get(WS_RS_TMP_DIR);
       if (tmpDirName == null)
       {
-         tmpDir = new File(PrivilegedSystemHelper.getProperty("java.io.tmpdir") + File.separator + "ws_jaxrs");
+         tmpDir = new File(System.getProperty("java.io.tmpdir") + File.separator + "ws_jaxrs");
          properties.put(WS_RS_TMP_DIR, tmpDir.getPath());
       }
       else
@@ -316,9 +314,9 @@ public final class RequestHandlerImpl implements RequestHandler, Startable
          tmpDir = new File(tmpDirName);
       }
 
-      if (!PrivilegedFileHelper.exists(tmpDir))
+      if (!tmpDir.exists())
       {
-         PrivilegedFileHelper.mkdirs(tmpDir);
+         tmpDir.mkdirs();
       }
    }
 

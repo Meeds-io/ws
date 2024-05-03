@@ -16,7 +16,6 @@
  */
 package org.exoplatform.services.rest.impl;
 
-import org.exoplatform.commons.utils.SecurityHelper;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.log.ExoLogger;
@@ -35,7 +34,6 @@ import org.exoplatform.services.rest.resource.ResourceDescriptorVisitor;
 import org.exoplatform.services.rest.uri.UriPattern;
 import org.picocontainer.Startable;
 
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -204,14 +202,7 @@ public class ResourceBinder implements Startable
       this.invokerFactory = invokerFactory;
       // Initialize RuntimeDelegate instance
       // This is first component in life cycle what needs.
-      SecurityHelper.doPrivilegedAction(new PrivilegedAction<Void>()
-      {
-         public Void run()
-         {
-            RuntimeDelegate.setInstance(new RuntimeDelegateImpl());
-            return null;
-         }
-      });
+     RuntimeDelegate.setInstance(new RuntimeDelegateImpl());
 
       rd = RuntimeDelegate.getInstance();
       container = containerContext.getContainer();
