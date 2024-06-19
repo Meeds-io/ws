@@ -22,14 +22,14 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.exoplatform.ws</groupId>
+    <groupId>io.meeds.ws</groupId>
     <artifactId>ws-parent</artifactId>
     <version>7.0.x-SNAPSHOT</version>
   </parent>
 
   <artifactId>exo.ws.testframework</artifactId>
 
-  <name>eXo PLF:: WS :: HTTP :: testframework</name>
+  <name>Meeds:: PLF:: WS :: HTTP :: testframework</name>
   <description>Implementation of HTTP testframework for Exoplatform SAS 'Web Services' project.</description>
 
   <dependencies>
@@ -38,15 +38,15 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <artifactId>jakarta.servlet-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.kernel</groupId>
+      <groupId>io.meeds.kernel</groupId>
       <artifactId>exo.kernel.container</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.kernel</groupId>
+      <groupId>io.meeds.kernel</groupId>
       <artifactId>exo.kernel.commons</artifactId>  
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.kernel</groupId>
+      <groupId>io.meeds.kernel</groupId>
       <artifactId>exo.kernel.container</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
