@@ -22,14 +22,14 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
    <modelVersion>4.0.0</modelVersion>
 
    <parent>
-      <groupId>org.exoplatform.ws</groupId>
+      <groupId>io.meeds.ws</groupId>
       <artifactId>ws-parent</artifactId>
       <version>7.0.x-exo-SNAPSHOT</version>
    </parent>
 
    <artifactId>exo.ws.frameworks.json</artifactId>
 
-   <name>eXo PLF:: WS :: Framework :: JSON</name>
+   <name>Meeds:: PLF:: WS :: Framework :: JSON</name>
    <description>Implementation of Java Bean to JSON Transformation for Exoplatform SAS 'Web Services' project.</description>
 
    <properties>
@@ -48,12 +48,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
          <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>org.exoplatform.kernel</groupId>
+         <groupId>io.meeds.kernel</groupId>
          <artifactId>exo.kernel.commons.test</artifactId>
          <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>org.exoplatform.kernel</groupId>
+         <groupId>io.meeds.kernel</groupId>
          <artifactId>exo.kernel.commons</artifactId>
       </dependency>
    </dependencies>

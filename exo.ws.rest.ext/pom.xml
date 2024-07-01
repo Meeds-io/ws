@@ -22,14 +22,14 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.exoplatform.ws</groupId>
+		<groupId>io.meeds.ws</groupId>
 		<artifactId>ws-parent</artifactId>
 		<version>7.0.x-exo-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>exo.ws.rest.ext</artifactId>
 
-	<name>eXo PLF:: WS :: REST :: Extentions</name>
+	<name>Meeds:: PLF:: WS :: REST :: Extentions</name>
 	<description>Implementation of REST Extentions for Exoplatform SAS 'Web Services' project.</description>
 
 	<properties>
@@ -38,28 +38,28 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 	<dependencies>
 		<dependency>
-			<groupId>org.exoplatform.kernel</groupId>
+			<groupId>io.meeds.kernel</groupId>
 			<artifactId>exo.kernel.commons.test</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.exoplatform.core</groupId>
+			<groupId>io.meeds.core</groupId>
 			<artifactId>exo.core.component.xml-processing</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.exoplatform.core</groupId>
+			<groupId>io.meeds.core</groupId>
 			<artifactId>exo.core.component.script.groovy</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.exoplatform.ws</groupId>
+			<groupId>io.meeds.ws</groupId>
 			<artifactId>exo.ws.commons</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.exoplatform.ws</groupId>
+			<groupId>io.meeds.ws</groupId>
 			<artifactId>exo.ws.rest.core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.exoplatform.ws</groupId>
+			<groupId>io.meeds.ws</groupId>
 			<artifactId>exo.ws.testframework</artifactId>
 			<scope>test</scope>
 		</dependency>

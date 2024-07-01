@@ -23,16 +23,16 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
    <parent>
       <artifactId>maven-parent-pom</artifactId>
-      <groupId>org.exoplatform</groupId>
-      <version>27-M03</version>
+      <groupId>io.meeds</groupId>
+      <version>27-M04</version>
       <relativePath />
    </parent>
 
-   <groupId>org.exoplatform.ws</groupId>
+   <groupId>io.meeds.ws</groupId>
    <artifactId>ws-parent</artifactId>
    <version>7.0.x-exo-SNAPSHOT</version>
    <packaging>pom</packaging>
-   <name>eXo PLF:: WS</name>
+   <name>Meeds:: PLF:: WS</name>
    <description>Exoplatform SAS 'Web Services' project.</description>
 
    <scm>
@@ -43,10 +43,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
    </scm>
 
    <properties>
-      <org.exoplatform.core.version>7.0.x-exo-SNAPSHOT</org.exoplatform.core.version>
+      <io.meeds.core.version>7.0.x-exo-SNAPSHOT</io.meeds.core.version>
       
       <!-- Sonar properties -->
       <sonar.organization>meeds-io</sonar.organization>
+    
    </properties>
 
    <modules>
@@ -61,9 +62,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
    <dependencyManagement>
       <dependencies>
          <dependency>
-           <groupId>org.exoplatform.core</groupId>
+           <groupId>io.meeds.core</groupId>
            <artifactId>core-parent</artifactId>
-           <version>${org.exoplatform.core.version}</version>
+           <version>${io.meeds.core.version}</version>
            <type>pom</type>
            <scope>import</scope>
          </dependency>
