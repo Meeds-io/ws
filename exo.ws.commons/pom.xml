@@ -22,14 +22,14 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
    <modelVersion>4.0.0</modelVersion>
 
    <parent>
-      <groupId>org.exoplatform.ws</groupId>
+      <groupId>io.meeds.ws</groupId>
       <artifactId>ws-parent</artifactId>
       <version>7.0.x-SNAPSHOT</version>
    </parent>
 
    <artifactId>exo.ws.commons</artifactId>
 
-   <name>eXo PLF:: WS :: Commons Utils</name>
+   <name>Meeds:: PLF:: WS :: Commons Utils</name>
    <description>Implementation of Commons Utils for Exoplatform SAS 'Web Services' project.</description>
 
    <properties>
@@ -38,11 +38,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
    
    <dependencies>
       <dependency>
-         <groupId>org.exoplatform.kernel</groupId>
+         <groupId>io.meeds.kernel</groupId>
          <artifactId>exo.kernel.commons</artifactId>
       </dependency>
       <dependency>
-         <groupId>org.exoplatform.kernel</groupId>
+         <groupId>io.meeds.kernel</groupId>
          <artifactId>exo.kernel.commons.test</artifactId>
          <scope>test</scope>
       </dependency>
