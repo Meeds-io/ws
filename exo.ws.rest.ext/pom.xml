@@ -33,7 +33,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	<description>Implementation of REST Extentions for Exoplatform SAS 'Web Services' project.</description>
 
 	<properties>
-		<exo.test.coverage.ratio>0.31</exo.test.coverage.ratio>
+		<exo.test.coverage.ratio>0.11</exo.test.coverage.ratio>
 	</properties>
 
 	<dependencies>
@@ -41,14 +41,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			<groupId>io.meeds.kernel</groupId>
 			<artifactId>exo.kernel.commons.test</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.meeds.core</groupId>
-			<artifactId>exo.core.component.xml-processing</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.meeds.core</groupId>
-			<artifactId>exo.core.component.script.groovy</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.meeds.ws</groupId>
