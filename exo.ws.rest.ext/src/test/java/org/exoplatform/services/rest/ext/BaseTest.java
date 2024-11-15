@@ -17,51 +17,43 @@
 
 package org.exoplatform.services.rest.ext;
 
-import junit.framework.TestCase;
-
 import org.exoplatform.container.StandaloneContainer;
-import org.exoplatform.services.rest.ext.groovy.GroovyJaxrsPublisher;
 import org.exoplatform.services.rest.impl.ApplicationContextImpl;
 import org.exoplatform.services.rest.impl.ProviderBinder;
 import org.exoplatform.services.rest.impl.RequestHandlerImpl;
 import org.exoplatform.services.rest.impl.ResourceBinder;
 import org.exoplatform.services.rest.tools.ResourceLauncher;
 
+import junit.framework.TestCase;
+
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id$
  */
-public abstract class BaseTest extends TestCase
-{
-   protected StandaloneContainer container;
+public abstract class BaseTest extends TestCase {
 
-   protected ProviderBinder providers;
+  protected StandaloneContainer container;
 
-   protected ResourceBinder binder;
+  protected ProviderBinder      providers;
 
-   protected RequestHandlerImpl requestHandler;
+  protected ResourceBinder      binder;
 
-   protected GroovyJaxrsPublisher groovyPublisher;
+  protected RequestHandlerImpl  requestHandler;
 
-   protected ResourceLauncher launcher;
+  protected ResourceLauncher    launcher;
 
-   public void setUp() throws Exception
-   {
-      StandaloneContainer.setConfigurationPath("src/test/resources/conf/standalone/test-configuration.xml");
-      container = StandaloneContainer.getInstance();
-      binder = (ResourceBinder)container.getComponentInstanceOfType(ResourceBinder.class);
-      requestHandler = (RequestHandlerImpl)container.getComponentInstanceOfType(RequestHandlerImpl.class);
-      // reset providers to be sure it is clean
-      ProviderBinder.setInstance(new ProviderBinder());
-      providers = ProviderBinder.getInstance();
-      ApplicationContextImpl.setCurrent(new ApplicationContextImpl(null, null, providers));
-      binder.clear();
-      groovyPublisher = (GroovyJaxrsPublisher)container.getComponentInstanceOfType(GroovyJaxrsPublisher.class);
-      launcher = new ResourceLauncher(requestHandler);
-   }
-
-   public void tearDown() throws Exception
-   {
-   }
+  @Override
+  public void setUp() throws Exception {
+    StandaloneContainer.setConfigurationPath("src/test/resources/conf/standalone/test-configuration.xml");
+    container = StandaloneContainer.getInstance();
+    binder = container.getComponentInstanceOfType(ResourceBinder.class);
+    requestHandler = container.getComponentInstanceOfType(RequestHandlerImpl.class);
+    // reset providers to be sure it is clean
+    ProviderBinder.setInstance(new ProviderBinder());
+    providers = ProviderBinder.getInstance();
+    ApplicationContextImpl.setCurrent(new ApplicationContextImpl(null, null, providers));
+    binder.clear();
+    launcher = new ResourceLauncher(requestHandler);
+  }
 
 }
