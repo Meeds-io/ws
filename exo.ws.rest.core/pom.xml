@@ -58,7 +58,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
-        <artifactId>commons-fileupload2-jakarta</artifactId>
+        <artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
       </dependency>
       <dependency>
          <groupId>javax.ws.rs</groupId>
