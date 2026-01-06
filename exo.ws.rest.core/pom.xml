@@ -80,6 +80,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
          <scope>test</scope>
       </dependency>
       <dependency>
+         <groupId>io.meeds.core</groupId>
+         <artifactId>exo.core.component.security.core</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
          <groupId>junit</groupId>
          <artifactId>junit</artifactId>
          <scope>test</scope>
