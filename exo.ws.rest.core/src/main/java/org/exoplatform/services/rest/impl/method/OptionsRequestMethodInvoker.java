@@ -17,13 +17,17 @@
 package org.exoplatform.services.rest.impl.method;
 
 import org.exoplatform.services.rest.ApplicationContext;
+import org.exoplatform.services.rest.impl.ApplicationContextImpl;
 import org.exoplatform.services.rest.impl.header.MediaTypeHelper;
 import org.exoplatform.services.rest.method.MethodInvoker;
 import org.exoplatform.services.rest.resource.GenericMethodResource;
 import org.exoplatform.services.rest.wadl.WadlProcessor;
 import org.exoplatform.services.rest.wadl.research.Application;
 
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -37,6 +41,17 @@ public class OptionsRequestMethodInvoker implements MethodInvoker
     */
    public Object invokeMethod(Object resource, GenericMethodResource genericMethodResource, ApplicationContext context)
    {
+
+      SecurityContext securityContext = ApplicationContextImpl.getCurrent().getSecurityContext();
+      String role = "users";
+
+      if (!securityContext.isUserInRole(role)) {
+         // user is not in allowed roles
+         throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity(
+             "You do not have access rights to this resource, please contact your administrator. ").type(
+             MediaType.TEXT_PLAIN).build());
+      }
+
       Application wadlApplication =
          new WadlProcessor().process(genericMethodResource.getParentResource(), context.getBaseUri());
       return Response.ok(wadlApplication, MediaTypeHelper.WADL_TYPE).build();
