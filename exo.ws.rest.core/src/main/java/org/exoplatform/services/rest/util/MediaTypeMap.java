@@ -19,6 +19,7 @@ package org.exoplatform.services.rest.util;
 import org.exoplatform.services.rest.impl.header.MediaTypeHelper;
 
 import java.util.Comparator;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import javax.ws.rs.core.MediaType;
 
@@ -29,7 +30,7 @@ import javax.ws.rs.core.MediaType;
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
-public class MediaTypeMap<T> extends java.util.TreeMap<MediaType, T>
+public class MediaTypeMap<T> extends ConcurrentSkipListMap<MediaType, T>
 {
 
    /**
