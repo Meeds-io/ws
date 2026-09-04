@@ -299,11 +299,12 @@ public class MockHttpServletResponse implements HttpServletResponse
    /**
     * {@inheritDoc}
     */
-   public void sendRedirect(String location) throws IOException
-   {
-      resetBuffer();
-      setStatus(SC_MOVED_TEMPORARILY);
-      setHeader("Location", location);
+   public void sendRedirect(String location, int sc, boolean clearBuffer) throws IOException {
+     if (clearBuffer) {
+       resetBuffer();
+     }
+     setStatus(sc);
+     setHeader("Location", location);
    }
 
    /**
@@ -517,4 +518,5 @@ public class MockHttpServletResponse implements HttpServletResponse
   public void setContentLengthLong(long len) {
     this.contentLength = len;
   }
+
 }
