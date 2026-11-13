@@ -43,8 +43,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
          <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>org.codehaus.groovy</groupId>
-         <artifactId>groovy-all</artifactId>
+         <groupId>org.apache.groovy</groupId>
+         <artifactId>groovy</artifactId>
          <scope>test</scope>
       </dependency>
       <dependency>
