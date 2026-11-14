@@ -509,7 +509,7 @@ public final class HeaderHelper
 
    /**
     * Create string representation of Java Object for adding to response. Method
-    * use {@link HeaderDelegate#toString()}.
+    * use {@link HeaderDelegate#toString(Object)}.
     *
     * @param o HTTP header as Java type.
     * @return string representation of supplied type
