@@ -29,6 +29,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermissions;
 
 import jakarta.activation.DataSource;
 import jakarta.activation.FileDataSource;
@@ -99,6 +103,18 @@ public class DataSourceEntityProvider implements EntityProvider<DataSource>
    }
 
    /**
+    * Creates the temporary file readable and writable by its owner only, whatever
+    * the umask, when the file system has POSIX permissions.
+    */
+   private static File createOwnerOnlyTempFile() throws IOException
+   {
+      FileAttribute<?>[] attributes = FileSystems.getDefault().supportedFileAttributeViews().contains("posix")
+         ? new FileAttribute<?>[] { PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------")) }
+         : new FileAttribute<?>[0];
+      return Files.createTempFile("datasource", "tmp", attributes).toFile();
+   }
+
+   /**
     * Create DataSource instance dependent entity size. If entity has size less
     * then <code>MAX_BUFFER_SIZE</code> then {@link ByteArrayDataSource} will be
     * created otherwise {@link MimeFileDataSource} will be created.
@@ -136,7 +152,7 @@ public class DataSourceEntityProvider implements EntityProvider<DataSource>
          return new ByteArrayDataSource(bout.toByteArray(), mimeType);
 
       // large data, use file
-      final File file = File.createTempFile("datasource", "tmp");
+      final File file = createOwnerOnlyTempFile();
       OutputStream fout = new FileOutputStream(file);
 
       // copy data from byte array in file
